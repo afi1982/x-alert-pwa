@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ff2d4a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="X Alert">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<title>X Live Alert</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+Hebrew:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#06060c; --bg2:#0e0e1a; --card:#111122; --card2:#161630;
+  --accent:#00e5ff; --accentD:#00e5ff22;
+  --red:#ff2d4a; --redD:#ff2d4a18; --redG:#ff2d4a44;
+  --green:#00e676; --greenD:#00e67622;
+  --warn:#ffb800;
+  --text:#eaeaf4; --text2:#7777aa; --text3:#444466;
+  --brd:#1e1e38; --r:14px;
+  --fh:'Noto Sans Hebrew',sans-serif; --fm:'Space Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--fh);min-height:100%;-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom)}
+.app{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:14px;padding-top:max(14px,env(safe-area-inset-top))}
+
+/* UI Elements */
+.header{display:flex;align-items:center;justify-content:space-between;padding:16px 0;margin-bottom:14px;border-bottom:1px solid var(--brd)}
+.logo{display:flex;align-items:center;gap:11px}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--red),#ff6b35);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff}
+.logo h1{font-size:18px;font-weight:900}
+.hctrl{display:flex;gap:6px;align-items:center}
+.pill{display:flex;align-items:center;gap:6px;padding:5px 11px;background:var(--card);border:1px solid var(--brd);border-radius:100px;font-size:11px;color:var(--text2);font-family:var(--fm)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--text3)}
+.dot.on{background:var(--green);box-shadow:0 0 6px var(--green)}
+
+.add{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:16px;margin-bottom:14px}
+.fr{display:flex;gap:8px}
+.fi{flex:1;padding:10px 13px;background:var(--bg);border:2px solid var(--brd);border-radius:9px;color:var(--text);outline:none}
+.bgo{padding:10px 18px;background:linear-gradient(135deg,var(--red),#ff6b35);color:#fff;border:none;border-radius:9px;font-weight:700;cursor:pointer}
+
+.ac{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:14px 15px;margin-bottom:8px;position:relative}
+.at{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.ab{background:var(--redD);color:var(--red);font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px}
+.atx{font-size:13px;color:var(--text);line-height:1.7}
+.lb{height:2px;background:var(--bg2);margin-bottom:14px;overflow:hidden}
+.lb.on .lf{animation:sw 2s infinite}
+.lf{height:100%;width:30%;background:var(--accent)}
+@keyframes sw{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+let S = { keywords: [], alerts: [], soundOn: true, intervals: {}, seen: new Set(), errors: [] };
+
+// --- API Functions (Gemini via Vercel) ---
+
+async function searchKeyword(kw) {
+  const prompt = `Search for the latest 3 posts on X (Twitter) about "${kw.terms}" from the last 2 minutes. 
+  Return ONLY JSON: {"posts":[{"text":"tweet content","author":"@name","time":"1m","url":"#"}]}`;
+
+  try {
+    const r = await fetch("/api/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt })
+    });
+
+    if (!r.ok) throw new Error(`Server Error ${r.status}`);
+    const data = await r.json();
+    const aiText = data.candidates[0].content.parts[0].text;
+    const result = JSON.parse(aiText.match(/\{[\s\S]*\}/)[0]);
+    
+    if (!result.posts || result.posts.length === 0) return { posts: [], translated: [] };
+    
+    const translated = await translatePosts(result.posts);
+    return { posts: result.posts, translated };
+  } catch (err) {
+    console.error(err);
+    return { posts: [], translated: [], error: err.message };
+  }
+}
+
+async function translatePosts(posts) {
+  const txt = posts.map((p, i) => `[${i+1}] ${p.text}`).join('\n');
+  const prompt = `Translate these to Hebrew. Return ONLY JSON: {"translations":[{"index":1,"hebrew":"טקסט"}]}\n\n${txt}`;
+  
+  try {
+    const r = await fetch("/api/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt })
+    });
+    const data = await r.json();
+    const aiText = data.candidates[0].content.parts[0].text;
+    return JSON.parse(aiText.match(/\{[\s\S]*\}/)[0]).translations;
+  } catch (e) {
+    return posts.map((p, i) => ({ index: i + 1, hebrew: p.text }));
+  }
+}
+
+// --- App Logic ---
+
+async function runCycle(id) {
+  const kw = S.keywords.find(k => k.id === id);
+  if (!kw || !kw.active) return;
+  kw.status = 'searching'; render();
+
+  const res = await searchKeyword(kw);
+  const posts = res.posts || [], trans = res.translated || [];
+
+  posts.forEach((p, i) => {
+    const h = btoa(p.text).slice(0, 16);
+    if (S.seen.has(h)) return;
+    S.seen.add(h);
+
+    const tr = trans.find(t => t.index === i + 1);
+    S.alerts.unshift({
+      id: Math.random(),
+      keyword: kw.terms,
+      text: tr ? tr.hebrew : p.text,
+      detectedAt: new Date().toISOString()
+    });
+  });
+
+  kw.status = 'idle'; render();
+}
+
+function addKW(terms) {
+  if (!terms.trim()) return;
+  const id = Math.random().toString(36).substr(2, 9);
+  const kw = { id, terms, active: true, status: 'idle' };
+  S.keywords.push(kw);
+  render();
+  runCycle(id);
+  S.intervals[id] = setInterval(() => runCycle(id), 60000);
+}
+
+function render() {
+  const app = document.getElementById('app');
+  const isSrch = S.keywords.some(k => k.status === 'searching');
+  
+  app.innerHTML = `
+    <header class="header">
+      <div class="logo"><div class="logo-icon">⚡</div><h1>X Live Alert</h1></div>
+      <div class="pill"><span class="dot ${S.keywords.length ? 'on' : ''}"></span>
