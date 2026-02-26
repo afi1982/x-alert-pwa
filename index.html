@@ -1,41 +1,70 @@
+// פונקציית החיפוש המעודכנת עבור Gemini
 async function searchKeyword(kw) {
   const now = new Date();
-  // ה-Prompt המעודכן עבור Gemini
-  const prompt = `Search X (Twitter) for the very latest posts about: "${kw.terms}". 
+  const prompt = `Search X (Twitter) for the latest posts about: "${kw.terms}". 
   ONLY posts from the LAST 2 MINUTES.
-  Return JSON only: {"posts":[{"text":"tweet text","author":"@handle","time":"1m ago","url":"link"}]}`;
+  Return JSON only: {"posts":[{"text":"tweet content","author":"@handle","time":"1m ago","url":"link"}]}`;
 
   try {
-    // אנחנו פונים לפונקציית השרת שיצרנו ב-Vercel
     const r = await fetch("/api/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: prompt })
     });
 
-    if (!r.ok) throw new Error(`API ${r.status}`);
+    if (!r.ok) {
+        const errData = await r.json();
+        throw new Error(errData.error || `API ${r.status}`);
+    }
     
     const data = await r.json();
     
-    // שליפת הטקסט שהחזיר Gemini
-    const aiText = data.candidates[0].content.parts[0].text;
-    
-    // ניקוי הטקסט כדי למצוא את ה-JSON בתוכו
-    const jsonMatch = aiText.match(/\{[\s\S]*\}/);
-    let posts = [];
-    if (jsonMatch) {
-      posts = JSON.parse(jsonMatch[0]).posts || [];
-    }
+    // חילוץ הטקסט מהמבנה של Gemini
+    const aiResponseText = data.candidates[0].content.parts[0].text;
+    const result = JSON.parse(aiResponseText);
+    const posts = result.posts || [];
 
     if (posts.length === 0) return { posts: [], translated: [] };
 
-    // קריאה לפונקציית התרגום (שגם אותה נעדכן ל-Gemini)
     const translated = await translatePosts(posts);
     return { posts, translated };
     
   } catch (err) {
     console.error('Search error:', err);
     S.errors.push({ time: new Date().toISOString(), msg: err.message });
+    render();
     return { posts: [], translated: [], error: err.message };
+  }
+}
+
+// פונקציית התרגום המעודכנת
+async function translatePosts(posts) {
+  if (!posts.length) return [];
+  const txt = posts.map((p, i) => `[${i + 1}] ${p.text}`).join('\n');
+  
+  try {
+    const r = await fetch("/api/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt: `Translate these tweets to Hebrew. Keep usernames as-is. 
+        Return ONLY JSON format: {"translations":[{"index":1,"hebrew":"text"}]}
+        
+        Tweets:
+        ${txt}`
+      })
+    });
+    
+    if (!r.ok) throw new Error('Translate fetch failed');
+    
+    const data = await r.json();
+    const aiText = data.candidates[0].content.parts[0].text;
+    const result = JSON.parse(aiText);
+    
+    return result.translations || [];
+  } catch (e) {
+    console.error('Translate error:', e);
+    // במקרה של שגיאה, נחזיר את הטקסט המקורי כדי שהאפליקציה לא תקרוס
+    return posts.map((p, i) => ({ index: i + 1, hebrew: p.text }));
   }
 }
