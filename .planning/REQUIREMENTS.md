@@ -103,55 +103,55 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SETUP-01 | Phase ? | Pending |
-| SETUP-02 | Phase ? | Pending |
-| SETUP-03 | Phase ? | Pending |
-| SETUP-04 | Phase ? | Pending |
-| KW-01 | Phase ? | Pending |
-| KW-02 | Phase ? | Pending |
-| KW-03 | Phase ? | Pending |
-| KW-04 | Phase ? | Pending |
-| KW-05 | Phase ? | Pending |
-| SEARCH-01 | Phase ? | Pending |
-| SEARCH-02 | Phase ? | Pending |
-| SEARCH-03 | Phase ? | Pending |
-| SEARCH-04 | Phase ? | Pending |
-| SEARCH-05 | Phase ? | Pending |
-| SEARCH-06 | Phase ? | Pending |
-| ALERT-01 | Phase ? | Pending |
-| ALERT-02 | Phase ? | Pending |
-| ALERT-03 | Phase ? | Pending |
-| ALERT-04 | Phase ? | Pending |
-| ALERT-05 | Phase ? | Pending |
-| ALERT-06 | Phase ? | Pending |
-| ALERT-07 | Phase ? | Pending |
-| ALERT-08 | Phase ? | Pending |
-| ALERT-09 | Phase ? | Pending |
-| NOTIF-01 | Phase ? | Pending |
-| NOTIF-02 | Phase ? | Pending |
-| NOTIF-03 | Phase ? | Pending |
-| NOTIF-04 | Phase ? | Pending |
-| NOTIF-05 | Phase ? | Pending |
-| NOTIF-06 | Phase ? | Pending |
-| NOTIF-07 | Phase ? | Pending |
-| PWA-01 | Phase ? | Pending |
-| PWA-02 | Phase ? | Pending |
-| PWA-03 | Phase ? | Pending |
-| PWA-04 | Phase ? | Pending |
-| UI-01 | Phase ? | Pending |
-| UI-02 | Phase ? | Pending |
-| UI-03 | Phase ? | Pending |
-| UI-04 | Phase ? | Pending |
-| UI-05 | Phase ? | Pending |
-| UI-06 | Phase ? | Pending |
-| UI-07 | Phase ? | Pending |
-| UI-08 | Phase ? | Pending |
+| SETUP-01 | Phase 1 | Pending |
+| SETUP-02 | Phase 1 | Pending |
+| SETUP-03 | Phase 1 | Pending |
+| SETUP-04 | Phase 1 | Pending |
+| PWA-01 | Phase 1 | Pending |
+| PWA-02 | Phase 1 | Pending |
+| PWA-03 | Phase 1 | Pending |
+| PWA-04 | Phase 1 | Pending |
+| SEARCH-01 | Phase 2 | Pending |
+| SEARCH-02 | Phase 2 | Pending |
+| SEARCH-03 | Phase 2 | Pending |
+| SEARCH-04 | Phase 2 | Pending |
+| SEARCH-05 | Phase 2 | Pending |
+| SEARCH-06 | Phase 2 | Pending |
+| KW-01 | Phase 3 | Pending |
+| KW-02 | Phase 3 | Pending |
+| KW-03 | Phase 3 | Pending |
+| KW-04 | Phase 3 | Pending |
+| KW-05 | Phase 3 | Pending |
+| ALERT-01 | Phase 4 | Pending |
+| ALERT-02 | Phase 4 | Pending |
+| ALERT-03 | Phase 4 | Pending |
+| ALERT-04 | Phase 4 | Pending |
+| ALERT-05 | Phase 4 | Pending |
+| ALERT-06 | Phase 4 | Pending |
+| ALERT-07 | Phase 4 | Pending |
+| ALERT-08 | Phase 4 | Pending |
+| ALERT-09 | Phase 4 | Pending |
+| NOTIF-01 | Phase 5 | Pending |
+| NOTIF-02 | Phase 5 | Pending |
+| NOTIF-03 | Phase 5 | Pending |
+| NOTIF-04 | Phase 5 | Pending |
+| NOTIF-05 | Phase 5 | Pending |
+| NOTIF-06 | Phase 5 | Pending |
+| NOTIF-07 | Phase 5 | Pending |
+| UI-01 | Phase 6 | Pending |
+| UI-02 | Phase 6 | Pending |
+| UI-03 | Phase 6 | Pending |
+| UI-04 | Phase 6 | Pending |
+| UI-05 | Phase 6 | Pending |
+| UI-06 | Phase 6 | Pending |
+| UI-07 | Phase 6 | Pending |
+| UI-08 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 39 total
-- Mapped to phases: 0
-- Unmapped: 39 ⚠️
+- Mapped to phases: 39
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-27*
-*Last updated: 2026-02-27 after initial definition*
+*Last updated: 2026-02-27 after roadmap creation*
