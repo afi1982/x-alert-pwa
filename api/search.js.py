@@ -1,5 +1,4 @@
 export default async function handler(req, res) {
-  // הגדרת כותרות כדי לאפשר לאתר שלך לגשת לשרת הזה
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -7,18 +6,22 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const API_KEY = process.env.GEMINI_API_KEY;
+    // כתובת ה-API של Gemini (מודל 1.5 Flash הוא מהיר וחינמי)
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+    const response = await fetch(url, {
       method: 'POST',
-      headers: {
-        'x-api-key': process.env.ANTHROPIC_API_KEY, // המפתח יישמר ב-Vercel
-        'anthropic-version': '2023-06-01',
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(req.body)
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: req.body.prompt }] // אנחנו נשלח "prompt" מה-HTML
+        }]
+      })
     });
 
     const data = await response.json();
-    res.status(response.status).json(data);
+    res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
