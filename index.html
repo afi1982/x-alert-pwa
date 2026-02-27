@@ -10,12 +10,12 @@
         :root { --bg:#06060c; --card:#111122; --accent:#ff2d4a; --text:#eaeaf4; --brd:#1e1e38; }
         body { background:var(--bg); color:var(--text); font-family:'Noto Sans Hebrew', sans-serif; margin:0; padding:20px; }
         .app { max-width:600px; margin:0 auto; }
-        .header { text-align:center; margin-bottom:30px; }
+        .header { text-align:center; margin-bottom:30px; border-bottom:1px solid var(--brd); padding-bottom:15px; }
         .input-group { display:flex; gap:10px; margin-bottom:20px; }
-        input { flex:1; padding:12px; border-radius:8px; border:1px solid var(--brd); background:var(--card); color:white; }
+        input { flex:1; padding:12px; border-radius:8px; border:1px solid var(--brd); background:var(--card); color:white; outline:none; }
         button { padding:12px 20px; border-radius:8px; border:none; background:var(--accent); color:white; font-weight:700; cursor:pointer; }
-        .post { background:var(--card); padding:15px; border-radius:12px; margin-bottom:12px; border:1px solid var(--brd); animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        .post { background:var(--card); padding:15px; border-radius:12px; margin-bottom:12px; border:1px solid var(--brd); }
+        .status { font-size: 0.8em; color: #77aa; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -23,43 +23,55 @@
         <div class="header"><h1>⚡ X Live Alert</h1></div>
         
         <div class="input-group">
-            <input type="text" id="kwInput" placeholder="הכנס מילת חיפוש (למשל: צבע אדום)">
-            <button onclick="startSearch()">עקוב</button>
+            <input type="text" id="kwInput" placeholder="הכנס מילת חיפוש (למשל: חדשות)">
+            <button onclick="startSearch()">הפעל מעקב</button>
         </div>
 
+        <div id="status" class="status"></div>
         <div id="alerts"></div>
     </div>
 
     <script>
         const seen = new Set();
+        let intervalId = null;
 
         async function startSearch() {
             const kw = document.getElementById('kwInput').value;
             if (!kw) return;
-            document.getElementById('alerts').innerHTML = '<p>מחפש עדכונים...</p>';
+            
+            if (intervalId) clearInterval(intervalId);
+            document.getElementById('alerts').innerHTML = '';
+            document.getElementById('status').innerText = `עוקב אחר: ${kw}...`;
+            
             fetchAlerts(kw);
-            setInterval(() => fetchAlerts(kw), 30000); // רענון כל 30 שניות
+            intervalId = setInterval(() => fetchAlerts(kw), 20000); 
         }
 
         async function fetchAlerts(kw) {
-            const prompt = `Search for latest posts about "${kw}". Return ONLY JSON: {"posts":[{"text":"content","author":"@name"}]}`;
+            const prompt = `Search for latest 3 posts on X about "${kw}" in Hebrew or English. Return ONLY JSON format: {"posts":[{"text":"תוכן הפוסט","author":"@name"}]}`;
+            
             try {
                 const r = await fetch("/api/search", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ prompt })
                 });
+
+                if (!r.ok) throw new Error('שגיאת שרת: ' + r.status);
+
                 const data = await r.json();
-                const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "");
-                const json = JSON.parse(text);
-                render(json.posts);
-            } catch (e) { console.error("Error:", e); }
+                const aiText = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+                const result = JSON.parse(aiText);
+                
+                if (result.posts) render(result.posts);
+            } catch (e) {
+                console.error("שגיאה:", e);
+                document.getElementById('status').innerText = "שגיאה בחיבור לשרת. וודא שהגדרת API KEY.";
+            }
         }
 
         function render(posts) {
             const container = document.getElementById('alerts');
-            if (seen.size === 0) container.innerHTML = ''; // ניקוי ה"טוען"
-            
             posts.forEach(p => {
                 if (seen.has(p.text)) return;
                 seen.add(p.text);
