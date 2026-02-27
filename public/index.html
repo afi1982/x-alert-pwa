@@ -1,264 +1,41 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>X-Alert Pro | ניטור מבצעי</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;500;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg: #0b0e14;
-            --surface: #161b22;
-            --accent: #ff2d4a;
-            --text: #f0f6fc;
-            --text-secondary: #8b949e;
-            --border: #30363d;
-        }
+// בתוך ה-Script של ה-index.html, נעדכן את פונקציית fetchData:
 
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Noto Sans Hebrew', sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+async function fetchData(kw) {
+    try {
+        const response = await fetch('/api/search', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ keyword: kw })
+        });
+        
+        const items = await response.json();
 
-        .container {
-            width: 100%;
-            max-width: 700px;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+        items.forEach(item => {
+            if (seenPosts.has(item.url)) return; // מניעת כפילויות לפי לינק אמיתי
+            seenPosts.add(item.url);
+            
+            addAlertToUI(kw, item);
+            notify(kw, item.title);
+        });
+    } catch (e) {
+        console.error("Fetch error:", e);
+    }
+}
 
-        .header {
-            text-align: center;
-            padding: 40px 0;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-weight: 900;
-            letter-spacing: -1px;
-            margin: 0;
-            background: linear-gradient(90deg, #ff2d4a, #ff6b35);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .search-section {
-            background: var(--surface);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            margin-bottom: 25px;
-        }
-
-        .input-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        input {
-            flex: 1;
-            background: #0d1117;
-            border: 1px solid var(--border);
-            padding: 14px;
-            border-radius: 10px;
-            color: white;
-            font-size: 16px;
-            outline: none;
-            transition: border 0.3s;
-        }
-
-        input:focus { border-color: var(--accent); }
-
-        .btn-add {
-            background: var(--accent);
-            color: white;
-            border: none;
-            padding: 0 25px;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .btn-add:active { transform: scale(0.95); }
-
-        .keywords-bar { margin: 15px 0; display: flex; flex-wrap: wrap; gap: 8px; }
-        .tag {
-            background: rgba(255, 45, 74, 0.1);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .tag span { cursor: pointer; font-weight: bold; }
-
-        .alert-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 16px;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s;
-        }
-
-        .alert-card:hover { transform: translateY(-3px); border-color: #555; }
-
-        .alert-card::before {
-            content: '';
-            position: absolute;
-            right: 0; top: 0; bottom: 0;
-            width: 4px; background: var(--accent);
-        }
-
-        .card-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
-        .author { font-weight: 700; color: var(--accent); }
-        .time { font-size: 12px; color: var(--text-secondary); }
-
-        .content { line-height: 1.6; font-size: 15px; margin-bottom: 15px; }
-
-        .image-container img {
-            width: 100%;
-            border-radius: 10px;
-            margin-top: 10px;
-            border: 1px solid var(--border);
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid var(--border);
-            padding-top: 15px;
-        }
-
-        .source-btn {
-            color: #58a6ff;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-        }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="header">
-        <h1>X-ALERT PREMIER</h1>
-        <p style="color: var(--text-secondary); font-size: 14px;">מערכת ניטור ומודיעין זמן-אמת</p>
-    </div>
-
-    <div class="search-section">
-        <div class="input-group">
-            <input type="text" id="kwInput" placeholder="הכנס ביטוי לחיפוש (למשל: צבע אדום, חדשות מתפרצות)">
-            <button class="btn-add" onclick="addKeyword()">הוסף מעקב</button>
+function addAlertToUI(kw, item) {
+    const container = document.getElementById('alertsContainer');
+    const card = document.createElement('div');
+    card.className = 'alert-card';
+    card.innerHTML = `
+        <div class="card-header">
+            <span class="author">${item.source_name}</span>
+            <span class="time">${new Date().toLocaleTimeString('he-IL')}</span>
         </div>
-        <div id="keywordsList" class="keywords-bar"></div>
-    </div>
-
-    <div id="alertsContainer"></div>
-</div>
-
-<script>
-    let keywords = JSON.parse(localStorage.getItem('alerts_v2') || '[]');
-    let seenPosts = new Set();
-
-    function save() {
-        localStorage.setItem('alerts_v2', JSON.stringify(keywords));
-        renderKeywords();
-    }
-
-    function renderKeywords() {
-        const div = document.getElementById('keywordsList');
-        div.innerHTML = keywords.map(k => `
-            <div class="tag">${k} <span onclick="removeKeyword('${k}')">✕</span></div>
-        `).join('');
-    }
-
-    function addKeyword() {
-        const val = document.getElementById('kwInput').value.trim();
-        if (val && !keywords.includes(val)) {
-            keywords.push(val);
-            document.getElementById('kwInput').value = '';
-            save();
-            fetchData(val);
-        }
-    }
-
-    function removeKeyword(kw) {
-        keywords = keywords.filter(k => k !== kw);
-        save();
-    }
-
-    async function fetchData(kw) {
-        // הנחיה נוקשה ל-AI לתרגום מלא
-        const prompt = `Search for the 3 LATEST and HOTTEST posts from the last 3 minutes on X about "${kw}". 
-        CRITICAL: Translate the 'text' field to HEBREW. 
-        Return ONLY valid JSON: {"posts":[{"text":"הטקסט המתורגם לעברית","author":"@name","url":"https://x.com/..","img":"optional_url"}]}`;
-
-        try {
-            const response = await fetch('/api/search', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ prompt })
-            });
-            const data = await response.json();
-            const cleanText = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
-            const result = JSON.parse(cleanText);
-
-            result.posts.forEach(post => {
-                if (seenPosts.has(post.text)) return;
-                seenPosts.add(post.text);
-                addAlert(kw, post);
-                notify(kw, post.text);
-            });
-        } catch (e) { console.error("Search error", e); }
-    }
-
-    function addAlert(kw, post) {
-        const container = document.getElementById('alertsContainer');
-        const card = document.createElement('div');
-        card.className = 'alert-card';
-        card.innerHTML = `
-            <div class="card-header">
-                <span class="author">${post.author}</span>
-                <span class="time">${new Date().toLocaleTimeString('he-IL')}</span>
-            </div>
-            <div class="content">${post.text}</div>
-            ${post.img ? `<div class="image-container"><img src="${post.img}"></div>` : ''}
-            <div class="footer-links">
-                <span style="font-size:11px; color:var(--text-secondary)">מילת מפתח: ${kw}</span>
-                <a href="${post.url}" target="_blank" class="source-btn">צפה במקור ב-X ←</a>
-            </div>
-        `;
-        container.prepend(card);
-    }
-
-    function notify(title, msg) {
-        if (Notification.permission === 'granted') {
-            new Notification(`התראה: ${title}`, { body: msg });
-        }
-    }
-
-    // הפעלה מחזורית
-    if (Notification.permission !== 'granted') Notification.requestPermission();
-    renderKeywords();
-    setInterval(() => keywords.forEach(fetchData), 60000); // כל דקה
-</script>
-
-</body>
-</html>
+        <div class="content"><strong>${item.title}</strong><br>${item.summary}</div>
+        <div class="footer-links">
+            <span style="font-size:11px; color:var(--text-secondary)">מילת מפתח: ${kw}</span>
+            <a href="${item.url}" target="_blank" class="source-btn">קרא את הכתבה המלאה ←</a>
+        </div>
+    `;
+    container.prepend(card);
+}
