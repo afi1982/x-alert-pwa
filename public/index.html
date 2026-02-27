@@ -3,115 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X-Alert Pro | חמ"ל מבצעי</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>WAR-ROOM | Intel Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Noto+Sans+Hebrew:wght@300;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0d1117; --card: #161b22; --accent: #ff2d4a; --text: #c9d1d9; }
-        body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Hebrew', sans-serif; margin: 0; padding: 15px; }
-        .container { max-width: 650px; margin: 0 auto; }
-        .header { text-align: center; padding: 20px 0; border-bottom: 1px solid #30363d; }
-        .status-pulse { display: inline-block; width: 10px; height: 10px; background: #238636; border-radius: 50%; margin-left: 8px; box-shadow: 0 0 8px #238636; }
-        .search-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #30363d; display: flex; gap: 10px; margin-top: 20px; }
-        input { flex: 1; background: #010409; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 8px; outline: none; font-family: inherit; }
-        button { background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { opacity: 0.8; }
-        .chip-container { margin: 15px 0; display: flex; flex-wrap: wrap; gap: 8px; }
-        .chip { background: rgba(255,45,74,0.1); border: 1px solid var(--accent); color: var(--accent); padding: 5px 12px; border-radius: 20px; font-size: 13px; display: flex; align-items: center; gap: 5px; }
-        .alert-card { background: var(--card); border: 1px solid #30363d; border-radius: 12px; padding: 18px; margin-top: 15px; border-right: 4px solid var(--accent); animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .author-line { color: var(--accent); font-weight: bold; font-size: 12px; display: flex; justify-content: space-between; }
-        .title { display: block; margin: 8px 0; font-weight: 700; font-size: 17px; color: white; line-height: 1.4; }
-        .summary { font-size: 14px; color: #8b949e; line-height: 1.6; }
-        .source-link { color: #58a6ff; text-decoration: none; font-size: 13px; font-weight: bold; margin-top: 10px; display: inline-block; }
+        :root { --neon-red: #ff003c; --neon-blue: #00f2ff; --bg-dark: #050505; }
+        body { background: var(--bg-dark); color: white; font-family: 'Noto Sans Hebrew', sans-serif; margin: 0; overflow-x: hidden; }
+        
+        /* רקע טכנולוגי */
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%; pointer-events: none; z-index: 10;
+        }
+
+        .dashboard { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        
+        .header { 
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid var(--neon-red); padding-bottom: 10px; margin-bottom: 20px;
+            font-family: 'Orbitron', sans-serif; text-transform: uppercase;
+        }
+
+        .status-tag { color: var(--neon-red); animation: blink 1s infinite; font-weight: bold; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        .search-area { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 5px; border: 1px solid #333; margin-bottom: 30px; }
+        input { 
+            background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue);
+            padding: 15px; width: 70%; font-size: 18px; border-radius: 4px; outline: none;
+        }
+        
+        .alert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        
+        .alert-card { 
+            background: rgba(255, 255, 255, 0.03); border: 1px solid #444; padding: 15px;
+            position: relative; overflow: hidden; transition: 0.3s;
+        }
+        .alert-card:hover { border-color: var(--neon-red); box-shadow: 0 0 15px rgba(255, 0, 60, 0.3); }
+        .alert-card::after {
+            content: "URGENT"; position: absolute; top: 10px; left: -30px;
+            background: var(--neon-red); color: white; font-size: 10px;
+            padding: 2px 30px; transform: rotate(-45deg); font-weight: bold;
+        }
+
+        .source { color: var(--neon-blue); font-size: 12px; font-weight: bold; }
+        .title { font-size: 18px; font-weight: 700; margin: 10px 0; display: block; }
+        .time { float: left; font-size: 11px; color: #888; }
+        
+        /* כפתור הייטק */
+        .btn-neon {
+            background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red);
+            padding: 15px 30px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-neon:hover { background: var(--neon-red); color: white; box-shadow: 0 0 20px var(--neon-red); }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1 style="margin:0; font-size: 24px;">⚡ X-ALERT PREMIER</h1>
-            <div style="font-size: 12px; color: #8b949e; margin-top: 5px;">
-                <span class="status-pulse"></span> ניטור חי: דקה אחרונה
-            </div>
-        </div>
 
-        <div class="search-box">
-            <input type="text" id="kwInput" placeholder="הוסף מילת מפתח למעקב...">
-            <button onclick="addKeyword()">הוסף</button>
-        </div>
-        <div id="keywordsList" class="chip-container"></div>
-        <div id="alertsContainer"></div>
+<div class="dashboard">
+    <div class="header">
+        <div>System: <span class="status-tag">LIVE MONITORING</span></div>
+        <div style="font-size: 24px; font-weight: 900;">INTEL-HUB V3</div>
+        <div id="clock">00:00:00</div>
     </div>
 
-    <script>
-        let keywords = JSON.parse(localStorage.getItem('kws_final') || '[]');
-        let seen = new Set();
+    <div class="search-area">
+        <input type="text" id="kwInput" placeholder="הכנס יעד לניטור (למשל: איראן, ארהב, סוריה)...">
+        <button class="btn-neon" onclick="addKeyword()">ACTIVATE SCAN</button>
+    </div>
 
-        function addKeyword() {
-            const val = document.getElementById('kwInput').value.trim();
-            if (val && !keywords.includes(val)) {
-                keywords.push(val);
-                localStorage.setItem('kws_final', JSON.stringify(keywords));
-                renderChips();
-                fetchNews(val);
-            }
-            document.getElementById('kwInput').value = '';
+    <div id="keywordsList" style="margin-bottom: 20px;"></div>
+    <div id="alertsContainer" class="alert-grid"></div>
+</div>
+
+<audio id="alertSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<script>
+    let keywords = JSON.parse(localStorage.getItem('intel_kws') || '[]');
+    let seen = new Set();
+
+    function updateClock() {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('he-IL');
+    }
+    setInterval(updateClock, 1000);
+
+    function addKeyword() {
+        const val = document.getElementById('kwInput').value.trim();
+        if (val && !keywords.includes(val)) {
+            keywords.push(val);
+            localStorage.setItem('intel_kws', JSON.stringify(keywords));
+            renderKeywords();
+            fetchData(val);
         }
+    }
 
-        function renderChips() {
-            document.getElementById('keywordsList').innerHTML = keywords.map(k => `
-                <span class="chip">${k} <b style="cursor:pointer" onclick="removeKeyword('${k}')">✕</b></span>
-            `).join('');
-        }
+    function renderKeywords() {
+        document.getElementById('keywordsList').innerHTML = keywords.map(k => 
+            `<span style="border: 1px solid #555; padding: 5px 15px; margin-left: 10px; border-radius: 3px;">${k}</span>`
+        ).join('');
+    }
 
-        function removeKeyword(kw) {
-            keywords = keywords.filter(k => k !== kw);
-            localStorage.setItem('kws_final', JSON.stringify(keywords));
-            renderChips();
-        }
-
-        async function fetchNews(kw) {
-            try {
-                const r = await fetch('/api/search', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ keyword: kw })
+    async function fetchData(kw) {
+        try {
+            const r = await fetch('/api/search', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ keyword: kw })
+            });
+            const data = await r.json();
+            
+            if (data.items && data.items.length > 0) {
+                data.items.forEach(item => {
+                    if (seen.has(item.url)) return;
+                    seen.add(item.url);
+                    
+                    // הפעלת צליל התראה
+                    document.getElementById('alertSound').play();
+                    
+                    renderAlert(kw, item);
                 });
-                const data = await r.json();
-                if (data.items) {
-                    data.items.forEach(item => {
-                        if (seen.has(item.url)) return;
-                        seen.add(item.url);
-                        renderAlert(kw, item);
-                        if (Notification.permission === 'granted') {
-                            new Notification(`עדכון חדש: ${kw}`, { body: item.title });
-                        }
-                    });
-                }
-            } catch (e) { console.error("Error fetching news"); }
-        }
+            }
+        } catch (e) { console.error("Scan Error"); }
+    }
 
-        function renderAlert(kw, item) {
-            const html = `
-                <div class="alert-card">
-                    <div class="author-line">
-                        <span>${item.source}</span>
-                        <span>${new Date().toLocaleTimeString('he-IL')}</span>
-                    </div>
-                    <span class="title">${item.title}</span>
-                    <p class="summary">${item.summary}</p>
-                    <div style="border-top: 1px solid #30363d; margin-top: 10px; padding-top: 10px;">
-                        <a href="${item.url}" target="_blank" class="source-link">קרא עוד במקור ←</a>
-                    </div>
-                </div>`;
-            document.getElementById('alertsContainer').insertAdjacentHTML('afterbegin', html);
-        }
+    function renderAlert(kw, item) {
+        const container = document.getElementById('alertsContainer');
+        const card = `
+            <div class="alert-card">
+                <span class="source">${item.source.toUpperCase()}</span>
+                <span class="time">${new Date().toLocaleTimeString()}</span>
+                <span class="title">${item.title}</span>
+                <p style="font-size: 13px; color: #bbb;">${item.summary}</p>
+                <a href="${item.url}" target="_blank" style="color: var(--neon-blue); text-decoration: none; font-size: 12px;">VIEW SOURCE →</a>
+            </div>
+        `;
+        container.insertAdjacentHTML('afterbegin', card);
+    }
 
-        // בקשת הרשאה להתראות
-        if (Notification.permission !== 'granted') Notification.requestPermission();
-
-        renderChips();
-        // בדיקה כל 45 שניות לכל המילים
-        setInterval(() => keywords.forEach(fetchNews), 45000);
-    </script>
+    renderKeywords();
+    // סריקה אגרסיבית כל 30 שניות
+    setInterval(() => keywords.forEach(fetchData), 30000);
+</script>
 </body>
 </html>
