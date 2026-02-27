@@ -1,8 +1,15 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
-  
+  // בדיקה שהבקשה היא POST
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'נא לשלוח בקשת POST בלבד' });
+  }
+
   const { prompt } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    return res.status(500).json({ error: 'חסר מפתח API בשרת' });
+  }
 
   try {
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
@@ -16,6 +23,6 @@ export default async function handler(req, res) {
     const data = await response.json();
     res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'שגיאה בתקשורת עם Gemini' });
   }
 }
