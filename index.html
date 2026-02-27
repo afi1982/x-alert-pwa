@@ -2,70 +2,73 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#ff2d4a">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="manifest" href="/manifest.json">
     <title>X Live Alert</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Noto+Sans+Hebrew:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* ה-CSS שלך נשאר זהה */
-        :root { --bg:#06060c; --red:#ff2d4a; --text:#eaeaf4; --brd:#1e1e38; }
-        body { background:var(--bg); color:var(--text); font-family:'Noto Sans Hebrew', sans-serif; }
-        .app { max-width: 800px; margin: 0 auto; padding: 20px; }
-        .header { border-bottom: 1px solid var(--brd); padding-bottom: 10px; margin-bottom: 20px; }
-        .post { background: #111122; padding: 15px; border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--brd); }
+        :root { --bg:#06060c; --card:#111122; --accent:#ff2d4a; --text:#eaeaf4; --brd:#1e1e38; }
+        body { background:var(--bg); color:var(--text); font-family:'Noto Sans Hebrew', sans-serif; margin:0; padding:20px; }
+        .app { max-width:600px; margin:0 auto; }
+        .header { text-align:center; margin-bottom:30px; }
+        .input-group { display:flex; gap:10px; margin-bottom:20px; }
+        input { flex:1; padding:12px; border-radius:8px; border:1px solid var(--brd); background:var(--card); color:white; }
+        button { padding:12px 20px; border-radius:8px; border:none; background:var(--accent); color:white; font-weight:700; cursor:pointer; }
+        .post { background:var(--card); padding:15px; border-radius:12px; margin-bottom:12px; border:1px solid var(--brd); animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
     </style>
 </head>
 <body>
     <div class="app">
-        <header class="header">
-            <h1>X Live Alert ⚡</h1>
-        </header>
-        <div id="status-pill"></div>
-        <div id="alerts-container"></div>
+        <div class="header"><h1>⚡ X Live Alert</h1></div>
+        
+        <div class="input-group">
+            <input type="text" id="kwInput" placeholder="הכנס מילת חיפוש (למשל: צבע אדום)">
+            <button onclick="startSearch()">עקוב</button>
+        </div>
+
+        <div id="alerts"></div>
     </div>
 
     <script>
-        let S = { seen: new Set() };
+        const seen = new Set();
 
-        async function searchKeyword(kw) {
-            const prompt = `Search for 3 recent posts about "${kw}". Return ONLY JSON: {"posts":[{"text":"content","author":"@name"}]}`;
-            
+        async function startSearch() {
+            const kw = document.getElementById('kwInput').value;
+            if (!kw) return;
+            document.getElementById('alerts').innerHTML = '<p>מחפש עדכונים...</p>';
+            fetchAlerts(kw);
+            setInterval(() => fetchAlerts(kw), 30000); // רענון כל 30 שניות
+        }
+
+        async function fetchAlerts(kw) {
+            const prompt = `Search for latest posts about "${kw}". Return ONLY JSON: {"posts":[{"text":"content","author":"@name"}]}`;
             try {
-                // קריאה לנתיב השרת המקומי שלנו
                 const r = await fetch("/api/search", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ prompt })
                 });
-
                 const data = await r.json();
-                const aiText = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
-                const result = JSON.parse(aiText);
-                
-                renderPosts(result.posts);
-            } catch (err) {
-                console.error("Error fetching:", err);
-            }
+                const text = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "");
+                const json = JSON.parse(text);
+                render(json.posts);
+            } catch (e) { console.error("Error:", e); }
         }
 
-        function renderPosts(posts) {
-            const container = document.getElementById('alerts-container');
+        function render(posts) {
+            const container = document.getElementById('alerts');
+            if (seen.size === 0) container.innerHTML = ''; // ניקוי ה"טוען"
+            
             posts.forEach(p => {
-                if (S.seen.has(p.text)) return;
-                S.seen.add(p.text);
-                
+                if (seen.has(p.text)) return;
+                seen.add(p.text);
                 const div = document.createElement('div');
                 div.className = 'post';
-                div.innerHTML = `<strong>${p.author}:</strong> <p>${p.text}</p>`;
+                div.innerHTML = `<strong>${p.author}</strong><p>${p.text}</p>`;
                 container.prepend(div);
             });
         }
-
-        // בדיקה ראשונית
-        searchKeyword("חדשות צפון");
     </script>
 </body>
 </html>
