@@ -1,41 +1,93 @@
-// בתוך ה-Script של ה-index.html, נעדכן את פונקציית fetchData:
-
-async function fetchData(kw) {
-    try {
-        const response = await fetch('/api/search', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ keyword: kw })
-        });
-        
-        const items = await response.json();
-
-        items.forEach(item => {
-            if (seenPosts.has(item.url)) return; // מניעת כפילויות לפי לינק אמיתי
-            seenPosts.add(item.url);
-            
-            addAlertToUI(kw, item);
-            notify(kw, item.title);
-        });
-    } catch (e) {
-        console.error("Fetch error:", e);
-    }
-}
-
-function addAlertToUI(kw, item) {
-    const container = document.getElementById('alertsContainer');
-    const card = document.createElement('div');
-    card.className = 'alert-card';
-    card.innerHTML = `
-        <div class="card-header">
-            <span class="author">${item.source_name}</span>
-            <span class="time">${new Date().toLocaleTimeString('he-IL')}</span>
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X-Alert Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0d1117; --card: #161b22; --accent: #ff2d4a; --text: #c9d1d9; }
+        body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Hebrew', sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .search-box { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #30363d; display: flex; gap: 10px; }
+        input { flex: 1; background: #010409; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 6px; outline: none; }
+        button { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .chip-container { margin: 15px 0; display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip { background: rgba(255,45,74,0.1); border: 1px solid var(--accent); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 14px; }
+        .alert-card { background: var(--card); border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-top: 15px; border-right: 4px solid var(--accent); animation: slide 0.4s ease; }
+        @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .author { color: var(--accent); font-weight: bold; font-size: 13px; }
+        .title { display: block; margin: 10px 0; font-weight: 700; font-size: 18px; color: white; }
+        .source-link { color: #58a6ff; text-decoration: none; font-size: 13px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 style="margin:0; font-weight:900; color:white;">⚡ X-ALERT PREMIER</h1>
+            <p style="font-size:14px; color:#8b949e;">מערכת ניטור בזמן-אמת (נתונים אמיתיים)</p>
         </div>
-        <div class="content"><strong>${item.title}</strong><br>${item.summary}</div>
-        <div class="footer-links">
-            <span style="font-size:11px; color:var(--text-secondary)">מילת מפתח: ${kw}</span>
-            <a href="${item.url}" target="_blank" class="source-btn">קרא את הכתבה המלאה ←</a>
+
+        <div class="search-box">
+            <input type="text" id="kwInput" placeholder="הכנס מילת חיפוש...">
+            <button onclick="addKeyword()">עקוב</button>
         </div>
-    `;
-    container.prepend(card);
-}
+        <div id="keywordsList" class="chip-container"></div>
+        <div id="alertsContainer"></div>
+    </div>
+
+    <script>
+        let keywords = JSON.parse(localStorage.getItem('kws_v3') || '[]');
+        let seen = new Set();
+
+        function addKeyword() {
+            const val = document.getElementById('kwInput').value.trim();
+            if (val && !keywords.includes(val)) {
+                keywords.push(val);
+                localStorage.setItem('kws_v3', JSON.stringify(keywords));
+                renderChips();
+                fetchNews(val);
+            }
+            document.getElementById('kwInput').value = '';
+        }
+
+        function renderChips() {
+            document.getElementById('keywordsList').innerHTML = keywords.map(k => `<span class="chip">${k}</span>`).join('');
+        }
+
+        async function fetchNews(kw) {
+            try {
+                const r = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ keyword: kw })
+                });
+                const data = await r.json();
+                data.items.forEach(item => {
+                    if (seen.has(item.url)) return;
+                    seen.add(item.url);
+                    renderAlert(kw, item);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function renderAlert(kw, item) {
+            const html = `
+                <div class="alert-card">
+                    <div class="author">${item.source} • ${new Date().toLocaleTimeString('he-IL')}</div>
+                    <span class="title">${item.title}</span>
+                    <p style="font-size:14px; line-height:1.5;">${item.summary}</p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #30363d; padding-top:10px;">
+                        <span style="font-size:11px; color:#8b949e;">מילת מפתח: ${kw}</span>
+                        <a href="${item.url}" target="_blank" class="source-link">קרא עוד ←</a>
+                    </div>
+                </div>`;
+            document.getElementById('alertsContainer').insertAdjacentHTML('afterbegin', html);
+        }
+
+        renderChips();
+        setInterval(() => keywords.forEach(fetchNews), 60000);
+    </script>
+</body>
+</html>
