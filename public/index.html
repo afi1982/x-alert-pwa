@@ -3,49 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>X-Alert Pro</title>
+    <title>X-Alert Pro | חמ"ל מבצעי</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #0d1117; --card: #161b22; --accent: #ff2d4a; --text: #c9d1d9; }
-        body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Hebrew', sans-serif; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 30px; }
-        .search-box { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #30363d; display: flex; gap: 10px; }
-        input { flex: 1; background: #010409; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 6px; outline: none; }
-        button { background: var(--accent); color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        body { background: var(--bg); color: var(--text); font-family: 'Noto Sans Hebrew', sans-serif; margin: 0; padding: 15px; }
+        .container { max-width: 650px; margin: 0 auto; }
+        .header { text-align: center; padding: 20px 0; border-bottom: 1px solid #30363d; }
+        .status-pulse { display: inline-block; width: 10px; height: 10px; background: #238636; border-radius: 50%; margin-left: 8px; box-shadow: 0 0 8px #238636; }
+        .search-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #30363d; display: flex; gap: 10px; margin-top: 20px; }
+        input { flex: 1; background: #010409; border: 1px solid #30363d; color: white; padding: 12px; border-radius: 8px; outline: none; font-family: inherit; }
+        button { background: var(--accent); color: white; border: none; padding: 0 20px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        button:hover { opacity: 0.8; }
         .chip-container { margin: 15px 0; display: flex; flex-wrap: wrap; gap: 8px; }
-        .chip { background: rgba(255,45,74,0.1); border: 1px solid var(--accent); color: var(--accent); padding: 4px 12px; border-radius: 20px; font-size: 14px; }
-        .alert-card { background: var(--card); border: 1px solid #30363d; border-radius: 12px; padding: 20px; margin-top: 15px; border-right: 4px solid var(--accent); animation: slide 0.4s ease; }
-        @keyframes slide { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .author { color: var(--accent); font-weight: bold; font-size: 13px; }
-        .title { display: block; margin: 10px 0; font-weight: 700; font-size: 18px; color: white; }
-        .source-link { color: #58a6ff; text-decoration: none; font-size: 13px; font-weight: bold; }
+        .chip { background: rgba(255,45,74,0.1); border: 1px solid var(--accent); color: var(--accent); padding: 5px 12px; border-radius: 20px; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+        .alert-card { background: var(--card); border: 1px solid #30363d; border-radius: 12px; padding: 18px; margin-top: 15px; border-right: 4px solid var(--accent); animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .author-line { color: var(--accent); font-weight: bold; font-size: 12px; display: flex; justify-content: space-between; }
+        .title { display: block; margin: 8px 0; font-weight: 700; font-size: 17px; color: white; line-height: 1.4; }
+        .summary { font-size: 14px; color: #8b949e; line-height: 1.6; }
+        .source-link { color: #58a6ff; text-decoration: none; font-size: 13px; font-weight: bold; margin-top: 10px; display: inline-block; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1 style="margin:0; font-weight:900; color:white;">⚡ X-ALERT PREMIER</h1>
-            <p style="font-size:14px; color:#8b949e;">מערכת ניטור בזמן-אמת (נתונים אמיתיים)</p>
+            <h1 style="margin:0; font-size: 24px;">⚡ X-ALERT PREMIER</h1>
+            <div style="font-size: 12px; color: #8b949e; margin-top: 5px;">
+                <span class="status-pulse"></span> ניטור חי: דקה אחרונה
+            </div>
         </div>
 
         <div class="search-box">
-            <input type="text" id="kwInput" placeholder="הכנס מילת חיפוש...">
-            <button onclick="addKeyword()">עקוב</button>
+            <input type="text" id="kwInput" placeholder="הוסף מילת מפתח למעקב...">
+            <button onclick="addKeyword()">הוסף</button>
         </div>
         <div id="keywordsList" class="chip-container"></div>
         <div id="alertsContainer"></div>
     </div>
 
     <script>
-        let keywords = JSON.parse(localStorage.getItem('kws_v3') || '[]');
+        let keywords = JSON.parse(localStorage.getItem('kws_final') || '[]');
         let seen = new Set();
 
         function addKeyword() {
             const val = document.getElementById('kwInput').value.trim();
             if (val && !keywords.includes(val)) {
                 keywords.push(val);
-                localStorage.setItem('kws_v3', JSON.stringify(keywords));
+                localStorage.setItem('kws_final', JSON.stringify(keywords));
                 renderChips();
                 fetchNews(val);
             }
@@ -53,7 +58,15 @@
         }
 
         function renderChips() {
-            document.getElementById('keywordsList').innerHTML = keywords.map(k => `<span class="chip">${k}</span>`).join('');
+            document.getElementById('keywordsList').innerHTML = keywords.map(k => `
+                <span class="chip">${k} <b style="cursor:pointer" onclick="removeKeyword('${k}')">✕</b></span>
+            `).join('');
+        }
+
+        function removeKeyword(kw) {
+            keywords = keywords.filter(k => k !== kw);
+            localStorage.setItem('kws_final', JSON.stringify(keywords));
+            renderChips();
         }
 
         async function fetchNews(kw) {
@@ -64,30 +77,41 @@
                     body: JSON.stringify({ keyword: kw })
                 });
                 const data = await r.json();
-                data.items.forEach(item => {
-                    if (seen.has(item.url)) return;
-                    seen.add(item.url);
-                    renderAlert(kw, item);
-                });
-            } catch (e) { console.error(e); }
+                if (data.items) {
+                    data.items.forEach(item => {
+                        if (seen.has(item.url)) return;
+                        seen.add(item.url);
+                        renderAlert(kw, item);
+                        if (Notification.permission === 'granted') {
+                            new Notification(`עדכון חדש: ${kw}`, { body: item.title });
+                        }
+                    });
+                }
+            } catch (e) { console.error("Error fetching news"); }
         }
 
         function renderAlert(kw, item) {
             const html = `
                 <div class="alert-card">
-                    <div class="author">${item.source} • ${new Date().toLocaleTimeString('he-IL')}</div>
+                    <div class="author-line">
+                        <span>${item.source}</span>
+                        <span>${new Date().toLocaleTimeString('he-IL')}</span>
+                    </div>
                     <span class="title">${item.title}</span>
-                    <p style="font-size:14px; line-height:1.5;">${item.summary}</p>
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #30363d; padding-top:10px;">
-                        <span style="font-size:11px; color:#8b949e;">מילת מפתח: ${kw}</span>
-                        <a href="${item.url}" target="_blank" class="source-link">קרא עוד ←</a>
+                    <p class="summary">${item.summary}</p>
+                    <div style="border-top: 1px solid #30363d; margin-top: 10px; padding-top: 10px;">
+                        <a href="${item.url}" target="_blank" class="source-link">קרא עוד במקור ←</a>
                     </div>
                 </div>`;
             document.getElementById('alertsContainer').insertAdjacentHTML('afterbegin', html);
         }
 
+        // בקשת הרשאה להתראות
+        if (Notification.permission !== 'granted') Notification.requestPermission();
+
         renderChips();
-        setInterval(() => keywords.forEach(fetchNews), 60000);
+        // בדיקה כל 45 שניות לכל המילים
+        setInterval(() => keywords.forEach(fetchNews), 45000);
     </script>
 </body>
 </html>

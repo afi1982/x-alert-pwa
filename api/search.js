@@ -8,9 +8,10 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: `Search Google for 3 real, recent news articles about "${keyword}". 
-        Return ONLY a JSON array of objects with: title (Hebrew), source (English), url (valid link), summary (Hebrew). 
-        Format: {"items": [...]}` }] }]
+        contents: [{ parts: [{ text: `USING GOOGLE SEARCH, find real news from the LAST 60 SECONDS about "${keyword}". 
+        If no results from the last 1-2 minutes exist, return {"items": []}.
+        Translate everything to Hebrew. 
+        Return ONLY JSON: {"items": [{"title": "כותרת בעברית", "source": "מקור", "url": "לינק אמיתי", "summary": "תקציר בעברית"}]}` }] }]
       })
     });
 
@@ -18,6 +19,6 @@ export default async function handler(req, res) {
     const aiText = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
     res.status(200).json(JSON.parse(aiText));
   } catch (error) {
-    res.status(500).json({ error: "Search failed" });
+    res.status(200).json({ items: [] });
   }
 }
