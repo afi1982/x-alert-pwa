@@ -2,53 +2,67 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>X Live Alert</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>X-Alert Pro</title>
     <style>
-        :root { --bg:#06060c; --card:#111122; --accent:#ff2d4a; --text:#eaeaf4; --brd:#1e1e38; }
-        body { background:var(--bg); color:var(--text); font-family:'Noto Sans Hebrew', sans-serif; margin:0; padding:20px; }
-        .app { max-width:600px; margin:0 auto; }
-        .header { text-align:center; margin-bottom:30px; border-bottom:1px solid var(--brd); padding-bottom:15px; }
-        .input-group { display:flex; gap:10px; margin-bottom:20px; }
-        input { flex:1; padding:12px; border-radius:8px; border:1px solid var(--brd); background:var(--card); color:white; outline:none; }
-        button { padding:12px 20px; border-radius:8px; border:none; background:var(--accent); color:white; font-weight:700; cursor:pointer; }
-        .post { background:var(--card); padding:15px; border-radius:12px; margin-bottom:12px; border:1px solid var(--brd); }
-        .status { font-size: 0.8em; color: #77aa; margin-bottom: 10px; }
+        :root { --bg:#06060c; --card:#111122; --accent:#ff2d4a; --text:#eaeaf4; }
+        body { background:var(--bg); color:var(--text); font-family:system-ui, -apple-system; margin:0; padding:15px; }
+        .chip { display:inline-block; background:var(--accent); padding:5px 12px; border-radius:20px; margin:5px; font-size:14px; cursor:pointer; }
+        .input-box { width:100%; padding:15px; background:var(--card); border:1px solid #222; border-radius:12px; color:white; margin-bottom:10px; box-sizing:border-box; }
+        .alert-card { background:var(--card); border-right:4px solid var(--accent); padding:15px; border-radius:8px; margin-bottom:15px; animation:fadeIn 0.5s; }
+        @keyframes fadeIn { from {opacity:0; transform:translateX(20px);} to {opacity:1; transform:translateX(0);} }
+        .meta { font-size:12px; color:#888; margin-top:10px; display:flex; justify-content:space-between; }
+        .btn { background:var(--accent); color:white; border:none; padding:12px 25px; border-radius:8px; font-weight:bold; cursor:pointer; width:100%; }
     </style>
 </head>
 <body>
-    <div class="app">
-        <div class="header"><h1>⚡ X Live Alert</h1></div>
-        
-        <div class="input-group">
-            <input type="text" id="kwInput" placeholder="הכנס מילת חיפוש (למשל: חדשות)">
-            <button onclick="startSearch()">הפעל מעקב</button>
-        </div>
-
-        <div id="status" class="status"></div>
-        <div id="alerts"></div>
-    </div>
+    <h2>⚡ ניטור X בזמן אמת</h2>
+    
+    <input type="text" id="kwInput" class="input-box" placeholder="הוסף מילת חיפוש (למשל: צבע אדום)">
+    <button class="btn" onclick="addKeyword()">הוסף מילה למעקב</button>
+    
+    <div id="keywordsList" style="margin:15px 0;"></div>
+    <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+    <div id="alertsContainer"></div>
 
     <script>
-        const seen = new Set();
-        let intervalId = null;
+        let keywords = JSON.parse(localStorage.getItem('myKws') || '[]');
+        let seenIds = new Set();
 
-        async function startSearch() {
-            const kw = document.getElementById('kwInput').value;
-            if (!kw) return;
-            
-            if (intervalId) clearInterval(intervalId);
-            document.getElementById('alerts').innerHTML = '';
-            document.getElementById('status').innerText = `עוקב אחר: ${kw}...`;
-            
-            fetchAlerts(kw);
-            intervalId = setInterval(() => fetchAlerts(kw), 20000); 
+        // בקשת הרשאה להתראות
+        if (Notification.permission !== 'granted') Notification.requestPermission();
+
+        function renderKeywords() {
+            const container = document.getElementById('keywordsList');
+            container.innerHTML = keywords.map(k => `<span class="chip" onclick="removeKeyword('${k}')">${k} ✕</span>`).join('');
+            localStorage.setItem('myKws', JSON.stringify(keywords));
+        }
+
+        function addKeyword() {
+            const val = document.getElementById('kwInput').value.trim();
+            if (val && !keywords.includes(val)) {
+                keywords.push(val);
+                document.getElementById('kwInput').value = '';
+                renderKeywords();
+                checkAll();
+            }
+        }
+
+        function removeKeyword(kw) {
+            keywords = keywords.filter(k => k !== kw);
+            renderKeywords();
+        }
+
+        async function checkAll() {
+            if (keywords.length === 0) return;
+            for (let kw of keywords) {
+                await fetchAlerts(kw);
+            }
         }
 
         async function fetchAlerts(kw) {
-            const prompt = `Search for latest 3 posts on X about "${kw}" in Hebrew or English. Return ONLY JSON format: {"posts":[{"text":"תוכן הפוסט","author":"@name"}]}`;
+            const prompt = `Latest news from last 3 mins on X about "${kw}". Translate to Hebrew. 
+            Return ONLY JSON: {"posts":[{"text":"..","author":"..","url":"..","img":".."}]}`;
             
             try {
                 const r = await fetch("/api/search", {
@@ -56,31 +70,48 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ prompt })
                 });
-
-                if (!r.ok) throw new Error('שגיאת שרת: ' + r.status);
-
                 const data = await r.json();
                 const aiText = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
                 const result = JSON.parse(aiText);
                 
-                if (result.posts) render(result.posts);
-            } catch (e) {
-                console.error("שגיאה:", e);
-                document.getElementById('status').innerText = "שגיאה בחיבור לשרת. וודא שהגדרת API KEY.";
+                result.posts.forEach(post => {
+                    if (seenIds.has(post.text)) return;
+                    seenIds.add(post.text);
+                    
+                    // שלח התראה לנייד/מחשב
+                    sendNotification(kw, post.text);
+                    
+                    // הוסף למסך
+                    addAlertToUI(kw, post);
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        function sendNotification(title, body) {
+            if (Notification.permission === 'granted') {
+                new Notification(`התראה חדשה: ${title}`, { body, icon: '/icon-192.png' });
             }
         }
 
-        function render(posts) {
-            const container = document.getElementById('alerts');
-            posts.forEach(p => {
-                if (seen.has(p.text)) return;
-                seen.add(p.text);
-                const div = document.createElement('div');
-                div.className = 'post';
-                div.innerHTML = `<strong>${p.author}</strong><p>${p.text}</p>`;
-                container.prepend(div);
-            });
+        function addAlertToUI(kw, post) {
+            const container = document.getElementById('alertsContainer');
+            const html = `
+                <div class="alert-card">
+                    <div style="color:var(--accent); font-size:12px; margin-bottom:5px;">מילת מפתח: ${kw}</div>
+                    <strong>${post.author}</strong>
+                    <p>${post.text}</p>
+                    <div class="meta">
+                        <a href="${post.url}" target="_blank" style="color:white;">🔗 מקור</a>
+                        <span>${new Date().toLocaleTimeString('he-IL')}</span>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('afterbegin', html);
         }
+
+        // הפעלה אוטומטית כל 2 דקות
+        renderKeywords();
+        setInterval(checkAll, 120000);
     </script>
 </body>
 </html>
