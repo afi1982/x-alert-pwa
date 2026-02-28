@@ -133,6 +133,24 @@
       animation: spin .8s linear infinite;
     }
 
+    /* ===== PROVIDER TABS ===== */
+    .prov-tabs {
+      display: flex; gap: 4px; margin-bottom: 22px;
+      background: rgba(255,255,255,.04);
+      border-radius: 10px; padding: 4px;
+    }
+    .prov-tab {
+      flex: 1; background: none; border: none;
+      color: var(--muted); padding: 10px 8px;
+      border-radius: 8px; cursor: pointer;
+      font-size: 13px; font-weight: 700;
+      font-family: var(--heb);
+      transition: background .2s, color .2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .prov-tab.active { background: var(--bg); color: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.5); }
+    .prov-tab:hover:not(.active) { color: #ccc; }
+
     /* ===== IN-APP NOTIF ===== */
     .in-notif {
       position: fixed;
@@ -454,8 +472,16 @@
 <div id="apiModal" class="modal-overlay">
   <div class="modal-box">
     <div class="modal-logo">🔴 X Live Alert</div>
-    <h2>חיבור מפתח Anthropic API</h2>
-    <p>
+    <div class="prov-tabs">
+      <button class="prov-tab active" data-p="anthropic" onclick="setProvider('anthropic')">
+        🤖 Anthropic Claude
+      </button>
+      <button class="prov-tab" data-p="gemini" onclick="setProvider('gemini')">
+        ✨ Google Gemini
+      </button>
+    </div>
+    <h2 id="modalTitle">חיבור מפתח Anthropic API</h2>
+    <p id="modalDesc">
       המערכת משתמשת ב-Claude כדי לסרוק X/Twitter, טלגרם ו-Google News בזמן אמת.<br>
       המפתח נשמר בזיכרון בלבד ולא מועלה לשום שרת חיצוני.
     </p>
@@ -464,7 +490,7 @@
              autocomplete="off" onkeydown="if(event.key==='Enter') validateApiKey()">
       <button class="eye-btn" onclick="toggleKeyVis()" title="הצג/הסתר מפתח">👁</button>
     </div>
-    <a href="https://console.anthropic.com" target="_blank" rel="noopener" class="get-key-link">
+    <a id="keyLink" href="https://console.anthropic.com" target="_blank" rel="noopener" class="get-key-link">
       → קבל מפתח API חינם מ-Anthropic Console
     </a>
     <div id="keyError" class="key-error hidden"></div>
@@ -556,6 +582,7 @@
 // STATE
 // ================================================================
 let apiKey = null;
+let provider   = 'anthropic'; // 'anthropic' | 'gemini'
 let keywords   = [];  // { id, text, interval, enabled, status, checkCount, lastCheck, timerId }
 let alerts     = [];  // { id, keyword, text, hebrew, author, time, url, source, language, detectedAt, isNew }
 let seenHashes = new Set();
@@ -600,14 +627,36 @@ function intLabel(v) {
 // ================================================================
 // API KEY
 // ================================================================
+function setProvider(p) {
+  provider = p;
+  document.querySelectorAll('.prov-tab').forEach(t => t.classList.toggle('active', t.dataset.p === p));
+  document.getElementById('keyError').classList.add('hidden');
+  document.getElementById('apiKeyInput').value = '';
+  if (p === 'anthropic') {
+    document.getElementById('apiKeyInput').placeholder = 'sk-ant-api03-...';
+    document.getElementById('modalTitle').textContent   = 'חיבור מפתח Anthropic API';
+    document.getElementById('modalDesc').innerHTML      =
+      'המערכת משתמשת ב-Claude כדי לסרוק X/Twitter, טלגרם ו-Google News בזמן אמת.<br>המפתח נשמר בזיכרון בלבד ולא מועלה לשום שרת חיצוני.';
+    document.getElementById('keyLink').href        = 'https://console.anthropic.com';
+    document.getElementById('keyLink').textContent = '→ קבל מפתח API חינם מ-Anthropic Console';
+  } else {
+    document.getElementById('apiKeyInput').placeholder = 'AIzaSy...';
+    document.getElementById('modalTitle').textContent   = 'חיבור מפתח Google Gemini API';
+    document.getElementById('modalDesc').innerHTML      =
+      'המערכת משתמשת ב-Gemini ו-Google Search Grounding לסריקת חדשות בזמן אמת.<br>המפתח נשמר בזיכרון בלבד ולא מועלה לשום שרת חיצוני.';
+    document.getElementById('keyLink').href        = 'https://aistudio.google.com/app/apikey';
+    document.getElementById('keyLink').textContent = '→ קבל מפתח Gemini API חינם מ-Google AI Studio';
+  }
+}
+
 function toggleKeyVis() {
   const inp = document.getElementById('apiKeyInput');
   inp.type = inp.type === 'password' ? 'text' : 'password';
 }
+
 async function validateApiKey() {
   const key = document.getElementById('apiKeyInput').value.trim();
   if (!key) { showKeyErr('אנא הכנס מפתח API'); return; }
-  if (!key.startsWith('sk-ant-')) { showKeyErr('מפתח לא נראה תקין — מתחיל ב-sk-ant-'); return; }
 
   const btn = document.getElementById('validateBtn');
   const ldr = document.getElementById('valLoader');
@@ -616,30 +665,46 @@ async function validateApiKey() {
   document.getElementById('keyError').classList.add('hidden');
 
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 10,
-        messages: [{ role: 'user', content: 'OK' }]
-      })
-    });
-    if (r.ok) {
+    let ok = false, errMsg = '';
+    if (provider === 'anthropic') {
+      if (!key.startsWith('sk-ant-')) { showKeyErr('מפתח Anthropic מתחיל ב-sk-ant-'); return; }
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 10,
+                               messages: [{ role: 'user', content: 'OK' }] })
+      });
+      if (r.ok) { ok = true; }
+      else if (r.status === 401) { errMsg = 'מפתח לא תקין (401). בדוק שהעתקת אותו במלואו.'; }
+      else { const d = await r.json().catch(() => ({})); errMsg = 'שגיאה: ' + (d.error?.message || r.status); }
+    } else {
+      // Gemini validation
+      if (!key.startsWith('AIza')) { showKeyErr('מפתח Gemini מתחיל ב-AIza'); return; }
+      const r = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + key,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: 'OK' }] }],
+                                 generationConfig: { maxOutputTokens: 5 } })
+        });
+      if (r.ok) { ok = true; }
+      else if (r.status === 400 || r.status === 403) { errMsg = 'מפתח Gemini לא תקין. בדוק ב-AI Studio.'; }
+      else { const d = await r.json().catch(() => ({})); errMsg = 'שגיאה: ' + (d.error?.message || r.status); }
+    }
+
+    if (ok) {
       apiKey = key;
       document.getElementById('apiModal').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
       requestNotifPermission();
-    } else if (r.status === 401) {
-      showKeyErr('מפתח לא תקין (401). בדוק שהעתקת אותו במלואו.');
     } else {
-      const d = await r.json().catch(() => ({}));
-      showKeyErr('שגיאה: ' + (d.error?.message || r.status));
+      showKeyErr(errMsg);
     }
   } catch (e) {
     showKeyErr('שגיאת רשת — בדוק חיבור לאינטרנט.');
@@ -648,6 +713,7 @@ async function validateApiKey() {
     ldr.classList.add('hidden');
   }
 }
+
 function showKeyErr(msg) {
   const el = document.getElementById('keyError');
   el.textContent = '❌ ' + msg;
@@ -661,6 +727,7 @@ function changeApiKey() {
   document.getElementById('apiModal').classList.remove('hidden');
   document.getElementById('apiKeyInput').value = '';
   document.getElementById('keyError').classList.add('hidden');
+  setProvider(provider); // restore tab state
 }
 
 // ================================================================
@@ -776,14 +843,67 @@ Respond ONLY with valid JSON (no markdown, no preamble):
 If nothing qualifies: {"results":[],"found":false}`;
 }
 
+// Dispatch to the right provider
 async function doSearch(kw) {
-  if (!apiKey || !kw.enabled) return;
-  kw.status = 'searching';
-  kw.checkCount++;
-  kw.lastCheck = Date.now();
-  updateChip(kw);
-  updateGStatus();
+  if (provider === 'gemini') return doSearchGemini(kw);
+  return doSearchAnthropic(kw);
+}
 
+// ── Shared: process parsed JSON results ──────────────────────────
+function processResults(parsed, kw) {
+  if (!parsed || !Array.isArray(parsed.results)) return false;
+  let foundNew = false;
+  for (const item of parsed.results) {
+    const h = hash((item.url || '') + (item.text || '').slice(0, 120));
+    if (seenHashes.has(h)) continue;
+    seenHashes.add(h);
+    if (seenHashes.size > 500) seenHashes.delete(seenHashes.values().next().value);
+    const alert = {
+      id: 'a-' + Date.now() + '-' + Math.random().toString(36).slice(2),
+      keyword: kw.text,
+      text:    item.text    || '',
+      hebrew:  item.hebrew  || item.text || '',
+      author:  item.author  || '',
+      time:    item.time    || '',
+      url:     item.url     || '#',
+      source:  item.source  || 'google',
+      language:item.language|| 'en',
+      detectedAt: Date.now(),
+      isNew: true
+    };
+    alerts.unshift(alert);
+    foundNew = true;
+    showInNotif(alert);
+    sendBrowserNotif(alert);
+    playSound();
+    doVibrate();
+  }
+  if (alerts.length > 100) alerts = alerts.slice(0, 100);
+  return foundNew;
+}
+
+function parseJsonResponse(text) {
+  try { return JSON.parse(text); } catch {}
+  const m = text.match(/\{[\s\S]*\}/);
+  if (m) try { return JSON.parse(m[0]); } catch {}
+  return null;
+}
+
+function finishSearch(kw, foundNew) {
+  kw.status = foundNew ? 'found' : 'idle';
+  if (foundNew) {
+    renderFeed();
+    setTimeout(() => { kw.status = 'idle'; updateChip(kw); }, 5000);
+    setTimeout(() => { alerts.forEach(a => { if (a.isNew) a.isNew = false; }); renderFeed(); }, 30000);
+  }
+  updateChip(kw); updateGStatus(); renderFeed();
+}
+
+// ── Anthropic Claude search ───────────────────────────────────────
+async function doSearchAnthropic(kw) {
+  if (!apiKey || !kw.enabled) return;
+  kw.status = 'searching'; kw.checkCount++; kw.lastCheck = Date.now();
+  updateChip(kw); updateGStatus();
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -800,69 +920,47 @@ async function doSearch(kw) {
         messages: [{ role: 'user', content: buildPrompt(kw.text, new Date().toISOString()) }]
       })
     });
-
-    if (!r.ok) {
-      console.error('API', r.status);
-      kw.status = 'idle'; updateChip(kw); updateGStatus(); return;
-    }
-
+    if (!r.ok) { console.error('Anthropic API', r.status); kw.status = 'idle'; updateChip(kw); updateGStatus(); return; }
     const data = await r.json();
-    // Find last text block
+    // Last text block in content array
     let jsonStr = null;
     if (Array.isArray(data.content)) {
       for (let i = data.content.length - 1; i >= 0; i--) {
         if (data.content[i].type === 'text') { jsonStr = data.content[i].text; break; }
       }
     }
-    if (!jsonStr) { kw.status = 'idle'; updateChip(kw); updateGStatus(); return; }
-
-    let parsed = null;
-    try { parsed = JSON.parse(jsonStr); } catch {
-      const m = jsonStr.match(/\{[\s\S]*\}/);
-      if (m) try { parsed = JSON.parse(m[0]); } catch {}
-    }
-    if (!parsed || !Array.isArray(parsed.results)) {
-      kw.status = 'idle'; updateChip(kw); updateGStatus(); return;
-    }
-
-    let foundNew = false;
-    for (const item of parsed.results) {
-      const h = hash((item.url || '') + (item.text || '').slice(0, 120));
-      if (seenHashes.has(h)) continue;
-      seenHashes.add(h);
-      if (seenHashes.size > 500) seenHashes.delete(seenHashes.values().next().value);
-
-      const alert = {
-        id: 'a-' + Date.now() + '-' + Math.random().toString(36).slice(2),
-        keyword: kw.text,
-        text:    item.text    || '',
-        hebrew:  item.hebrew  || item.text || '',
-        author:  item.author  || '',
-        time:    item.time    || '',
-        url:     item.url     || '#',
-        source:  item.source  || 'google',
-        language:item.language|| 'en',
-        detectedAt: Date.now(),
-        isNew: true
-      };
-      alerts.unshift(alert);
-      foundNew = true;
-      showInNotif(alert);
-      sendBrowserNotif(alert);
-      playSound();
-      doVibrate();
-    }
-    if (alerts.length > 100) alerts = alerts.slice(0, 100);
-
-    kw.status = foundNew ? 'found' : 'idle';
-    if (foundNew) {
-      renderFeed();
-      setTimeout(() => { kw.status = 'idle'; updateChip(kw); }, 5000);
-      setTimeout(() => { alerts.forEach(a => { if (a.isNew) a.isNew = false; }); renderFeed(); }, 30000);
-    }
-    updateChip(kw); updateGStatus(); renderFeed();
+    finishSearch(kw, processResults(parseJsonResponse(jsonStr || ''), kw));
   } catch (e) {
-    console.error('Search error', e);
+    console.error('Anthropic search error', e);
+    kw.status = 'idle'; updateChip(kw); updateGStatus();
+  }
+}
+
+// ── Google Gemini search ──────────────────────────────────────────
+async function doSearchGemini(kw) {
+  if (!apiKey || !kw.enabled) return;
+  kw.status = 'searching'; kw.checkCount++; kw.lastCheck = Date.now();
+  updateChip(kw); updateGStatus();
+  try {
+    const r = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tools: [{ google_search: {} }],
+          contents: [{ role: 'user', parts: [{ text: buildPrompt(kw.text, new Date().toISOString()) }] }],
+          generationConfig: { maxOutputTokens: 4000, temperature: 0.1 }
+        })
+      });
+    if (!r.ok) { console.error('Gemini API', r.status); kw.status = 'idle'; updateChip(kw); updateGStatus(); return; }
+    const data = await r.json();
+    // Concatenate all text parts from the first candidate
+    const parts  = data.candidates?.[0]?.content?.parts || [];
+    const jsonStr = parts.map(p => p.text || '').join('');
+    finishSearch(kw, processResults(parseJsonResponse(jsonStr), kw));
+  } catch (e) {
+    console.error('Gemini search error', e);
     kw.status = 'idle'; updateChip(kw); updateGStatus();
   }
 }
