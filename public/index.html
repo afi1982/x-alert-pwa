@@ -4,108 +4,240 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INTEL-HUB V3 | חמ"ל מבצעי</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #05070a; --accent: #00f2ff; --red: #ff4757; --glass: rgba(255,255,255,0.03); }
-        body { background: var(--bg); color: white; font-family: 'Noto Sans Hebrew', sans-serif; margin: 0; }
+        :root {
+            --bg: #05070a;
+            --accent: #00f2ff;
+            --red: #ff4757;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background: var(--bg);
+            color: white;
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+        }
+
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #1a1c20; }
-        .logo { font-size: 24px; font-weight: 900; letter-spacing: 2px; color: var(--accent); }
-        .nav-btn { color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 8px 16px; border-radius: 5px; font-size: 14px; transition: 0.3s; }
-        .nav-btn:hover { background: var(--accent); color: black; }
-        .search-area { background: var(--glass); padding: 30px; border-radius: 15px; margin: 30px 0; border: 1px solid #1a1c20; }
-        .input-wrap { display: flex; gap: 10px; }
-        input { flex: 1; background: #000; border: 1px solid #333; padding: 15px; border-radius: 8px; color: white; outline: none; }
-        button { background: var(--accent); border: none; padding: 0 25px; border-radius: 8px; font-weight: 900; cursor: pointer; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-        .card { background: var(--glass); border: 1px solid #1a1c20; padding: 20px; border-radius: 12px; position: relative; animation: fadeIn 0.5s; }
-        .card::before { content: 'URGENT'; position: absolute; top: 10px; left: -15px; background: var(--red); font-size: 10px; padding: 2px 10px; transform: rotate(-45deg); font-weight: 900; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo { font-size: 24px; font-weight: 900; color: var(--accent); letter-spacing: 2px; }
+
+        .nav-links { display: flex; gap: 15px; }
+
+        .btn-nav {
+            color: var(--accent);
+            text-decoration: none;
+            border: 1px solid var(--accent);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .btn-nav:hover { background: var(--accent); color: black; }
+
+        .search-area {
+            background: var(--glass);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+            border: 1px solid var(--border);
+        }
+
+        .input-group { display: flex; gap: 10px; }
+
+        input {
+            flex: 1;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus { border-color: var(--accent); }
+
+        .btn-scan {
+            background: var(--accent);
+            color: black;
+            border: none;
+            padding: 0 30px;
+            border-radius: 10px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            padding: 25px;
+            border-radius: 15px;
+            position: relative;
+            border-right: 4px solid var(--accent);
+            animation: fadeIn 0.5s ease-out;
+        }
+
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } }
-        .card-source { color: var(--accent); font-size: 12px; font-weight: 900; margin-bottom: 10px; }
-        .card-title { font-size: 18px; font-weight: 900; margin-bottom: 10px; line-height: 1.4; }
-        .card-text { font-size: 14px; color: #888; margin-bottom: 15px; }
-        .card-link { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 13px; }
-        .chips { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-        .chip { background: #1a1c20; padding: 4px 12px; border-radius: 20px; font-size: 12px; border: 1px solid #333; cursor: pointer; }
+
+        .card-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--accent); font-weight: 900; margin-bottom: 10px; }
+        .card-title { font-size: 19px; font-weight: 900; margin-bottom: 12px; line-height: 1.4; }
+        .card-body { font-size: 14px; color: #ccc; line-height: 1.6; margin-bottom: 20px; }
+        
+        .card-link {
+            display: inline-block;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+            border: 1px solid var(--accent);
+            padding: 5px 12px;
+            border-radius: 5px;
+        }
+
+        .card-link:hover { background: var(--accent); color: black; }
+
+        .chips { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .chip { background: #1a1c20; padding: 5px 12px; border-radius: 20px; font-size: 12px; border: 1px solid #333; cursor: pointer; }
+        .status-msg { font-size: 12px; color: #666; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">INTEL-HUB V3</div>
-            <a href="sources.html" class="nav-btn">ניהול מקורות מודיעין ⚙️</a>
-        </header>
 
-        <section class="search-area">
-            <div class="input-wrap">
-                <input type="text" id="kwInput" placeholder="הכנס יעד לניטור (איראן, סוריה, סייבר)...">
-                <button onclick="addKeyword()">ACTIVATE SCAN</button>
-            </div>
-            <div id="keywordsList" class="chips"></div>
-        </section>
+<div class="container">
+    <header>
+        <div class="logo">INTEL-HUB V3</div>
+        <div class="nav-links">
+            <a href="sources.html" class="btn-nav">ניהול מקורות ⚙️</a>
+        </div>
+    </header>
 
-        <div id="alertsContainer" class="grid"></div>
-    </div>
+    <section class="search-area">
+        <div class="input-group">
+            <input type="text" id="kwInput" placeholder="הכנס יעד לניטור (איראן, לבנון, סייבר)...">
+            <button class="btn-scan" onclick="addKeyword()">ACTIVATE SCAN</button>
+        </div>
+        <div id="keywordsList" class="chips"></div>
+        <div id="statusLabel" class="status-msg">מערכת מוכנה לסריקה...</div>
+    </section>
 
-    <script>
-        let keywords = JSON.parse(localStorage.getItem('kws') || '[]');
-        let seen = new Set();
+    <main id="alertsContainer" class="grid"></main>
+</div>
 
-        function addKeyword() {
-            const val = document.getElementById('kwInput').value.trim();
-            if(val && !keywords.includes(val)) {
-                keywords.push(val);
-                localStorage.setItem('kws', JSON.stringify(keywords));
-                renderKeywords();
-                fetchData(val);
-            }
-            document.getElementById('kwInput').value = '';
-        }
+<audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
-        function renderKeywords() {
-            document.getElementById('keywordsList').innerHTML = keywords.map(k => `<span class="chip" onclick="removeKeyword('${k}')">${k} ✕</span>`).join('');
-        }
+<script>
+    // שימוש במפתחות זיכרון קבועים למניעת מחיקה
+    let keywords = JSON.parse(localStorage.getItem('intel_kws_v3') || '[]');
+    let seenLinks = new Set();
 
-        function removeKeyword(k) {
-            keywords = keywords.filter(x => x !== k);
-            localStorage.setItem('kws', JSON.stringify(keywords));
+    function addKeyword() {
+        const val = document.getElementById('kwInput').value.trim();
+        if (val && !keywords.includes(val)) {
+            keywords.push(val);
+            localStorage.setItem('intel_kws_v3', JSON.stringify(keywords));
             renderKeywords();
+            fetchData(val);
         }
+        document.getElementById('kwInput').value = '';
+    }
 
-        async function fetchData(kw) {
-            const sources = JSON.parse(localStorage.getItem('intel_sources') || '[]');
-            try {
-                const r = await fetch('/api/search', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ keyword: kw, customSources: sources })
-                });
-                const data = await r.json();
-                if(data.items) {
-                    data.items.forEach(item => {
-                        if(seen.has(item.url)) return;
-                        seen.add(item.url);
-                        renderAlert(kw, item);
-                    });
-                }
-            } catch(e) {}
-        }
+    function renderKeywords() {
+        document.getElementById('keywordsList').innerHTML = keywords.map(k => `
+            <span class="chip" onclick="removeKeyword('${k}')">${k} ✕</span>
+        `).join('');
+    }
 
-        function renderAlert(kw, item) {
-            const container = document.getElementById('alertsContainer');
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-source">${item.source.toUpperCase()}</div>
-                <div class="card-title">${item.title}</div>
-                <div class="card-text">${item.summary}</div>
-                <a href="${item.url}" target="_blank" class="card-link">→ VIEW SOURCE</a>
-            `;
-            container.prepend(card);
-        }
-
+    function removeKeyword(k) {
+        keywords = keywords.filter(x => x !== k);
+        localStorage.setItem('intel_kws_v3', JSON.stringify(keywords));
         renderKeywords();
-        setInterval(() => keywords.forEach(fetchData), 30000);
-    </script>
+    }
+
+    async function fetchData(kw) {
+        // טעינת המקורות האישיים מדף הניהול
+        const customSources = JSON.parse(localStorage.getItem('intel_sources_v3') || '[]');
+        document.getElementById('statusLabel').innerText = `סורק כעת מקורות עבור: ${kw}...`;
+
+        try {
+            const r = await fetch('/api/search', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    keyword: kw, 
+                    customSources: customSources 
+                })
+            });
+            const data = await r.json();
+
+            if (data.items && data.items.length > 0) {
+                data.items.forEach(item => {
+                    if (seenLinks.has(item.url)) return;
+                    seenLinks.add(item.url);
+                    
+                    document.getElementById('alertSound').play().catch(() => {});
+                    renderAlert(kw, item);
+                });
+                document.getElementById('statusLabel').innerText = `נמצאו עדכונים עבור ${kw}`;
+            } else {
+                document.getElementById('statusLabel').innerText = `אין חדשות חדשות כרגע עבור ${kw}`;
+            }
+        } catch (e) {
+            document.getElementById('statusLabel').innerText = "שגיאה בתקשורת עם השרת";
+        }
+    }
+
+    function renderAlert(kw, item) {
+        const container = document.getElementById('alertsContainer');
+        const card = document.createElement('div');
+        card.className = 'card';
+        
+        const now = new Date().toLocaleTimeString('he-IL', {hour: '2-digit', minute:'2-digit'});
+
+        card.innerHTML = `
+            <div class="card-meta">
+                <span>${item.source.toUpperCase()}</span>
+                <span>${now}</span>
+            </div>
+            <div class="card-title">${item.title}</div>
+            <div class="card-body">${item.summary}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <span style="font-size:10px; color:#444">יעד: ${kw}</span>
+                <a href="${item.url}" target="_blank" class="card-link">צפה במקור</a>
+            </div>
+        `;
+        // הוספה לראש הרשימה ללא מחיקת הקודמים
+        container.prepend(card);
+    }
+
+    // טעינה ראשונית
+    renderKeywords();
+
+    // לופ סריקה אוטומטי
+    setInterval(() => {
+        keywords.forEach(kw => fetchData(kw));
+    }, 60000); // כל דקה
+</script>
+
 </body>
 </html>
