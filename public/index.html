@@ -2,300 +2,116 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>X-ALERT PREMIER 2026</title>
-    <link href="https://fonts.googleapis.com/css2?family=Platypi:wght@300;600;800&family=Noto+Sans+Hebrew:wght@100;400;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INTEL-HUB PREMIER 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Platypi:wght@800&family=Noto+Sans+Hebrew:wght@400;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #020305;
-            --accent-primary: #00f2ff;
-            --accent-secondary: #ff0055;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-main: #f0f4f8;
-            --text-dim: #94a3b8;
+            --bg: #020408;
+            --accent: #00f2ff;
+            --accent-red: #ff0055;
+            --glass: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            background: var(--bg);
+            color: white;
             font-family: 'Noto Sans Hebrew', sans-serif;
             margin: 0;
-            min-height: 100vh;
             overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
+            min-height: 100vh;
         }
 
-        /* רקע אינטראקטיבי */
-        #dynamic-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                radial-gradient(circle at 50% 50%, rgba(0, 242, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 0, 85, 0.05) 0%, transparent 40%);
+        #bg-effect {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(0, 242, 255, 0.07) 0%, transparent 50%);
             z-index: -1;
-            transition: background 0.2s ease;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            width: 100%;
-            box-sizing: border-box;
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 30px 0; border-bottom: 1px solid var(--border);
         }
 
-        /* --- Header --- */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 40px 0;
-            border-bottom: 1px solid var(--glass-border);
+        .brand h1 { font-family: 'Platypi'; font-size: 28px; margin: 0; color: var(--accent); }
+
+        .search-box {
+            background: var(--glass); padding: 30px; border-radius: 20px;
+            border: 1px solid var(--border); margin: 30px 0; backdrop-filter: blur(10px);
         }
 
-        .brand h1 {
-            font-family: 'Platypi', serif;
-            font-size: 32px;
-            margin: 0;
-            background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .status-badge {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--glass-bg);
-            padding: 8px 20px;
-            border-radius: 40px;
-            border: 1px solid var(--glass-border);
-            font-size: 13px;
-            letter-spacing: 1px;
-        }
-
-        .pulse-dot {
-            width: 8px; height: 8px;
-            background: var(--accent-primary);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent-primary);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.5); opacity: 0.4; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* --- Search System --- */
-        .search-system {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid var(--glass-border);
-            margin: 40px 0;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
-        .input-wrapper {
-            display: flex;
-            gap: 15px;
-        }
+        .input-group { display: flex; gap: 10px; }
 
         input {
-            flex: 1;
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--glass-border);
-            padding: 20px;
-            border-radius: 12px;
-            color: white;
-            font-size: 18px;
-            outline: none;
-            transition: 0.3s;
+            flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--border);
+            padding: 15px; border-radius: 10px; color: white; font-size: 16px; outline: none;
         }
 
-        input:focus {
-            border-color: var(--accent-primary);
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+        input:focus { border-color: var(--accent); }
+
+        button {
+            background: var(--accent); color: black; border: none; padding: 0 30px;
+            border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s;
         }
 
-        .btn-scan {
-            background: linear-gradient(135deg, var(--accent-primary) 0%, #00bfff 100%);
-            color: #000;
-            border: none;
-            padding: 0 40px;
-            border-radius: 12px;
-            font-weight: 800;
-            cursor: pointer;
-            font-family: 'Platypi', serif;
-            transition: 0.3s;
+        button:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--accent); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
+
+        .card {
+            background: var(--glass); border: 1px solid var(--border); padding: 25px;
+            border-radius: 15px; position: relative; transition: 0.3s;
+            animation: slideUp 0.5s ease-out;
         }
 
-        .btn-scan:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 242, 255, 0.3);
+        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card::before {
+            content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%;
+            background: var(--accent); border-radius: 0 15px 15px 0;
         }
 
-        .chips {
-            margin-top: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+        .source { color: var(--accent); font-size: 12px; font-weight: 900; text-transform: uppercase; }
+        .title { font-size: 19px; font-weight: 900; margin: 10px 0; line-height: 1.4; }
+        .summary { font-size: 14px; color: #aaa; margin-bottom: 20px; line-height: 1.6; }
+
+        .btn-link {
+            display: inline-block; color: var(--accent); text-decoration: none;
+            font-weight: 700; font-size: 13px; border: 1px solid var(--accent);
+            padding: 5px 15px; border-radius: 5px; transition: 0.3s;
         }
 
-        .chip {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            padding: 8px 18px;
-            border-radius: 30px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+        .btn-link:hover { background: var(--accent); color: black; }
 
-        .chip b { color: var(--accent-secondary); cursor: pointer; }
-
-        /* --- Feed Grid --- */
-        .feed-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 30px;
-            margin-bottom: 60px;
-        }
-
-        .news-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 30px;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .news-card:hover {
-            transform: translateY(-10px);
-            border-color: var(--accent-primary);
-            background: rgba(255,255,255,0.05);
-        }
-
-        .news-card::after {
-            content: '';
-            position: absolute;
-            top: 0; right: 0; width: 4px; height: 100%;
-            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
-            border-radius: 0 20px 20px 0;
-        }
-
-        .card-top {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .source-tag {
-            color: var(--accent-primary);
-            font-weight: 800;
-            font-size: 12px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .timestamp {
-            font-size: 12px;
-            color: var(--text-dim);
-        }
-
-        .news-title {
-            font-size: 21px;
-            font-weight: 900;
-            margin: 0 0 15px 0;
-            line-height: 1.4;
-        }
-
-        .news-summary {
-            font-size: 15px;
-            color: var(--text-dim);
-            line-height: 1.7;
-            margin-bottom: 25px;
-            flex: 1;
-        }
-
-        .card-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid var(--glass-border);
-            padding-top: 20px;
-        }
-
-        .link-btn {
-            color: var(--accent-primary);
-            text-decoration: none;
-            font-weight: 700;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: 0.2s;
-        }
-
-        .link-btn:hover {
-            color: white;
-            transform: translateX(-5px);
-        }
-
-        .footer {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-dim);
-            font-size: 12px;
-            border-top: 1px solid var(--glass-border);
-        }
+        .chips { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .chip { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; font-size: 12px; }
     </style>
 </head>
 <body>
 
-<div id="dynamic-bg"></div>
+<div id="bg-effect"></div>
 
 <div class="container">
-    <header class="header">
-        <div class="brand">
-            <h1>X-ALERT <span style="font-weight:300">PREMIER</span></h1>
-        </div>
-        <div class="status-badge">
-            <div class="pulse-dot"></div>
-            <span>סריקה רב-לשונית פעילה (2026)</span>
-        </div>
+    <header>
+        <div class="brand"><h1>X-ALERT PREMIER</h1></div>
+        <div id="status" style="font-size:12px; color: #00ff00;">● מערכת סריקה פעילה</div>
     </header>
 
-    <section class="search-system">
-        <div class="input-wrapper">
-            <input type="text" id="kwInput" placeholder="הזן מילת מפתח לניטור עולמי (איראן, תקיפה, סייבר)...">
-            <button class="btn-scan" onclick="addKeyword()">ACTIVATE SCAN</button>
+    <div class="search-box">
+        <div class="input-group">
+            <input type="text" id="kwInput" placeholder="הזן יעד לניטור (איראן, לבנון, סייבר)...">
+            <button onclick="addKeyword()">ACTIVATE</button>
         </div>
         <div id="keywordsList" class="chips"></div>
-    </section>
+    </div>
 
-    <main id="alertsContainer" class="feed-grid"></main>
+    <div id="alertsContainer" class="grid"></div>
 </div>
-
-<footer class="footer">
-    &copy; 2026 PREMIER INTEL | מערכת ניטור גלובלית בזמן אמת
-</footer>
 
 <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
@@ -303,14 +119,10 @@
     let keywords = JSON.parse(localStorage.getItem('intel_v2026') || '[]');
     let seen = new Set();
 
-    // אפקט רקע זז
-    document.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth) * 10;
-        const y = (e.clientY / window.innerHeight) * 10;
-        document.getElementById('dynamic-bg').style.background = `
-            radial-gradient(circle at ${50 + x}% ${50 + y}%, rgba(0, 242, 255, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at ${80 - x}% ${20 - y}%, rgba(255, 0, 85, 0.05) 0%, transparent 40%)
-        `;
+    // אפקט רקע
+    document.addEventListener('mousemove', e => {
+        document.body.style.setProperty('--x', (e.clientX / window.innerWidth) * 100 + '%');
+        document.body.style.setProperty('--y', (e.clientY / window.innerHeight) * 100 + '%');
     });
 
     function addKeyword() {
@@ -326,7 +138,7 @@
 
     function renderKeywords() {
         document.getElementById('keywordsList').innerHTML = keywords.map(k => `
-            <div class="chip">${k} <b onclick="removeKeyword('${k}')">✕</b></div>
+            <span class="chip">${k} <b style="cursor:pointer" onclick="removeKeyword('${k}')">✕</b></span>
         `).join('');
     }
 
@@ -344,12 +156,10 @@
                 body: JSON.stringify({ keyword: kw })
             });
             const data = await r.json();
-            
-            if (data.items && data.items.length > 0) {
+            if (data.items) {
                 data.items.forEach(item => {
-                    if (seen.has(item.url)) return;
+                    if (seen.has(item.url) || !item.url.includes('http')) return;
                     seen.add(item.url);
-                    
                     document.getElementById('alertSound').play().catch(() => {});
                     renderAlert(kw, item);
                 });
@@ -360,29 +170,21 @@
     function renderAlert(kw, item) {
         const container = document.getElementById('alertsContainer');
         const card = document.createElement('div');
-        card.className = 'news-card';
-        
-        // תיקון לינק
-        const cleanUrl = item.url.startsWith('http') ? item.url : `https://${item.url}`;
-
+        card.className = 'card';
         card.innerHTML = `
-            <div class="card-top">
-                <span class="source-tag">${item.source}</span>
-                <span class="timestamp">${new Date().toLocaleTimeString('he-IL')}</span>
-            </div>
-            <h3 class="news-title">${item.title}</h3>
-            <p class="news-summary">${item.summary}</p>
-            <div class="card-bottom">
-                <span style="font-size:10px; opacity:0.5">TARGET: ${kw}</span>
-                <a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="link-btn">מקור הדיווח ←</a>
+            <div class="source">${item.source}</div>
+            <div class="title">${item.title}</div>
+            <div class="summary">${item.summary}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center">
+                <span style="font-size:10px; color:#555">TARGET: ${kw}</span>
+                <a href="${item.url}" target="_blank" rel="noopener" class="btn-link">צפה במקור</a>
             </div>
         `;
         container.prepend(card);
     }
 
     renderKeywords();
-    // סריקה כל 20 שניות
-    setInterval(() => keywords.forEach(fetchData), 20000);
+    setInterval(() => keywords.forEach(fetchData), 30000); // סריקה כל 30 שניות
 </script>
 </body>
 </html>
