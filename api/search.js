@@ -9,10 +9,18 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: `
-          TASK: Find REAL-TIME news published in the LAST 60 SECONDS about "${keyword}".
-          STRATEGY: Use Google Search with 'sort by date'. 
-          CRITICAL: If the newest article is older than 2 minutes, return {"items": []}. Do not summarize old news.
-          OUTPUT: Return ONLY a JSON array: {"items": [{"title": "Hebrew Title", "source": "Source", "url": "URL", "summary": "Short Hebrew Summary"}]}` 
+          CRITICAL MISSION: Search for the absolute latest news (last 60 seconds) about "${keyword}".
+          SOURCES TO SCAN: 
+          1. IRAN: IRNA, Fars News, Tasnim (Persian/English).
+          2. LEBANON/HEZBOLLAH: Al-Manar, Al-Mayadeen.
+          3. IRAQ: Sabereen News, Shafaq.
+          4. GLOBAL: Reuters, Al-Jazeera.
+
+          INSTRUCTIONS:
+          - Find primary sources in Persian, Arabic, or English.
+          - TRANSLATE everything immediately to HEBREW.
+          - If no news from the last 2 minutes, return {"items": []}.
+          - Return ONLY JSON: {"items": [{"title": "כותרת בעברית", "source": "שם המקור", "url": "URL", "summary": "תקציר בעברית"}]}` 
         }] }]
       })
     });

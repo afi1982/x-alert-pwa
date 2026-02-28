@@ -2,165 +2,462 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INTEL-HUB | חמ"ל מבצעי</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Noto+Sans+Hebrew:wght@300;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>X-ALERT PREMIER | ניטור מודיעין 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Platypi:wght@300;600;800&family=Noto+Sans+Hebrew:wght@100;400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { 
-            --neon-red: #ff003c; 
-            --neon-blue: #00f2ff; 
-            --bg-dark: #050505; 
-            --card-bg: rgba(20, 20, 20, 0.8);
+        :root {
+            /* פלטת צבעים 2026: נעימה אך טכנולוגית */
+            --bg-dark: #030407;
+            --bg-lighter: #0a0e17;
+            --text-main: #e0e6ed;
+            --text-secondary: #94a3b8;
+            
+            /* צבעי הדגשה דינמיים */
+            --accent-primary: #00f2ff; /* טורקיז חשמלי */
+            --accent-primary-dim: rgba(0, 242, 255, 0.2);
+            --accent-secondary: #ff0055; /* אדום-ורוד עמוק */
+            --accent-secondary-dim: rgba(255, 0, 85, 0.15);
+            
+            /* הגדרות Glassmorphism */
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-blur: blur(12px);
+            
+            --transition-main: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        body { 
-            background: var(--bg-dark); 
-            color: white; 
-            font-family: 'Noto Sans Hebrew', sans-serif; 
-            margin: 0; 
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Noto Sans Hebrew', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
             overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #050505 100%);
-        }
-        
-        /* אפקט סריקה טכנולוגי על כל המסך */
-        body::before {
-            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 3px, 3px 100%; pointer-events: none; z-index: 100;
+            position: relative;
         }
 
-        .dashboard { padding: 20px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
-        
-        .header { 
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid var(--neon-red); padding-bottom: 15px; margin-bottom: 30px;
-            font-family: 'Orbitron', sans-serif;
+        /* רקע גראדיאנט דינמי המגיב לעכבר */
+        #dynamic-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 50% 50%, var(--accent-primary-dim) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, var(--accent-secondary-dim) 0%, transparent 35%);
+            z-index: -1;
+            transition: background 0.1s ease; /* מעבר מהיר לתנועת עכבר */
         }
 
-        .status-tag { 
-            color: var(--neon-red); 
-            animation: blink 1.5s infinite; 
-            font-weight: bold; 
-            display: flex; align-items: center; gap: 8px;
-        }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.2; } 100% { opacity: 1; } }
-
-        .search-area { 
-            background: var(--card-bg); padding: 25px; border-radius: 8px; 
-            border: 1px solid #333; margin-bottom: 30px; box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            display: flex; gap: 15px;
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+            flex: 1;
         }
 
-        input { 
-            background: rgba(0,0,0,0.5); border: 1px solid var(--neon-blue); color: var(--neon-blue);
-            padding: 15px; flex: 1; font-size: 18px; border-radius: 4px; outline: none;
-            font-family: inherit; transition: 0.3s;
-        }
-        input:focus { box-shadow: 0 0 10px var(--neon-blue); }
-        
-        .btn-neon {
-            background: transparent; border: 1px solid var(--neon-red); color: var(--neon-red);
-            padding: 0 30px; cursor: pointer; font-family: 'Orbitron'; font-weight: 900;
-            transition: 0.3s; letter-spacing: 1px;
-        }
-        .btn-neon:hover { background: var(--neon-red); color: white; box-shadow: 0 0 20px var(--neon-red); }
-
-        .chip-container { margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
-        .chip { 
-            background: rgba(0, 242, 255, 0.1); border: 1px solid var(--neon-blue); 
-            color: var(--neon-blue); padding: 5px 15px; border-radius: 3px; font-size: 14px;
-            display: flex; align-items: center; gap: 8px;
+        /* --- Header --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--glass-border);
+            margin-bottom: 40px;
+            position: relative;
         }
 
-        .alert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
-        
-        .alert-card { 
-            background: var(--card-bg); border: 1px solid #444; padding: 20px;
-            position: relative; overflow: hidden; transition: 0.4s;
-            animation: slideIn 0.5s ease-out;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
 
-        .alert-card:hover { border-color: var(--neon-red); transform: scale(1.02); }
-        
+        .brand h1 {
+            font-family: 'Platypi', serif;
+            font-weight: 800;
+            font-size: 28px;
+            margin: 0;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .status-hub {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--glass-bg);
+            padding: 8px 15px;
+            border-radius: 30px;
+            border: 1px solid var(--glass-border);
+            backdrop-filter: var(--glass-blur);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px; height: 8px;
+            background-color: var(--accent-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(0, 242, 255, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 242, 255, 0); }
+        }
+
+        /* --- Search Area --- */
+        .search-area {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+            transition: var(--transition-main);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* אפקט אור עובר על ה-Search Area */
+        .search-area::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(from 180deg at 50% 50%, transparent 0%, var(--accent-primary-dim) 25%, transparent 50%);
+            animation: rotateLight 6s linear infinite;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        @keyframes rotateLight {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            padding: 18px;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: var(--transition-main);
+            font-family: inherit;
+        }
+
+        input:focus {
+            border-color: var(--accent-primary);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px var(--accent-primary-dim);
+        }
+
+        .btn-activate {
+            background: linear-gradient(135deg, var(--accent-primary) 0%, #00bfff 100%);
+            color: #030407;
+            border: none;
+            padding: 0 35px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: var(--transition-main);
+            font-family: 'Platypi', serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-activate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px var(--accent-primary-dim);
+        }
+
+        .btn-activate:active { transform: translateY(1px); }
+
+        .chip-container {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-main);
+            cursor: default;
+        }
+
+        .chip:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .chip b { cursor: pointer; color: var(--accent-secondary); transition: var(--transition-main); }
+        .chip b:hover { transform: scale(1.2); }
+
+        /* --- Alert Grid --- */
+        .alert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            padding-bottom: 40px;
+        }
+
+        .alert-card {
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition-main);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            animation: cardEnter 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* אפקט הובר משודרג לכרטיסייה */
+        .alert-card:hover {
+            transform: translateY(-5px) scale(1.01);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* פס הדגשה צבעוני בצד */
         .alert-card::before {
-            content: "LIVE REPORT"; position: absolute; top: 12px; left: -35px;
-            background: var(--neon-red); color: white; font-size: 9px;
-            padding: 2px 40px; transform: rotate(-45deg); font-weight: bold; font-family: 'Orbitron';
+            content: '';
+            position: absolute;
+            top: 0; right: 0; width: 4px; height: 100%;
+            background: linear-gradient(to bottom, var(--accent-primary), var(--accent-secondary));
+            opacity: 0.7;
+            transition: var(--transition-main);
+        }
+        
+        .alert-card:hover::before { opacity: 1; width: 6px; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
         }
 
-        .source { color: var(--neon-blue); font-size: 12px; font-weight: 900; letter-spacing: 1px; }
-        .title { font-size: 20px; font-weight: 900; margin: 15px 0 10px 0; color: #fff; line-height: 1.3; }
-        .summary { font-size: 14px; color: #ccc; line-height: 1.6; margin-bottom: 15px; }
-        .time { float: left; font-size: 11px; color: var(--neon-red); font-family: 'Orbitron'; }
-        
-        .source-link { 
-            color: var(--neon-blue); text-decoration: none; font-size: 12px; 
-            font-weight: bold; border-bottom: 1px solid transparent; transition: 0.2s;
+        .source {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-family: 'Platypi', serif;
         }
-        .source-link:hover { border-bottom-color: var(--neon-blue); }
+
+        .time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-family: inherit;
+        }
+
+        .title {
+            font-size: 19px;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+            transition: var(--transition-main);
+        }
+        
+        .alert-card:hover .title { color: var(--accent-primary); }
+
+        .summary {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin: 0 0 20px 0;
+            flex: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 15px;
+            margin-top: auto;
+        }
+
+        .target-tag {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.03);
+            padding: 3px 8px;
+            border-radius: 4px;
+        }
+
+        .source-link {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            transition: var(--transition-main);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .source-link:hover {
+            color: white;
+            transform: translateX(-3px);
+        }
+
+        /* --- Footer --- */
+        .main-footer {
+            text-align: center;
+            padding: 30px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.2);
+            border-top: 1px solid var(--glass-border);
+            margin-top: auto;
+        }
 
     </style>
 </head>
 <body>
 
-<div class="dashboard">
-    <div class="header">
-        <div class="status-tag"><span>●</span> LIVE MONITORING</div>
-        <div style="font-size: 28px; font-weight: 900; color: white; letter-spacing: 2px;">INTEL-HUB V3</div>
-        <div id="clock" style="color: var(--neon-blue); font-weight: bold;">00:00:00</div>
-    </div>
+<div id="dynamic-bg"></div>
 
-    <div class="search-area">
-        <input type="text" id="kwInput" placeholder="הכנס יעד לניטור (למשל: תקיפה באיראן, פנטגון, צפון)...">
-        <button class="btn-neon" onclick="addKeyword()">ACTIVATE SCAN</button>
-    </div>
+<div class="container">
+    <header class="header">
+        <div class="brand">
+            <div style="font-size: 30px;">⚡</div>
+            <h1>X-ALERT <span style="font-weight:300;">PREMIER</span></h1>
+        </div>
+        <div class="status-hub">
+            <div class="status-dot"></div>
+            <span>ניטור פעיל | 2026 INTEL CORE</span>
+        </div>
+    </header>
 
-    <div id="keywordsList" class="chip-container"></div>
-    <div id="alertsContainer" class="alert-grid"></div>
+    <section class="search-area">
+        <div class="input-group">
+            <input type="text" id="kwInput" placeholder="הכנס יעד או נושא לניטור (למשל: תקיפה באיראן, פנטגון)...">
+            <button class="btn-activate" onclick="addKeyword()">START SCAN</button>
+        </div>
+        <div id="keywordsList" class="chip-container"></div>
+    </section>
+
+    <main id="alertsContainer" class="alert-grid">
+        <div class="alert-card">
+            <div class="card-header">
+                <span class="source">REUTERS</span>
+                <span class="time">10:45:02</span>
+            </div>
+            <h3 class="title">דיווח ראשוני: פיצוצים נשמעו במערב טהרן</h3>
+            <p class="summary">מקורות מקומיים מדווחים על לפחות שלושה פיצוצים חזקים באזור מתקן צבאי. כוחות הצלה בדרכם למקום. הרקע אינו ברור.</p>
+            <div class="card-footer">
+                <span class="target-tag">TARGET: איראן</span>
+                <a href="#" target="_blank" class="source-link">צפה במקור ←</a>
+            </div>
+        </div>
+        
+        <div class="alert-card">
+            <div class="card-header">
+                <span class="source">AL-MANAR</span>
+                <span class="time">10:44:30</span>
+            </div>
+            <h3 class="title">נאומו של מזכ"ל חיזבאללה צפוי בשעה 18:00</h3>
+            <p class="summary">הודעה רשמית מטעם הלשכה המדינית: השייח' נסראללה יתייחס להתפתחויות האחרונות בגבול הדרום ולתקיפות חיל האוויר.</p>
+            <div class="card-footer">
+                <span class="target-tag">TARGET: לבנון</span>
+                <a href="#" target="_blank" class="source-link">צפה במקור ←</a>
+            </div>
+        </div>
+    </main>
 </div>
+
+<footer class="main-footer">
+    &copy; 2026 PREMIER INTELLIGENCE SYSTEMS | כל הזכויות שמורות | סיווג: סודי ביותר
+</footer>
 
 <audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
 
 <script>
-    let keywords = JSON.parse(localStorage.getItem('intel_v3_kws') || '[]');
+    let keywords = JSON.parse(localStorage.getItem('intel_kws_2026') || '[]');
     let seen = new Set();
+    
+    // --- לוגיקת רקע דינמי (2026) ---
+    const bg = document.getElementById('dynamic-bg');
+    document.addEventListener('mousemove', (e) => {
+        const moveX = (e.clientX / window.innerWidth) * 5; // תנועה עדינה
+        const moveY = (e.clientY / window.innerHeight) * 5;
+        bg.style.background = `
+            radial-gradient(circle at ${50 + moveX}% ${50 + moveY}%, var(--accent-primary-dim) 0%, transparent 40%),
+            radial-gradient(circle at ${80 - moveX}% ${20 - moveY}%, var(--accent-secondary-dim) 0%, transparent 35%)
+        `;
+    });
 
-    // עדכון שעון
-    function updateClock() {
-        const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString('he-IL', {hour12: false});
-    }
-    setInterval(updateClock, 1000);
+    // --- לוגיקת המערכת ---
 
-    // הוספת מילת מפתח
     function addKeyword() {
         const val = document.getElementById('kwInput').value.trim();
         if (val && !keywords.includes(val)) {
             keywords.push(val);
-            localStorage.setItem('intel_v3_kws', JSON.stringify(keywords));
+            localStorage.setItem('intel_kws_2026', JSON.stringify(keywords));
             renderKeywords();
             fetchData(val);
+            // אפקט פלאש בחיפוש
+            document.querySelector('.search-area').style.boxShadow = '0 0 30px var(--accent-primary-dim)';
+            setTimeout(() => document.querySelector('.search-area').style.boxShadow = '0 15px 35px rgba(0,0,0,0.3)', 300);
         }
         document.getElementById('kwInput').value = '';
     }
 
     function renderKeywords() {
         document.getElementById('keywordsList').innerHTML = keywords.map(k => `
-            <span class="chip">${k} <b style="cursor:pointer; margin-right:5px" onclick="removeKeyword('${k}')">✕</b></span>
+            <span class="chip">${k} <b onclick="removeKeyword('${k}')">✕</b></span>
         `).join('');
     }
 
     function removeKeyword(kw) {
         keywords = keywords.filter(k => k !== kw);
-        localStorage.setItem('intel_v3_kws', JSON.stringify(keywords));
+        localStorage.setItem('intel_kws_2026', JSON.stringify(keywords));
         renderKeywords();
     }
 
-    // משיכת נתונים מהשרת
     async function fetchData(kw) {
         try {
+            // כאן מתבצעת הפנייה ל-API שלך ב-Vercel
             const r = await fetch('/api/search', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -173,54 +470,51 @@
                     if (seen.has(item.url)) return;
                     seen.add(item.url);
                     
-                    // הפעלת סאונד התראה
-                    const sound = document.getElementById('alertSound');
-                    sound.play().catch(e => console.log("Sound blocked by browser"));
+                    // סאונד והתראה רק על ידיעות חדשות
+                    document.getElementById('alertSound').play().catch(e => {});
+                    if (Notification.permission === 'granted') {
+                        new Notification(`INTEL ALERT: ${kw}`, { body: item.title });
+                    }
                     
                     renderAlert(kw, item);
-                    
-                    // התראה בדפדפן
-                    if (Notification.permission === 'granted') {
-                        new Notification(`דיווח מתפרץ: ${kw}`, { body: item.title });
-                    }
                 });
             }
-        } catch (e) {
-            console.error("Scan error for: " + kw);
-        }
+        } catch (e) { console.error("Scan error"); }
     }
 
     function renderAlert(kw, item) {
         const container = document.getElementById('alertsContainer');
-        const card = `
-            <div class="alert-card">
-                <div style="display:flex; justify-content:space-between; align-items:center">
-                    <span class="source">${item.source.toUpperCase()}</span>
-                    <span class="time">${new Date().toLocaleTimeString('he-IL', {hour:'2-digit', minute:'2-digit'})}</span>
-                </div>
-                <span class="title">${item.title}</span>
-                <p class="summary">${item.summary}</p>
-                <div style="border-top: 1px solid #333; padding-top: 10px; display:flex; justify-content:space-between; align-items:center">
-                    <span style="font-size:10px; color:#666">TARGET: ${kw}</span>
-                    <a href="${item.url}" target="_blank" class="source-link">מקור הידיעה ←</a>
-                </div>
+        
+        // יצירת אלמנט הכרטיסייה
+        const card = document.createElement('div');
+        card.className = 'alert-card';
+        
+        // הגדרת תוכן הכרטיסייה
+        card.innerHTML = `
+            <div class="card-header">
+                <span class="source">${item.source.toUpperCase()}</span>
+                <span class="time">${new Date().toLocaleTimeString('he-IL')}</span>
+            </div>
+            <h3 class="title">${item.title}</h3>
+            <p class="summary">${item.summary}</p>
+            <div class="card-footer">
+                <span class="target-tag">TARGET: ${kw}</span>
+                <a href="${item.url}" target="_blank" class="source-link">צפה במקור ←</a>
             </div>
         `;
-        container.insertAdjacentHTML('afterbegin', card);
+        
+        // הוספה לראש הרשימה
+        container.prepend(card);
     }
-
-    // בקשת הרשאה להתראות
-    if (Notification.permission !== 'granted') Notification.requestPermission();
 
     // הפעלה ראשונית
     renderKeywords();
-    keywords.forEach(fetchData);
+    if (Notification.permission !== 'granted') Notification.requestPermission();
 
-    // סריקה אגרסיבית כל 15 שניות
+    // סריקה אוטומטית אגרסיבית (כל 20 שניות)
     setInterval(() => {
-        console.log("סריקת חמ''ל מתבצעת...");
         keywords.forEach(fetchData);
-    }, 15000);
+    }, 20000);
 
 </script>
 </body>
