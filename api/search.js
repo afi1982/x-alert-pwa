@@ -8,10 +8,12 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: `USING GOOGLE SEARCH, find real news from the LAST 60 SECONDS about "${keyword}". 
-        If no results from the last 1-2 minutes exist, return {"items": []}.
-        Translate everything to Hebrew. 
-        Return ONLY JSON: {"items": [{"title": "כותרת בעברית", "source": "מקור", "url": "לינק אמיתי", "summary": "תקציר בעברית"}]}` }] }]
+        contents: [{ parts: [{ text: `
+          TASK: Find REAL-TIME news published in the LAST 60 SECONDS about "${keyword}".
+          STRATEGY: Use Google Search with 'sort by date'. 
+          CRITICAL: If the newest article is older than 2 minutes, return {"items": []}. Do not summarize old news.
+          OUTPUT: Return ONLY a JSON array: {"items": [{"title": "Hebrew Title", "source": "Source", "url": "URL", "summary": "Short Hebrew Summary"}]}` 
+        }] }]
       })
     });
 
