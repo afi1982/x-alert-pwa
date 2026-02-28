@@ -9,26 +9,34 @@ export default async function handler(req, res) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: `
-          CRITICAL MISSION: Search for the absolute latest news (last 60 seconds) about "${keyword}".
-          SOURCES TO SCAN: 
-          1. IRAN: IRNA, Fars News, Tasnim (Persian/English).
-          2. LEBANON/HEZBOLLAH: Al-Manar, Al-Mayadeen.
-          3. IRAQ: Sabereen News, Shafaq.
-          4. GLOBAL: Reuters, Al-Jazeera.
+          STRICT SEARCH MISSION: Find REAL news from the LAST 60-120 SECONDS only.
+          KEYWORD: "${keyword}"
+          
+          MANDATORY SEARCH STRATEGY:
+          1. Translate "${keyword}" to Persian (Farsi), Arabic, and English.
+          2. Search primary sources: IRNA, Tasnim, Sabereen News, Al-Manar, Al-Jazeera, Reuters, Twitter/X trends.
+          3. Focus on "Breaking News" and "Last Minute" reports.
 
-          INSTRUCTIONS:
-          - Find primary sources in Persian, Arabic, or English.
-          - TRANSLATE everything immediately to HEBREW.
-          - If no news from the last 2 minutes, return {"items": []}.
-          - Return ONLY JSON: {"items": [{"title": "כותרת בעברית", "source": "שם המקור", "url": "URL", "summary": "תקציר בעברית"}]}` 
+          OUTPUT FORMAT:
+          - Translate all titles and summaries to HEBREW.
+          - MANDATORY: The 'url' must be a valid, clickable, direct link to the article.
+          - If no news from the last 2 minutes exists, return {"items": []}.
+          
+          Return ONLY valid JSON:
+          {"items": [{"title": "כותרת בעברית", "source": "שם המקור", "url": "https://...", "summary": "תקציר בעברית"}]}` 
         }] }]
       })
     });
 
     const data = await response.json();
-    const aiText = data.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim();
+    let aiText = data.candidates[0].content.parts[0].text;
+    
+    // ניקוי טקסט מיותר שה-AI עלול להוסיף
+    aiText = aiText.replace(/```json|```/g, "").trim();
+    
     res.status(200).json(JSON.parse(aiText));
   } catch (error) {
+    console.error("Search Error:", error);
     res.status(200).json({ items: [] });
   }
 }
