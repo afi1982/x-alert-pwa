@@ -2,189 +2,76 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INTEL-HUB PREMIER 2026</title>
+    <title>SOURCES MANAGEMENT | X-ALERT</title>
     <link href="https://fonts.googleapis.com/css2?family=Platypi:wght@800&family=Noto+Sans+Hebrew:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #020408;
-            --accent: #00f2ff;
-            --accent-red: #ff0055;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
-        }
-
-        body {
-            background: var(--bg);
-            color: white;
-            font-family: 'Noto Sans Hebrew', sans-serif;
-            margin: 0;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        #bg-effect {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(0, 242, 255, 0.07) 0%, transparent 50%);
-            z-index: -1;
-        }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-
-        header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 30px 0; border-bottom: 1px solid var(--border);
-        }
-
-        .brand h1 { font-family: 'Platypi'; font-size: 28px; margin: 0; color: var(--accent); }
-
-        .search-box {
-            background: var(--glass); padding: 30px; border-radius: 20px;
-            border: 1px solid var(--border); margin: 30px 0; backdrop-filter: blur(10px);
-        }
-
-        .input-group { display: flex; gap: 10px; }
-
-        input {
-            flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--border);
-            padding: 15px; border-radius: 10px; color: white; font-size: 16px; outline: none;
-        }
-
-        input:focus { border-color: var(--accent); }
-
-        button {
-            background: var(--accent); color: black; border: none; padding: 0 30px;
-            border-radius: 10px; font-weight: 900; cursor: pointer; transition: 0.3s;
-        }
-
-        button:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--accent); }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
-
-        .card {
-            background: var(--glass); border: 1px solid var(--border); padding: 25px;
-            border-radius: 15px; position: relative; transition: 0.3s;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        .card:hover { border-color: var(--accent); transform: translateY(-5px); }
-
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        .card::before {
-            content: ''; position: absolute; top: 0; right: 0; width: 4px; height: 100%;
-            background: var(--accent); border-radius: 0 15px 15px 0;
-        }
-
-        .source { color: var(--accent); font-size: 12px; font-weight: 900; text-transform: uppercase; }
-        .title { font-size: 19px; font-weight: 900; margin: 10px 0; line-height: 1.4; }
-        .summary { font-size: 14px; color: #aaa; margin-bottom: 20px; line-height: 1.6; }
-
-        .btn-link {
-            display: inline-block; color: var(--accent); text-decoration: none;
-            font-weight: 700; font-size: 13px; border: 1px solid var(--accent);
-            padding: 5px 15px; border-radius: 5px; transition: 0.3s;
-        }
-
-        .btn-link:hover { background: var(--accent); color: black; }
-
-        .chips { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
-        .chip { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; font-size: 12px; }
+        body { background: #020408; color: white; font-family: 'Noto Sans Hebrew', sans-serif; margin: 0; padding: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #00f2ff; font-family: 'Platypi'; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .source-input { background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; border: 1px solid #333; margin-bottom: 30px; }
+        input, select { background: #000; border: 1px solid #444; color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
+        button { background: #00f2ff; color: black; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+        .source-list { display: grid; gap: 10px; }
+        .source-item { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
+        .tag { font-size: 10px; padding: 3px 8px; border-radius: 4px; background: #333; }
+        .tag-telegram { background: #0088cc; }
+        .tag-web { background: #ff0055; }
+        a { color: #aaa; text-decoration: none; font-size: 14px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #00f2ff; text-decoration: none; }
     </style>
 </head>
 <body>
-
-<div id="bg-effect"></div>
-
-<div class="container">
-    <header>
-        <div class="brand"><h1>X-ALERT PREMIER</h1></div>
-        <div id="status" style="font-size:12px; color: #00ff00;">● מערכת סריקה פעילה</div>
-    </header>
-
-    <div class="search-box">
-        <div class="input-group">
-            <input type="text" id="kwInput" placeholder="הזן יעד לניטור (איראן, לבנון, סייבר)...">
-            <button onclick="addKeyword()">ACTIVATE</button>
+    <div class="container">
+        <a href="index.html" class="back-link">← חזרה לחמ"ל</a>
+        <h1>ניהול מקורות מודיעין</h1>
+        
+        <div class="source-input">
+            <input type="text" id="sourceName" placeholder="שם המקור (למשל: ערוץ המלחמה בטלגרם)">
+            <input type="text" id="sourceUrl" placeholder="לינק (URL או t.me/channel)">
+            <select id="sourceType">
+                <option value="web">אתר חדשות (Web)</option>
+                <option value="telegram">ערוץ טלגרם (Telegram)</option>
+            </select>
+            <button onclick="addSource()">הוסף מקור לסריקה</button>
         </div>
-        <div id="keywordsList" class="chips"></div>
+
+        <div id="sourcesList" class="source-list"></div>
     </div>
 
-    <div id="alertsContainer" class="grid"></div>
-</div>
+    <script>
+        let sources = JSON.parse(localStorage.getItem('intel_sources') || '[]');
 
-<audio id="alertSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
-
-<script>
-    let keywords = JSON.parse(localStorage.getItem('intel_v2026') || '[]');
-    let seen = new Set();
-
-    // אפקט רקע
-    document.addEventListener('mousemove', e => {
-        document.body.style.setProperty('--x', (e.clientX / window.innerWidth) * 100 + '%');
-        document.body.style.setProperty('--y', (e.clientY / window.innerHeight) * 100 + '%');
-    });
-
-    function addKeyword() {
-        const val = document.getElementById('kwInput').value.trim();
-        if (val && !keywords.includes(val)) {
-            keywords.push(val);
-            localStorage.setItem('intel_v2026', JSON.stringify(keywords));
-            renderKeywords();
-            fetchData(val);
-        }
-        document.getElementById('kwInput').value = '';
-    }
-
-    function renderKeywords() {
-        document.getElementById('keywordsList').innerHTML = keywords.map(k => `
-            <span class="chip">${k} <b style="cursor:pointer" onclick="removeKeyword('${k}')">✕</b></span>
-        `).join('');
-    }
-
-    function removeKeyword(kw) {
-        keywords = keywords.filter(k => k !== kw);
-        localStorage.setItem('intel_v2026', JSON.stringify(keywords));
-        renderKeywords();
-    }
-
-    async function fetchData(kw) {
-        try {
-            const r = await fetch('/api/search', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ keyword: kw })
-            });
-            const data = await r.json();
-            if (data.items) {
-                data.items.forEach(item => {
-                    if (seen.has(item.url) || !item.url.includes('http')) return;
-                    seen.add(item.url);
-                    document.getElementById('alertSound').play().catch(() => {});
-                    renderAlert(kw, item);
-                });
+        function addSource() {
+            const name = document.getElementById('sourceName').value;
+            const url = document.getElementById('sourceUrl').value;
+            const type = document.getElementById('sourceType').value;
+            
+            if(name && url) {
+                sources.push({ name, url, type });
+                localStorage.setItem('intel_sources', JSON.stringify(sources));
+                render();
             }
-        } catch (e) { console.error("Scan error"); }
-    }
+        }
 
-    function renderAlert(kw, item) {
-        const container = document.getElementById('alertsContainer');
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-            <div class="source">${item.source}</div>
-            <div class="title">${item.title}</div>
-            <div class="summary">${item.summary}</div>
-            <div style="display:flex; justify-content:space-between; align-items:center">
-                <span style="font-size:10px; color:#555">TARGET: ${kw}</span>
-                <a href="${item.url}" target="_blank" rel="noopener" class="btn-link">צפה במקור</a>
-            </div>
-        `;
-        container.prepend(card);
-    }
+        function removeSource(index) {
+            sources.splice(index, 1);
+            localStorage.setItem('intel_sources', JSON.stringify(sources));
+            render();
+        }
 
-    renderKeywords();
-    setInterval(() => keywords.forEach(fetchData), 30000); // סריקה כל 30 שניות
-</script>
+        function render() {
+            document.getElementById('sourcesList').innerHTML = sources.map((s, i) => `
+                <div class="source-item">
+                    <div>
+                        <span class="tag tag-${s.type}">${s.type.toUpperCase()}</span>
+                        <strong>${s.name}</strong><br>
+                        <a href="${s.url}" target="_blank">${s.url}</a>
+                    </div>
+                    <button style="background:none; color:red; border:none; cursor:pointer;" onclick="removeSource(${i})">מחק</button>
+                </div>
+            `).join('');
+        }
+        render();
+    </script>
 </body>
 </html>
