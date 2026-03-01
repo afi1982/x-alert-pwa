@@ -1,12 +1,14 @@
 {
-  "name": "X Live Alert - התראות חי",
+  "name": "X Live Alert - מודיעין חדשות",
   "short_name": "X Alert",
-  "description": "ניטור חדשות בזמן אמת מ-X עם התראות push",
+  "description": "ניטור חדשות בזמן אמת מ-X, טלגרם ו-Google News עם התראות push",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#06060c",
   "theme_color": "#ff2d4a",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "lang": "he",
+  "dir": "rtl",
   "icons": [
     {
       "src": "/icon-192.png",
@@ -20,5 +22,7 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [],
+  "categories": ["news", "productivity"]
 }

@@ -1,78 +1,1114 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>X-ALERT | חמ"ל מבצעי</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;900&display=swap" rel="stylesheet">
-    <style>
-        :root { --bg: #05070a; --accent: #00f2ff; --glass: rgba(255,255,255,0.03); }
-        body { background: var(--bg); color: white; font-family: 'Noto Sans Hebrew', sans-serif; margin: 0; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid #1a1c20; }
-        .logo { font-size: 24px; font-weight: 900; color: var(--accent); }
-        .nav-btn { color: var(--accent); text-decoration: none; border: 1px solid var(--accent); padding: 8px 16px; border-radius: 8px; font-weight: bold; }
-        .feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; margin-top: 30px; }
-        .card { background: var(--glass); border: 1px solid #1a1c20; padding: 20px; border-radius: 12px; border-right: 4px solid var(--accent); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ff2d4a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="X Alert">
+  <title>X Live Alert | מערכת מודיעין</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #06060c;
+      --bg2: #0a0a16;
+      --red: #ff2d4a;
+      --cyan: #00e5ff;
+      --green: #00e676;
+      --blue: #1d9bf0;
+      --sky: #24a1de;
+      --ggl: #34a853;
+      --glass: rgba(255,255,255,0.04);
+      --gb: rgba(255,255,255,0.08);
+      --text: #e8eaf0;
+      --muted: #7a8494;
+      --mono: 'Space Mono', monospace;
+      --heb: 'Noto Sans Hebrew', sans-serif;
+      --r: 12px;
+      --st: env(safe-area-inset-top, 0px);
+      --sb: env(safe-area-inset-bottom, 0px);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--heb);
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .modal-box {
+      background: var(--bg2);
+      border: 1px solid var(--gb);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 480px; width: 100%;
+      box-shadow: 0 0 80px rgba(255,45,74,0.15);
+      animation: modalIn .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes modalIn {
+      from { transform: scale(.8) translateY(20px); opacity: 0; }
+      to   { transform: scale(1) translateY(0);    opacity: 1; }
+    }
+    .modal-logo {
+      font-size: 26px; font-weight: 900; color: var(--red);
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .modal-box h2 { font-size: 19px; margin-bottom: 8px; color: #fff; }
+    .modal-box p  { color: var(--muted); font-size: 14px; margin-bottom: 22px; line-height: 1.65; }
+    .key-wrap { position: relative; margin-bottom: 12px; }
+    .key-wrap input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--gb);
+      color: #fff;
+      padding: 13px 50px 13px 14px;
+      border-radius: var(--r);
+      font-size: 14px; font-family: var(--mono);
+      transition: border-color .2s;
+      direction: ltr; text-align: left;
+    }
+    .key-wrap input:focus { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(0,229,255,.1); }
+    .eye-btn {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 18px; padding: 4px;
+    }
+    .get-key-link {
+      display: block; color: var(--cyan); text-decoration: none;
+      font-size: 13px; margin-bottom: 20px;
+    }
+    .get-key-link:hover { text-decoration: underline; }
+    .key-error {
+      color: var(--red); font-size: 13px; margin-bottom: 12px;
+      padding: 10px; background: rgba(255,45,74,.1);
+      border-radius: 8px; border: 1px solid rgba(255,45,74,.2);
+    }
+    #validateBtn {
+      width: 100%;
+      background: var(--red); color: #fff; border: none;
+      padding: 15px; border-radius: var(--r);
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      font-family: var(--heb);
+      transition: filter .2s, transform .2s;
+    }
+    #validateBtn:hover:not(:disabled) { filter: brightness(1.2); transform: translateY(-1px); }
+    #validateBtn:disabled { opacity: .5; cursor: not-allowed; }
+    .val-loader {
+      margin-top: 12px; text-align: center;
+      color: var(--cyan); font-size: 14px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .val-loader::before {
+      content: '';
+      width: 16px; height: 16px;
+      border: 2px solid rgba(0,229,255,.3);
+      border-top-color: var(--cyan);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    /* ===== PROVIDER TABS ===== */
+    .prov-tabs {
+      display: flex; gap: 4px; margin-bottom: 22px;
+      background: rgba(255,255,255,.04);
+      border-radius: 10px; padding: 4px;
+    }
+    .prov-tab {
+      flex: 1; background: none; border: none;
+      color: var(--muted); padding: 10px 8px;
+      border-radius: 8px; cursor: pointer;
+      font-size: 13px; font-weight: 700;
+      font-family: var(--heb);
+      transition: background .2s, color .2s;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .prov-tab.active { background: var(--bg); color: #fff; box-shadow: 0 1px 5px rgba(0,0,0,.5); }
+    .prov-tab:hover:not(.active) { color: #ccc; }
+
+    /* ===== IN-APP NOTIF ===== */
+    .in-notif {
+      position: fixed;
+      top: calc(var(--st) + 16px);
+      right: 16px; left: 16px;
+      max-width: 420px; margin: 0 auto;
+      background: var(--bg2);
+      border: 1px solid var(--red);
+      border-radius: var(--r);
+      padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px;
+      z-index: 900;
+      box-shadow: 0 0 30px rgba(255,45,74,.35);
+      animation: slideDown .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100px); opacity: 0; }
+      to   { transform: translateY(0);      opacity: 1; }
+    }
+    .in-notif-icon { font-size: 22px; flex-shrink: 0; }
+    .in-notif-body { flex: 1; min-width: 0; }
+    .in-notif-title { font-weight: 700; font-size: 14px; color: var(--red); margin-bottom: 3px; }
+    .in-notif-text  { font-size: 13px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .in-notif-close {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 18px; padding: 4px; flex-shrink: 0;
+    }
+
+    /* ===== INSTALL BANNER ===== */
+    .install-banner {
+      position: fixed;
+      bottom: calc(var(--sb) + 16px);
+      right: 16px; left: 16px;
+      max-width: 420px; margin: 0 auto;
+      background: var(--bg2);
+      border: 1px solid var(--cyan);
+      border-radius: var(--r);
+      padding: 12px 16px;
+      display: flex; align-items: center; gap: 12px;
+      z-index: 800;
+      box-shadow: 0 0 20px rgba(0,229,255,.15);
+    }
+    .install-banner span { flex: 1; font-size: 14px; }
+    .inst-btn  { background: var(--cyan); color: #000; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: var(--heb); }
+    .inst-x    { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; }
+
+    /* ===== HIDDEN ===== */
+    .hidden { display: none !important; }
+
+    /* ===== APP SHELL ===== */
+    .app {
+      max-width: 800px; margin: 0 auto;
+      padding: calc(var(--st) + 0px) 16px calc(var(--sb) + 32px);
+      position: relative; z-index: 1;
+    }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 0 14px;
+      border-bottom: 1px solid var(--gb);
+      margin-bottom: 24px;
+      position: sticky; top: 0;
+      background: rgba(6,6,12,.92);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+    }
+    .logo {
+      font-size: 21px; font-weight: 900; color: var(--red);
+      display: flex; align-items: center; gap: 9px;
+    }
+    .logo-pulse {
+      width: 10px; height: 10px;
+      background: var(--red); border-radius: 50%;
+      animation: pulse 1.5s ease infinite;
+      box-shadow: 0 0 8px var(--red);
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1);   }
+      50%      { opacity: .5; transform: scale(.8); }
+    }
+    .hdr-right { display: flex; align-items: center; gap: 12px; }
+    .g-status  { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+    .g-status.active { color: var(--cyan); }
+    .key-btn {
+      background: var(--glass); border: 1px solid var(--gb);
+      color: var(--muted); width: 36px; height: 36px;
+      border-radius: 8px; cursor: pointer; font-size: 15px;
+      transition: border-color .2s, color .2s;
+    }
+    .key-btn:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* ===== KEYWORD SECTION ===== */
+    .kw-section { margin-bottom: 28px; }
+    .kw-row {
+      display: flex; gap: 8px; margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .kw-input {
+      flex: 1 1 160px;
+      background: var(--glass); border: 1px solid var(--gb);
+      color: #fff; padding: 12px 14px;
+      border-radius: var(--r);
+      font-size: 15px; font-family: var(--heb);
+      transition: border-color .2s, box-shadow .2s;
+      min-width: 0;
+    }
+    .kw-input:focus     { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(0,229,255,.1); }
+    .kw-input::placeholder { color: var(--muted); }
+    .kw-select {
+      flex: 0 0 auto;
+      background: var(--glass); border: 1px solid var(--gb);
+      color: #fff; padding: 12px 10px;
+      border-radius: var(--r);
+      font-family: var(--heb); font-size: 13px; cursor: pointer;
+    }
+    .kw-select option { background: #13131f; }
+    .add-btn {
+      flex: 0 0 auto;
+      background: var(--red); color: #fff; border: none;
+      padding: 12px 20px; border-radius: var(--r);
+      font-weight: 700; cursor: pointer; font-family: var(--heb);
+      font-size: 15px; white-space: nowrap;
+      transition: filter .2s, transform .2s;
+    }
+    .add-btn:hover { filter: brightness(1.2); transform: translateY(-1px); }
+
+    /* ===== CHIPS ===== */
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--glass); border: 1px solid var(--gb);
+      border-radius: 100px; padding: 8px 14px;
+      font-size: 14px; position: relative; overflow: hidden;
+      animation: chipIn .35s cubic-bezier(.34,1.56,.64,1);
+      transition: border-color .25s, box-shadow .25s;
+      user-select: none;
+    }
+    @keyframes chipIn {
+      from { transform: scale(.6); opacity: 0; }
+      to   { transform: scale(1);  opacity: 1; }
+    }
+    .chip.disabled  { opacity: .38; }
+    .chip.searching { border-color: var(--cyan); box-shadow: 0 0 12px rgba(0,229,255,.2); }
+    .chip.found     { border-color: var(--red);  box-shadow: 0 0 12px rgba(255,45,74,.25); }
+    .chip-bar {
+      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      animation: sweep 1.4s linear infinite; opacity: 0;
+    }
+    .chip.searching .chip-bar { opacity: 1; }
+    @keyframes sweep {
+      from { transform: translateX(100%); }
+      to   { transform: translateX(-100%); }
+    }
+    .chip-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--muted); flex-shrink: 0; transition: background .3s;
+    }
+    .chip.idle      .chip-dot { background: var(--green); }
+    .chip.searching .chip-dot { background: var(--cyan); animation: blink .8s ease infinite; }
+    .chip.found     .chip-dot { background: var(--red); }
+    .chip.disabled  .chip-dot { background: var(--muted); animation: none; }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:.25; } }
+    .chip-text { font-weight: 700; max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .chip-meta { font-family: var(--mono); font-size: 10px; color: var(--muted); line-height: 1.4; }
+    .chip-acts { display: flex; gap: 4px; margin-right: 4px; }
+    .chip-act {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 14px; padding: 2px;
+      border-radius: 4px; transition: color .2s; line-height: 1;
+    }
+    .chip-act:hover       { color: #fff; }
+    .chip-act.del:hover   { color: var(--red); }
+
+    /* ===== FEED SECTION ===== */
+    .feed-section { margin-bottom: 24px; }
+    .feed-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 16px; flex-wrap: wrap; gap: 10px;
+    }
+    .feed-title {
+      font-size: 18px; font-weight: 700;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .live-dot {
+      width: 10px; height: 10px; background: var(--red);
+      border-radius: 50%; animation: pulse 1.5s ease infinite;
+      box-shadow: 0 0 8px var(--red);
+    }
+    .alert-cnt {
+      background: var(--red); color: #fff;
+      font-size: 11px; font-weight: 700;
+      padding: 2px 8px; border-radius: 100px;
+      font-family: var(--mono); min-width: 24px; text-align: center;
+    }
+    .feed-acts { display: flex; align-items: center; gap: 10px; }
+    .src-filters { display: flex; gap: 4px; }
+    .filter-btn {
+      background: var(--glass); border: 1px solid var(--gb);
+      color: var(--muted); padding: 6px 12px;
+      border-radius: 8px; cursor: pointer; font-size: 13px;
+      transition: border-color .2s, color .2s, background .2s;
+      font-family: var(--heb);
+    }
+    .filter-btn.active,
+    .filter-btn:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,229,255,.07); }
+    .clear-btn {
+      background: none; border: 1px solid rgba(255,45,74,.3);
+      color: rgba(255,45,74,.7); padding: 6px 12px;
+      border-radius: 8px; cursor: pointer; font-size: 13px;
+      font-family: var(--heb); transition: all .2s;
+    }
+    .clear-btn:hover { border-color: var(--red); color: var(--red); }
+
+    /* ===== ALERT CARDS ===== */
+    .alert-feed { display: flex; flex-direction: column; gap: 12px; }
+    .empty-feed {
+      text-align: center; color: var(--muted);
+      padding: 64px 20px; font-size: 15px; line-height: 2;
+    }
+    .empty-feed .ei { font-size: 44px; margin-bottom: 16px; }
+    .alert-card {
+      background: var(--glass); border: 1px solid var(--gb);
+      border-radius: var(--r); padding: 16px;
+      position: relative; overflow: hidden;
+      animation: alertIn .45s cubic-bezier(.34,1.56,.64,1);
+      transition: border-color .3s, box-shadow .3s;
+    }
+    @keyframes alertIn {
+      from { transform: translateY(-18px) scale(.97); opacity: 0; }
+      to   { transform: translateY(0)      scale(1);  opacity: 1; }
+    }
+    .alert-card.is-new {
+      border-color: rgba(255,45,74,.45);
+      box-shadow: 0 0 22px rgba(255,45,74,.12);
+      animation: alertIn .45s cubic-bezier(.34,1.56,.64,1), newGlow 2.2s ease infinite;
+    }
+    @keyframes newGlow {
+      0%,100% { box-shadow: 0 0 22px rgba(255,45,74,.12); }
+      50%      { box-shadow: 0 0 32px rgba(255,45,74,.28); }
+    }
+    .new-badge {
+      display: none;
+      background: var(--red); color: #fff;
+      font-size: 10px; font-weight: 700;
+      padding: 2px 6px; border-radius: 4px;
+      font-family: var(--mono);
+      animation: flashNew .55s ease infinite;
+    }
+    .alert-card.is-new .new-badge { display: inline-block; }
+    @keyframes flashNew { 0%,100% { opacity:1; } 50% { opacity:.55; } }
+    .card-hdr {
+      display: flex; align-items: center; gap: 7px;
+      margin-bottom: 11px; flex-wrap: wrap;
+    }
+    .src-badge {
+      font-weight: 700; font-size: 12px;
+      padding: 3px 8px; border-radius: 6px; font-family: var(--mono);
+    }
+    .src-badge.x        { background: rgba(29,155,240,.14); color: var(--blue); border: 1px solid rgba(29,155,240,.28); }
+    .src-badge.telegram { background: rgba(36,161,222,.14); color: var(--sky);  border: 1px solid rgba(36,161,222,.28); }
+    .src-badge.google   { background: rgba(52,168,83,.14);  color: var(--ggl);  border: 1px solid rgba(52,168,83,.28); }
+    .lang-badge {
+      font-size: 11px; padding: 2px 6px; border-radius: 4px;
+      font-family: var(--mono); font-weight: 700;
+      background: rgba(255,255,255,.07); color: var(--muted);
+      border: 1px solid var(--gb); text-transform: uppercase;
+    }
+    .kw-badge {
+      background: rgba(255,45,74,.14); color: var(--red);
+      border: 1px solid rgba(255,45,74,.28);
+      font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 700;
+    }
+    .card-time { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-right: auto; }
+    .card-author { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .card-heb {
+      font-size: 15px; line-height: 1.75; color: var(--text); margin-bottom: 6px;
+    }
+    .card-heb mark {
+      background: rgba(255,45,74,.18); color: var(--red);
+      border-radius: 3px; padding: 0 2px;
+    }
+    details.orig { margin-top: 8px; }
+    details.orig summary {
+      color: var(--muted); font-size: 13px; cursor: pointer; user-select: none;
+    }
+    details.orig summary:hover { color: var(--cyan); }
+    .orig-text {
+      font-size: 13px; color: var(--muted); margin-top: 8px;
+      padding: 10px; background: rgba(0,0,0,.22); border-radius: 8px;
+      direction: ltr; text-align: left; line-height: 1.6;
+    }
+    .card-foot {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 12px;
+    }
+    .card-link {
+      color: var(--cyan); text-decoration: none; font-size: 13px;
+      font-weight: 700; transition: opacity .2s;
+    }
+    .card-link:hover { opacity: .7; }
+    .card-det { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+    /* ===== MISC ===== */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--gb); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.18); }
+
+    @media (max-width: 520px) {
+      .modal-box { padding: 28px 20px; }
+      .feed-hdr { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">X-ALERT</div>
-            <a href="sources.html" class="nav-btn">ניהול מקורות ⚙️</a>
-        </header>
 
-        <div style="margin-top:20px;">
-            <input type="text" id="searchInp" placeholder="מילת מפתח (למשל: איראן)..." style="background:#000; color:#fff; border:1px solid #333; padding:12px; width:200px; border-radius:8px;">
-            <button onclick="startSearch()" style="background:var(--accent); border:none; padding:12px 20px; border-radius:8px; font-weight:900; cursor:pointer;">סרוק</button>
-        </div>
-
-        <div id="alertsContainer" class="feed"></div>
+<!-- ===== API KEY MODAL ===== -->
+<div id="apiModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-logo">🔴 X Live Alert</div>
+    <div class="prov-tabs">
+      <button class="prov-tab active" data-p="anthropic" onclick="setProvider('anthropic')">
+        🤖 Anthropic Claude
+      </button>
+      <button class="prov-tab" data-p="gemini" onclick="setProvider('gemini')">
+        ✨ Google Gemini
+      </button>
     </div>
+    <h2 id="modalTitle">חיבור מפתח Anthropic API</h2>
+    <p id="modalDesc">
+      המערכת משתמשת ב-Claude כדי לסרוק X/Twitter, טלגרם ו-Google News בזמן אמת.<br>
+      המפתח נשמר בזיכרון בלבד ולא מועלה לשום שרת חיצוני.
+    </p>
+    <div class="key-wrap">
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..."
+             autocomplete="off" onkeydown="if(event.key==='Enter') validateApiKey()">
+      <button class="eye-btn" onclick="toggleKeyVis()" title="הצג/הסתר מפתח">👁</button>
+    </div>
+    <a id="keyLink" href="https://console.anthropic.com" target="_blank" rel="noopener" class="get-key-link">
+      → קבל מפתח API חינם מ-Anthropic Console
+    </a>
+    <div id="keyError" class="key-error hidden"></div>
+    <button id="validateBtn" onclick="validateApiKey()">אמת מפתח ←</button>
+    <div id="valLoader" class="val-loader hidden">מאמת מפתח...</div>
+  </div>
+</div>
 
-    <script>
-        const STORAGE_KEY = 'intel_sources_v3';
-        let seen = new Set();
+<!-- ===== IN-APP NOTIFICATION ===== -->
+<div id="inNotif" class="in-notif hidden">
+  <div class="in-notif-icon">🚨</div>
+  <div class="in-notif-body">
+    <div class="in-notif-title" id="notifTitle"></div>
+    <div class="in-notif-text"  id="notifText"></div>
+  </div>
+  <button class="in-notif-close" onclick="dismissNotif()">✕</button>
+</div>
 
-        async function startSearch() {
-            const kw = document.getElementById('searchInp').value;
-            if(!kw) return;
-            fetchData(kw);
-        }
+<!-- ===== INSTALL BANNER ===== -->
+<div id="installBanner" class="install-banner hidden">
+  <span>📱 התקן את X Live Alert על המסך הראשי!</span>
+  <button class="inst-btn" onclick="installApp()">התקן</button>
+  <button class="inst-x"   onclick="dismissInstall()">✕</button>
+</div>
 
-        async function fetchData(kw) {
-            // כאן המפתח המשותף נטען מחדש בכל סריקה
-            const currentSources = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            
-            try {
-                const r = await fetch('/api/search', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ keyword: kw, customSources: currentSources })
-                });
-                const data = await r.json();
-                if(data.items) {
-                    data.items.forEach(item => {
-                        if(seen.has(item.url)) return;
-                        seen.add(item.url);
-                        renderCard(item);
-                    });
-                }
-            } catch(e) { console.error("Error fetching data"); }
-        }
+<!-- ===== MAIN APP ===== -->
+<div id="app" class="app hidden">
+  <header>
+    <div class="logo">
+      <span class="logo-pulse"></span>
+      X Live Alert
+    </div>
+    <div class="hdr-right">
+      <span id="gStatus" class="g-status">מוכן</span>
+      <button class="key-btn" onclick="changeApiKey()" title="שנה מפתח API">🔑</button>
+    </div>
+  </header>
 
-        function renderCard(item) {
-            const container = document.getElementById('alertsContainer');
-            const div = document.createElement('div');
-            div.className = 'card';
-            div.innerHTML = `
-                <div style="color:var(--accent); font-size:12px;">${item.source}</div>
-                <h3 style="margin:10px 0;">${item.title}</h3>
-                <p style="color:#aaa; font-size:14px;">${item.summary}</p>
-                <a href="${item.url}" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold;">למקור המלא ←</a>
-            `;
-            container.prepend(div);
-        }
-    </script>
+  <main>
+    <!-- Keywords -->
+    <section class="kw-section">
+      <div class="kw-row">
+        <input class="kw-input" type="text" id="kwInput"
+               placeholder="מילת מפתח (עברית, אנגלית, ערבית...)"
+               onkeydown="if(event.key==='Enter') addKeyword()">
+        <select class="kw-select" id="intervalSel">
+          <option value="30">30 שניות</option>
+          <option value="60" selected>דקה</option>
+          <option value="120">2 דקות</option>
+          <option value="300">5 דקות</option>
+        </select>
+        <button class="add-btn" onclick="addKeyword()">+ הוסף</button>
+      </div>
+      <div class="chips" id="chipsEl"></div>
+    </section>
+
+    <!-- Feed -->
+    <section class="feed-section">
+      <div class="feed-hdr">
+        <div class="feed-title">
+          <span class="live-dot"></span>
+          התראות חיות
+          <span class="alert-cnt" id="alertCnt">0</span>
+        </div>
+        <div class="feed-acts">
+          <div class="src-filters">
+            <button class="filter-btn active" data-f="all"      onclick="setFilter('all')">הכל</button>
+            <button class="filter-btn"        data-f="x"        onclick="setFilter('x')">𝕏</button>
+            <button class="filter-btn"        data-f="telegram" onclick="setFilter('telegram')">✈️</button>
+            <button class="filter-btn"        data-f="google"   onclick="setFilter('google')">📰</button>
+          </div>
+          <button class="clear-btn" onclick="clearAlerts()">נקה הכל</button>
+        </div>
+      </div>
+      <div class="alert-feed" id="feedEl"></div>
+      <div class="empty-feed" id="emptyEl">
+        <div class="ei">🔍</div>
+        <div>
+          הוסף מילת מפתח כדי להתחיל לנטר<br>
+          <span style="font-size:13px;color:#3a4455">מקורות: X/Twitter · טלגרם · Google News</span>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+// ================================================================
+// STATE
+// ================================================================
+let apiKey = null;
+let provider   = 'anthropic'; // 'anthropic' | 'gemini'
+let keywords   = [];  // { id, text, interval, enabled, status, checkCount, lastCheck, timerId }
+let alerts     = [];  // { id, keyword, text, hebrew, author, time, url, source, language, detectedAt, isNew }
+let seenHashes = new Set();
+let curFilter  = 'all';
+let installPrompt = null;
+let notifTimer    = null;
+
+// ================================================================
+// UTILS
+// ================================================================
+function hash(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+function timeAgo(ts) {
+  const s = Math.floor((Date.now() - ts) / 1000);
+  if (s < 10) return 'עכשיו';
+  if (s < 60) return s + 'ש׳';
+  if (s < 3600) return Math.floor(s/60) + 'ד׳';
+  return Math.floor(s/3600) + 'ש׳ ' + Math.floor((s%3600)/60) + 'ד׳';
+}
+function hlKw(text, kw) {
+  if (!text || !kw) return text || '';
+  const esc = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp('(' + esc + ')', 'gi'), '<mark>$1</mark>');
+}
+function escH(s) {
+  if (!s) return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function srcLabel(src) {
+  return { x:'𝕏 Twitter', telegram:'✈️ Telegram', google:'📰 Google News' }[src] || src;
+}
+function intLabel(v) {
+  if (v < 60) return v + 'ש׳';
+  if (v === 60) return '1ד׳';
+  if (v === 120) return '2ד׳';
+  return '5ד׳';
+}
+
+// ================================================================
+// API KEY
+// ================================================================
+function setProvider(p) {
+  provider = p;
+  document.querySelectorAll('.prov-tab').forEach(t => t.classList.toggle('active', t.dataset.p === p));
+  document.getElementById('keyError').classList.add('hidden');
+  document.getElementById('apiKeyInput').value = '';
+  if (p === 'anthropic') {
+    document.getElementById('apiKeyInput').placeholder = 'sk-ant-api03-...';
+    document.getElementById('modalTitle').textContent   = 'חיבור מפתח Anthropic API';
+    document.getElementById('modalDesc').innerHTML      =
+      'המערכת משתמשת ב-Claude כדי לסרוק X/Twitter, טלגרם ו-Google News בזמן אמת.<br>המפתח נשמר בזיכרון בלבד ולא מועלה לשום שרת חיצוני.';
+    document.getElementById('keyLink').href        = 'https://console.anthropic.com';
+    document.getElementById('keyLink').textContent = '→ קבל מפתח API חינם מ-Anthropic Console';
+  } else {
+    document.getElementById('apiKeyInput').placeholder = 'AIzaSy...';
+    document.getElementById('modalTitle').textContent   = 'חיבור מפתח Google Gemini API';
+    document.getElementById('modalDesc').innerHTML      =
+      'המערכת משתמשת ב-Gemini ו-Google Search Grounding לסריקת חדשות בזמן אמת.<br>המפתח נשמר בזיכרון בלבד ולא מועלה לשום שרת חיצוני.';
+    document.getElementById('keyLink').href        = 'https://aistudio.google.com/app/apikey';
+    document.getElementById('keyLink').textContent = '→ קבל מפתח Gemini API חינם מ-Google AI Studio';
+  }
+}
+
+function toggleKeyVis() {
+  const inp = document.getElementById('apiKeyInput');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+async function validateApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) { showKeyErr('אנא הכנס מפתח API'); return; }
+
+  const btn = document.getElementById('validateBtn');
+  const ldr = document.getElementById('valLoader');
+  btn.disabled = true; btn.textContent = 'מאמת...';
+  ldr.classList.remove('hidden');
+  document.getElementById('keyError').classList.add('hidden');
+
+  try {
+    let ok = false, errMsg = '';
+    if (provider === 'anthropic') {
+      if (!key.startsWith('sk-ant-')) { showKeyErr('מפתח Anthropic מתחיל ב-sk-ant-'); return; }
+      const r = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': key,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 10,
+                               messages: [{ role: 'user', content: 'OK' }] })
+      });
+      if (r.ok) { ok = true; }
+      else if (r.status === 401) { errMsg = 'מפתח לא תקין (401). בדוק שהעתקת אותו במלואו.'; }
+      else { const d = await r.json().catch(() => ({})); errMsg = 'שגיאה: ' + (d.error?.message || r.status); }
+    } else {
+      // Gemini validation
+      if (!key.startsWith('AIza')) { showKeyErr('מפתח Gemini מתחיל ב-AIza'); return; }
+      const r = await fetch(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + key,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: 'OK' }] }],
+                                 generationConfig: { maxOutputTokens: 5 } })
+        });
+      if (r.ok) { ok = true; }
+      else if (r.status === 400 || r.status === 403) { errMsg = 'מפתח Gemini לא תקין. בדוק ב-AI Studio.'; }
+      else { const d = await r.json().catch(() => ({})); errMsg = 'שגיאה: ' + (d.error?.message || r.status); }
+    }
+
+    if (ok) {
+      apiKey = key;
+      document.getElementById('apiModal').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      requestNotifPermission();
+    } else {
+      showKeyErr(errMsg);
+    }
+  } catch (e) {
+    showKeyErr('שגיאת רשת — בדוק חיבור לאינטרנט.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'אמת מפתח ←';
+    ldr.classList.add('hidden');
+  }
+}
+
+function showKeyErr(msg) {
+  const el = document.getElementById('keyError');
+  el.textContent = '❌ ' + msg;
+  el.classList.remove('hidden');
+}
+function changeApiKey() {
+  keywords.forEach(k => { if (k.timerId) clearInterval(k.timerId); k.timerId = null; k.status = 'idle'; });
+  renderChips();
+  apiKey = null;
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('apiModal').classList.remove('hidden');
+  document.getElementById('apiKeyInput').value = '';
+  document.getElementById('keyError').classList.add('hidden');
+  setProvider(provider); // restore tab state
+}
+
+// ================================================================
+// KEYWORDS
+// ================================================================
+function addKeyword() {
+  const text     = document.getElementById('kwInput').value.trim();
+  const interval = parseInt(document.getElementById('intervalSel').value);
+  if (!text) return;
+  const kw = { id: 'kw-' + Date.now(), text, interval, enabled: true,
+               status: 'idle', checkCount: 0, lastCheck: null, timerId: null };
+  keywords.push(kw);
+  document.getElementById('kwInput').value = '';
+  renderChips();
+  startTimer(kw);
+}
+function deleteKw(id) {
+  const kw = keywords.find(k => k.id === id);
+  if (kw && kw.timerId) clearInterval(kw.timerId);
+  keywords = keywords.filter(k => k.id !== id);
+  renderChips();
+}
+function toggleKw(id) {
+  const kw = keywords.find(k => k.id === id);
+  if (!kw) return;
+  kw.enabled = !kw.enabled;
+  if (!kw.enabled) {
+    if (kw.timerId) clearInterval(kw.timerId);
+    kw.timerId = null; kw.status = 'idle';
+  } else { startTimer(kw); }
+  renderChips();
+}
+function startTimer(kw) {
+  if (kw.timerId) clearInterval(kw.timerId);
+  doSearch(kw);
+  kw.timerId = setInterval(() => { if (kw.enabled) doSearch(kw); }, kw.interval * 1000);
+}
+function renderChips() {
+  const el = document.getElementById('chipsEl');
+  el.innerHTML = '';
+  keywords.forEach(kw => {
+    const chip = document.createElement('div');
+    chip.className = 'chip ' + (kw.enabled ? kw.status : 'disabled');
+    chip.id = 'chip-' + kw.id;
+    chip.innerHTML =
+      '<div class="chip-bar"></div>' +
+      '<div class="chip-dot"></div>' +
+      '<span class="chip-text" title="' + escH(kw.text) + '">' + escH(kw.text) + '</span>' +
+      '<div class="chip-meta">' +
+        '<div>#' + kw.checkCount + ' · ' + intLabel(kw.interval) + '</div>' +
+        '<div>' + (kw.lastCheck ? timeAgo(kw.lastCheck) : '—') + '</div>' +
+      '</div>' +
+      '<div class="chip-acts">' +
+        '<button class="chip-act" onclick="toggleKw(\'' + kw.id + '\')" title="' + (kw.enabled ? 'השהה' : 'הפעל') + '">' +
+          (kw.enabled ? '⏸' : '▶') +
+        '</button>' +
+        '<button class="chip-act del" onclick="deleteKw(\'' + kw.id + '\')" title="מחק">✕</button>' +
+      '</div>';
+    el.appendChild(chip);
+  });
+}
+function updateChip(kw) {
+  const chip = document.getElementById('chip-' + kw.id);
+  if (!chip) return;
+  chip.className = 'chip ' + (kw.enabled ? kw.status : 'disabled');
+  const meta = chip.querySelector('.chip-meta');
+  if (meta) meta.innerHTML =
+    '<div>#' + kw.checkCount + ' · ' + intLabel(kw.interval) + '</div>' +
+    '<div>' + (kw.lastCheck ? timeAgo(kw.lastCheck) : '—') + '</div>';
+  const tog = chip.querySelector('.chip-act:not(.del)');
+  if (tog) { tog.textContent = kw.enabled ? '⏸' : '▶'; tog.title = kw.enabled ? 'השהה' : 'הפעל'; }
+}
+
+// ================================================================
+// SEARCH ENGINE
+// ================================================================
+function buildPrompt(keyword, nowISO) {
+  return `You are a real-time news intelligence agent. Search for the VERY LATEST content about: "${keyword}"
+
+SEARCH INSTRUCTIONS (execute ALL of these):
+1. X/Twitter: web_search for "${keyword} site:x.com" AND "${keyword} site:twitter.com"
+2. Telegram:  web_search for "${keyword} site:t.me" AND "${keyword} telegram channel"
+3. News:      web_search for "${keyword} news" AND "${keyword}"
+4. Also translate "${keyword}" to Arabic and Persian, then search those translations too.
+
+CRITICAL TIME FILTER — Current UTC time: ${nowISO}
+- ONLY include results posted in the LAST 60 SECONDS
+- "just now", "0s", "1s"..."59s", "moments ago" = INCLUDE
+- "1m ago", "2m", "3m ago" or any time >= 60 seconds old = EXCLUDE
+- If time is ambiguous or cannot be confirmed < 60s = EXCLUDE
+- Be VERY strict about this filter.
+
+For EACH result within the last 60 seconds:
+- Translate content to Hebrew
+- Preserve @handles, channel names, and URLs exactly as-is
+
+Respond ONLY with valid JSON (no markdown, no preamble):
+{
+  "results": [
+    {
+      "text": "original post/article text",
+      "hebrew": "Hebrew translation — keep @handles and URLs unchanged",
+      "author": "@handle or channel name or outlet",
+      "time": "time string from source",
+      "url": "direct URL to post/article",
+      "source": "x" | "telegram" | "google",
+      "language": "en" | "ar" | "fa"
+    }
+  ],
+  "found": true | false
+}
+
+If nothing qualifies: {"results":[],"found":false}`;
+}
+
+// Dispatch to the right provider
+async function doSearch(kw) {
+  if (provider === 'gemini') return doSearchGemini(kw);
+  return doSearchAnthropic(kw);
+}
+
+// ── Shared: process parsed JSON results ──────────────────────────
+function processResults(parsed, kw) {
+  if (!parsed || !Array.isArray(parsed.results)) return false;
+  let foundNew = false;
+  for (const item of parsed.results) {
+    const h = hash((item.url || '') + (item.text || '').slice(0, 120));
+    if (seenHashes.has(h)) continue;
+    seenHashes.add(h);
+    if (seenHashes.size > 500) seenHashes.delete(seenHashes.values().next().value);
+    const alert = {
+      id: 'a-' + Date.now() + '-' + Math.random().toString(36).slice(2),
+      keyword: kw.text,
+      text:    item.text    || '',
+      hebrew:  item.hebrew  || item.text || '',
+      author:  item.author  || '',
+      time:    item.time    || '',
+      url:     item.url     || '#',
+      source:  item.source  || 'google',
+      language:item.language|| 'en',
+      detectedAt: Date.now(),
+      isNew: true
+    };
+    alerts.unshift(alert);
+    foundNew = true;
+    showInNotif(alert);
+    sendBrowserNotif(alert);
+    playSound();
+    doVibrate();
+  }
+  if (alerts.length > 100) alerts = alerts.slice(0, 100);
+  return foundNew;
+}
+
+function parseJsonResponse(text) {
+  try { return JSON.parse(text); } catch {}
+  const m = text.match(/\{[\s\S]*\}/);
+  if (m) try { return JSON.parse(m[0]); } catch {}
+  return null;
+}
+
+function finishSearch(kw, foundNew) {
+  kw.status = foundNew ? 'found' : 'idle';
+  if (foundNew) {
+    renderFeed();
+    setTimeout(() => { kw.status = 'idle'; updateChip(kw); }, 5000);
+    setTimeout(() => { alerts.forEach(a => { if (a.isNew) a.isNew = false; }); renderFeed(); }, 30000);
+  }
+  updateChip(kw); updateGStatus(); renderFeed();
+}
+
+// ── Anthropic Claude search ───────────────────────────────────────
+async function doSearchAnthropic(kw) {
+  if (!apiKey || !kw.enabled) return;
+  kw.status = 'searching'; kw.checkCount++; kw.lastCheck = Date.now();
+  updateChip(kw); updateGStatus();
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: buildPrompt(kw.text, new Date().toISOString()) }]
+      })
+    });
+    if (!r.ok) { console.error('Anthropic API', r.status); kw.status = 'idle'; updateChip(kw); updateGStatus(); return; }
+    const data = await r.json();
+    // Last text block in content array
+    let jsonStr = null;
+    if (Array.isArray(data.content)) {
+      for (let i = data.content.length - 1; i >= 0; i--) {
+        if (data.content[i].type === 'text') { jsonStr = data.content[i].text; break; }
+      }
+    }
+    finishSearch(kw, processResults(parseJsonResponse(jsonStr || ''), kw));
+  } catch (e) {
+    console.error('Anthropic search error', e);
+    kw.status = 'idle'; updateChip(kw); updateGStatus();
+  }
+}
+
+// ── Google Gemini search ──────────────────────────────────────────
+async function doSearchGemini(kw) {
+  if (!apiKey || !kw.enabled) return;
+  kw.status = 'searching'; kw.checkCount++; kw.lastCheck = Date.now();
+  updateChip(kw); updateGStatus();
+  try {
+    const r = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tools: [{ google_search: {} }],
+          contents: [{ role: 'user', parts: [{ text: buildPrompt(kw.text, new Date().toISOString()) }] }],
+          generationConfig: { maxOutputTokens: 4000, temperature: 0.1 }
+        })
+      });
+    if (!r.ok) { console.error('Gemini API', r.status); kw.status = 'idle'; updateChip(kw); updateGStatus(); return; }
+    const data = await r.json();
+    // Concatenate all text parts from the first candidate
+    const parts  = data.candidates?.[0]?.content?.parts || [];
+    const jsonStr = parts.map(p => p.text || '').join('');
+    finishSearch(kw, processResults(parseJsonResponse(jsonStr), kw));
+  } catch (e) {
+    console.error('Gemini search error', e);
+    kw.status = 'idle'; updateChip(kw); updateGStatus();
+  }
+}
+
+function updateGStatus() {
+  const s = keywords.filter(k => k.status === 'searching').length;
+  const el = document.getElementById('gStatus');
+  if (s > 0) { el.textContent = 'סורק ' + s + ' מילה...'; el.className = 'g-status active'; }
+  else if (keywords.some(k => k.enabled)) { el.textContent = 'ממתין'; el.className = 'g-status'; }
+  else { el.textContent = 'מוכן'; el.className = 'g-status'; }
+}
+
+// ================================================================
+// FEED
+// ================================================================
+function setFilter(f) {
+  curFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.f === f));
+  renderFeed();
+}
+function clearAlerts() {
+  alerts = []; seenHashes.clear(); renderFeed();
+}
+function renderFeed() {
+  const feed    = document.getElementById('feedEl');
+  const empty   = document.getElementById('emptyEl');
+  const cntEl   = document.getElementById('alertCnt');
+  const visible = curFilter === 'all' ? alerts : alerts.filter(a => a.source === curFilter);
+  cntEl.textContent = visible.length;
+  if (!visible.length) { feed.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  feed.innerHTML = '';
+  visible.forEach(a => feed.appendChild(buildCard(a)));
+}
+function buildCard(a) {
+  const card = document.createElement('div');
+  card.className = 'alert-card' + (a.isNew ? ' is-new' : '');
+  card.id = 'card-' + a.id;
+  const srcIcon = { x:'𝕏', telegram:'✈️', google:'📰' }[a.source] || '🌐';
+  const langLbl = { en:'EN', ar:'AR', fa:'FA' }[a.language] || a.language.toUpperCase();
+  card.innerHTML =
+    '<div class="card-hdr">' +
+      '<span class="src-badge ' + escH(a.source) + '">' + srcIcon + ' ' + srcLabel(a.source) + '</span>' +
+      '<span class="lang-badge">' + langLbl + '</span>' +
+      '<span class="kw-badge">' + escH(a.keyword) + '</span>' +
+      '<span class="new-badge">NEW</span>' +
+      '<span class="card-time">' + escH(a.time) + '</span>' +
+    '</div>' +
+    (a.author ? '<div class="card-author">' + escH(a.author) + '</div>' : '') +
+    '<div class="card-heb">' + hlKw(escH(a.hebrew), a.keyword) + '</div>' +
+    (a.text && a.text !== a.hebrew ?
+      '<details class="orig">' +
+        '<summary>טקסט מקורי (' + langLbl + ')</summary>' +
+        '<div class="orig-text">' + escH(a.text) + '</div>' +
+      '</details>' : '') +
+    '<div class="card-foot">' +
+      (a.url && a.url !== '#' ?
+        '<a href="' + escH(a.url) + '" target="_blank" rel="noopener" class="card-link">→ למקור המלא</a>' :
+        '<span></span>') +
+      '<span class="card-det">זוהה ' + timeAgo(a.detectedAt) + '</span>' +
+    '</div>';
+  return card;
+}
+
+// ================================================================
+// NOTIFICATIONS
+// ================================================================
+async function requestNotifPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    await Notification.requestPermission();
+  }
+}
+function showInNotif(a) {
+  document.getElementById('notifTitle').textContent = '🚨 ' + a.keyword + ' | ' + srcLabel(a.source);
+  document.getElementById('notifText').textContent  = a.hebrew.slice(0, 90) + (a.hebrew.length > 90 ? '...' : '');
+  const el = document.getElementById('inNotif');
+  el.classList.remove('hidden');
+  if (notifTimer) clearTimeout(notifTimer);
+  notifTimer = setTimeout(dismissNotif, 5500);
+}
+function dismissNotif() {
+  document.getElementById('inNotif').classList.add('hidden');
+  if (notifTimer) { clearTimeout(notifTimer); notifTimer = null; }
+}
+function sendBrowserNotif(a) {
+  if (navigator.serviceWorker?.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'SHOW_NOTIFICATION',
+      title: '🚨 ' + a.keyword,
+      body: a.hebrew.slice(0, 100),
+      url: a.url || '/'
+    });
+  }
+  if (Notification.permission === 'granted') {
+    try {
+      new Notification('🚨 ' + a.keyword + ' | ' + srcLabel(a.source), {
+        body: a.hebrew.slice(0, 100),
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        tag: 'xa-' + a.id,
+        vibrate: [200, 100, 200, 100, 200]
+      });
+    } catch {}
+  }
+}
+function playSound() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [[880,.0,.1],[1100,.13,.1],[880,.27,.15]].forEach(([f,s,d]) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.28, ctx.currentTime + s);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + s + d);
+      o.start(ctx.currentTime + s); o.stop(ctx.currentTime + s + d + .01);
+    });
+  } catch {}
+}
+function doVibrate() { if (navigator.vibrate) navigator.vibrate([200,100,200,100,200]); }
+
+// ================================================================
+// PWA INSTALL
+// ================================================================
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); installPrompt = e;
+  document.getElementById('installBanner').classList.remove('hidden');
+});
+function installApp() {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  installPrompt.userChoice.then(() => { installPrompt = null; dismissInstall(); });
+}
+function dismissInstall() { document.getElementById('installBanner').classList.add('hidden'); }
+window.addEventListener('appinstalled', () => { installPrompt = null; dismissInstall(); });
+
+// ================================================================
+// SERVICE WORKER
+// ================================================================
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').catch(e => console.log('SW:', e));
+}
+
+// ================================================================
+// INIT
+// ================================================================
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('apiKeyInput').focus();
+});
+</script>
 </body>
 </html>
