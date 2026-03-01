@@ -1,9 +1,10 @@
 {
-  "name": "x-live-alert",
+  "name": "x-live-alert-v2",
   "version": "2.0.0",
+  "description": "Real-Time Intelligence Monitoring System",
   "private": true,
   "scripts": {
     "build": "node generate-icons.js",
-    "generate-icons": "node generate-icons.js"
+    "start": "npx serve public"
   }
 }
