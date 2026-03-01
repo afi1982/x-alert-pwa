@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0b1120">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>X Live Alert — Intelligence Monitor</title>
+<title>X Live Alert — Intelligence Monitor V3</title>
 <link rel="manifest" href="/manifest.json">
 <link rel="icon" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/icon-192.png">
@@ -33,6 +33,7 @@
   --accent-purple:#805ad5;
   --source-x:#1d9bf0;
   --source-tg:#0088cc;
+  --source-rss:#e57a2e;
   --source-google:#4285f4;
   --rel-high:#38a169;
   --rel-medium:#d69e2e;
@@ -57,6 +58,7 @@ button{cursor:pointer}
 .modal-brand{text-align:center;margin-bottom:24px}
 .modal-brand h1{font-size:20px;font-weight:600;color:var(--text-primary);letter-spacing:0.5px}
 .modal-brand p{font-size:13px;color:var(--text-secondary);margin-top:4px}
+.modal-brand .version{font-size:10px;color:var(--accent-cyan);font-family:var(--font-mono);margin-top:2px}
 .provider-tabs{display:flex;gap:2px;background:var(--bg-primary);border-radius:var(--radius-sm);padding:2px;margin-bottom:20px}
 .provider-tab{flex:1;padding:10px 8px;text-align:center;font-size:13px;font-weight:500;background:transparent;color:var(--text-muted);border-radius:var(--radius-sm);transition:all 0.2s}
 .provider-tab.active{background:var(--bg-card);color:var(--text-primary)}
@@ -80,7 +82,7 @@ button{cursor:pointer}
 
 /* ===== HEADER ===== */
 header{background:var(--bg-surface);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:100}
-.header-row{display:flex;align-items:center;justify-content:space-between;max-width:800px;margin:0 auto}
+.header-row{display:flex;align-items:center;justify-content:space-between;max-width:900px;margin:0 auto}
 .header-left{display:flex;align-items:center;gap:10px}
 .live-dot{width:8px;height:8px;border-radius:50%;background:var(--accent-red);animation:pulse-dot 2s infinite;flex-shrink:0}
 @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.4}}
@@ -93,11 +95,12 @@ header{background:var(--bg-surface);border-bottom:1px solid var(--border);paddin
 .header-btn:hover{color:var(--text-primary)}
 
 /* ===== MAIN ===== */
-main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
+main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
 
 /* ===== CONTROL PANEL ===== */
 .panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
-.panel-title{font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:0.5px;margin-bottom:12px;text-transform:uppercase}
+.panel-title{font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:0.5px;margin-bottom:12px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.panel-title .title-badge{font-size:9px;background:var(--accent-cyan);color:#000;padding:1px 6px;border-radius:3px;font-weight:700}
 .add-row{display:flex;gap:8px;margin-bottom:12px}
 .add-row input[type=text]{flex:1;padding:9px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px}
 .add-row input[type=text]:focus{border-color:var(--accent-blue)}
@@ -107,7 +110,9 @@ main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
 
 /* ===== KEYWORDS ===== */
 .kw-grid{display:flex;flex-wrap:wrap;gap:8px}
-.kw-chip{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;min-width:140px;position:relative;transition:border-color 0.3s}
+.kw-chip{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;min-width:140px;position:relative;transition:all 0.3s;cursor:pointer}
+.kw-chip:hover{border-color:var(--border-light)}
+.kw-chip.active-filter{border-color:var(--accent-cyan);background:var(--bg-card-alt)}
 .kw-chip.searching{border-color:var(--accent-cyan)}
 .kw-chip.found{border-color:var(--accent-red)}
 .kw-chip.paused{opacity:0.5}
@@ -124,10 +129,20 @@ main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
 .kw-action.del:hover{color:var(--accent-red)}
 
 /* ===== FILTER BAR ===== */
-.filter-bar{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
-.filter-btn{padding:7px 14px;font-size:12px;font-weight:500;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-secondary);white-space:nowrap;transition:all 0.2s}
+.filters-row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.filter-group{display:flex;gap:4px;align-items:center}
+.filter-group-label{font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-left:6px}
+.filter-btn{padding:7px 14px;font-size:12px;font-weight:500;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-secondary);white-space:nowrap;transition:all 0.2s;cursor:pointer}
+.filter-btn:hover{border-color:var(--border-light);color:var(--text-primary)}
 .filter-btn.active{background:var(--bg-card-alt);color:var(--text-primary);border-color:var(--border-light)}
 .filter-count{font-family:var(--font-mono);font-size:10px;margin-right:4px;opacity:0.7}
+
+/* ===== SORT BAR ===== */
+.sort-bar{display:flex;gap:6px;align-items:center;margin-bottom:8px}
+.sort-label{font-size:10px;color:var(--text-muted);font-weight:600;margin-left:6px}
+.sort-btn{padding:4px 10px;font-size:11px;background:none;border:1px solid transparent;border-radius:3px;color:var(--text-muted);transition:all 0.2s;cursor:pointer}
+.sort-btn:hover{color:var(--text-secondary)}
+.sort-btn.active{color:var(--accent-cyan);border-color:var(--accent-cyan)}
 
 /* ===== ALERT FEED ===== */
 .feed-empty{text-align:center;padding:60px 20px;color:var(--text-muted)}
@@ -135,30 +150,34 @@ main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
 .feed-empty p{font-size:14px}
 .alert-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;animation:card-in 0.3s ease;position:relative}
 @keyframes card-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.alert-card.fresh{border-color:var(--accent-red-dim)}
-.alert-card.fresh::before{content:'';position:absolute;inset:-1px;border-radius:var(--radius);border:1px solid var(--accent-red);opacity:0;animation:glow-fade 2s ease-out forwards}
+.alert-card.breaking{border-color:var(--accent-red);box-shadow:0 0 12px rgba(229,62,62,0.15)}
+.alert-card.breaking::before{content:'';position:absolute;inset:-1px;border-radius:var(--radius);border:1px solid var(--accent-red);opacity:0;animation:glow-fade 3s ease-out forwards}
 @keyframes glow-fade{0%{opacity:0.8}100%{opacity:0}}
+.alert-card.fresh{border-color:var(--accent-red-dim)}
 .alert-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center}
 .badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:600;font-family:var(--font-mono);letter-spacing:0.3px}
-.badge-new{background:var(--accent-red);color:#fff;animation:badge-flash 1s ease 2}
+.badge-breaking{background:var(--accent-red);color:#fff;animation:badge-flash 1s ease 3}
+.badge-new{background:var(--accent-red-dim);color:var(--accent-red)}
 @keyframes badge-flash{0%,100%{opacity:1}50%{opacity:0.5}}
 .badge-source{color:#fff}
 .badge-source.x{background:var(--source-x)}
 .badge-source.telegram{background:var(--source-tg)}
+.badge-source.rss{background:var(--source-rss)}
 .badge-source.google{background:var(--source-google)}
 .badge-lang{background:var(--bg-card-alt);color:var(--text-secondary);border:1px solid var(--border)}
 .badge-rel{border:1px solid;font-size:9px}
 .badge-rel.high{color:var(--rel-high);border-color:var(--rel-high)}
 .badge-rel.medium{color:var(--rel-medium);border-color:var(--rel-medium)}
 .badge-rel.low{color:var(--rel-low);border-color:var(--rel-low)}
-.badge-kw{background:var(--accent-red-dim);color:var(--accent-red);font-size:10px}
+.badge-kw{background:var(--bg-card-alt);color:var(--accent-cyan);font-size:10px;border:1px solid var(--accent-cyan);opacity:0.7}
+.badge-time{background:none;color:var(--text-muted);font-size:10px}
 .alert-text{font-size:14px;line-height:1.7;color:var(--text-primary);margin-bottom:10px;word-break:break-word}
 .alert-text mark{background:rgba(229,62,62,0.2);color:var(--accent-red);padding:0 2px;border-radius:2px}
 .alert-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);margin-bottom:6px}
 .alert-meta a{color:var(--accent-blue);text-decoration:none;font-weight:500}
 .alert-meta a:hover{text-decoration:underline}
 .alert-original{margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
-.alert-orig-toggle{background:none;color:var(--text-muted);font-size:12px;display:flex;align-items:center;gap:4px;padding:2px 0}
+.alert-orig-toggle{background:none;color:var(--text-muted);font-size:12px;display:flex;align-items:center;gap:4px;padding:2px 0;cursor:pointer}
 .alert-orig-toggle:hover{color:var(--text-secondary)}
 .alert-orig-text{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-top:6px;direction:ltr;text-align:left;display:none;word-break:break-word}
 .alert-orig-text.open{display:block}
@@ -167,8 +186,20 @@ main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
 .feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .feed-title{font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:0.5px;text-transform:uppercase}
 .feed-actions{display:flex;gap:8px}
-.feed-action-btn{background:none;color:var(--text-muted);font-size:11px;padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);transition:all 0.2s}
+.feed-action-btn{background:none;color:var(--text-muted);font-size:11px;padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);transition:all 0.2s;cursor:pointer}
 .feed-action-btn:hover{color:var(--text-primary);border-color:var(--border-light)}
+
+/* ===== SEARCH STATUS ===== */
+.search-status{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:8px;display:none;font-size:12px;color:var(--text-secondary);font-family:var(--font-mono)}
+.search-status.active{display:flex;align-items:center;gap:10px}
+.search-spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent-cyan);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.search-status-text{flex:1}
+.search-sources{display:flex;gap:4px;flex-wrap:wrap}
+.search-source-dot{width:6px;height:6px;border-radius:50%;background:var(--text-muted)}
+.search-source-dot.done{background:var(--accent-green)}
+.search-source-dot.active{background:var(--accent-cyan);animation:pulse-dot 0.8s infinite}
+.search-source-dot.error{background:var(--accent-red)}
 
 /* ===== POPUP NOTIFICATION ===== */
 #popup{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:999;background:var(--bg-card-alt);border:1px solid var(--accent-red-dim);border-radius:var(--radius);padding:12px 16px;max-width:380px;width:calc(100% - 32px);box-shadow:0 8px 24px rgba(0,0,0,0.4);transition:all 0.3s ease;opacity:0;pointer-events:none;translate:0 -10px}
@@ -179,7 +210,7 @@ main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
 /* ===== SEARCH PROGRESS ===== */
 .search-bar{height:2px;background:var(--bg-primary);overflow:hidden;border-radius:1px;margin-bottom:8px;opacity:0;transition:opacity 0.2s}
 .search-bar.active{opacity:1}
-.search-bar-inner{height:100%;width:30%;background:var(--accent-cyan);border-radius:1px;animation:sweep 1.2s infinite ease-in-out}
+.search-bar-inner{height:100%;width:30%;background:linear-gradient(90deg,var(--accent-cyan),var(--accent-blue));border-radius:1px;animation:sweep 1.2s infinite ease-in-out}
 @keyframes sweep{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
 
 /* ===== INSTALL BANNER ===== */
@@ -195,6 +226,8 @@ main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
   .kw-chip{min-width:120px}
   .add-row{flex-wrap:wrap}
   .add-row input[type=text]{min-width:0}
+  .filters-row{gap:6px}
+  .filter-btn{padding:5px 10px;font-size:11px}
 }
 </style>
 </head>
@@ -206,24 +239,25 @@ main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
     <div class="modal-brand">
       <h1>X LIVE ALERT</h1>
       <p>מערכת מודיעין בזמן אמת</p>
+      <div class="version">V3 — HYBRID INTELLIGENCE ENGINE</div>
     </div>
     <div class="provider-tabs">
       <button class="provider-tab active" data-provider="anthropic" onclick="selectProvider('anthropic')">Anthropic Claude</button>
       <button class="provider-tab" data-provider="gemini" onclick="selectProvider('gemini')">Google Gemini</button>
     </div>
     <div class="modal-field">
-      <label id="key-label">מפתח API של Anthropic</label>
+      <label id="key-label">Anthropic API Key</label>
       <div class="key-input-wrap">
         <input type="password" id="key-input" placeholder="sk-ant-..." dir="ltr" autocomplete="off">
-        <button class="key-toggle" onclick="toggleKeyVis()">👁</button>
+        <button class="key-toggle" onclick="toggleKeyVis()">*</button>
       </div>
     </div>
-    <a class="modal-link" id="key-help-link" href="https://console.anthropic.com/" target="_blank" rel="noopener">← איך משיגים מפתח?</a>
+    <a class="modal-link" id="key-help-link" href="https://console.anthropic.com/" target="_blank" rel="noopener">? Get API Key</a>
     <div class="modal-persist">
       <input type="checkbox" id="persist-check" checked>
-      <label for="persist-check">שמור מפתח במכשיר (localStorage)</label>
+      <label for="persist-check">Save key locally (localStorage)</label>
     </div>
-    <button class="modal-btn primary" id="key-submit" onclick="submitKey()">אמת והתחבר</button>
+    <button class="modal-btn primary" id="key-submit" onclick="submitKey()">Validate & Connect</button>
     <div class="modal-status" id="key-status"></div>
   </div>
 </div>
@@ -235,16 +269,16 @@ main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
       <div class="live-dot"></div>
       <div>
         <div class="header-title">X LIVE ALERT</div>
-        <div class="header-subtitle">REAL-TIME INTELLIGENCE MONITORING</div>
+        <div class="header-subtitle">HYBRID REAL-TIME INTELLIGENCE V3</div>
       </div>
     </div>
     <div class="header-stats">
-      <span id="stat-kw">0 מילים</span>
+      <span id="stat-kw">0 keywords</span>
       <div class="stat-divider"></div>
-      <span id="stat-alerts">0 התראות</span>
+      <span id="stat-alerts">0 alerts</span>
       <div class="stat-divider"></div>
       <span id="stat-uptime">00:00:00</span>
-      <button class="header-btn" onclick="showSettings()" title="הגדרות">⚙</button>
+      <button class="header-btn" onclick="showSettings()" title="Settings">S</button>
     </div>
   </div>
 </header>
@@ -254,51 +288,81 @@ main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
 
   <!-- Install Banner -->
   <div id="install-banner">
-    <span class="install-text">התקן כאפליקציה במכשיר</span>
+    <span class="install-text">Install as app on your device</span>
     <div style="display:flex;gap:8px;align-items:center">
-      <button class="install-btn" onclick="installApp()">התקן</button>
-      <button class="install-dismiss" onclick="dismissInstall()">×</button>
+      <button class="install-btn" onclick="installApp()">Install</button>
+      <button class="install-dismiss" onclick="dismissInstall()">x</button>
     </div>
   </div>
 
   <!-- Search progress -->
   <div class="search-bar" id="search-bar"><div class="search-bar-inner"></div></div>
 
+  <!-- Search Status -->
+  <div class="search-status" id="search-status">
+    <div class="search-spinner"></div>
+    <div class="search-status-text" id="search-status-text">Scanning sources...</div>
+    <div class="search-sources" id="search-sources"></div>
+  </div>
+
   <!-- Control Panel -->
   <div class="panel">
-    <div class="panel-title">הוספת מילת חיפוש</div>
+    <div class="panel-title">
+      Add Search Keyword
+      <span class="title-badge">MULTI-SOURCE</span>
+    </div>
     <div class="add-row">
-      <input type="text" id="kw-input" placeholder="לדוגמה: Iran nuclear, حزب الله, drone attack..." dir="auto">
+      <input type="text" id="kw-input" placeholder="e.g. Iran nuclear, drone attack, Hezbollah..." dir="auto">
       <select id="kw-interval">
-        <option value="30000">30 שנ׳</option>
-        <option value="60000" selected>1 דק׳</option>
-        <option value="120000">2 דק׳</option>
-        <option value="300000">5 דק׳</option>
+        <option value="15000">15s</option>
+        <option value="30000" selected>30s</option>
+        <option value="60000">1m</option>
+        <option value="120000">2m</option>
+        <option value="300000">5m</option>
       </select>
-      <button class="add-btn" onclick="addKeyword()">+ הוסף</button>
+      <button class="add-btn" onclick="addKeyword()">+ Add</button>
     </div>
     <div class="kw-grid" id="kw-grid"></div>
   </div>
 
-  <!-- Filter bar -->
-  <div class="filter-bar" id="filter-bar">
-    <button class="filter-btn active" data-source="all" onclick="setFilter('all')">הכל <span class="filter-count" id="fc-all">0</span></button>
-    <button class="filter-btn" data-source="x" onclick="setFilter('x')">𝕏 <span class="filter-count" id="fc-x">0</span></button>
-    <button class="filter-btn" data-source="telegram" onclick="setFilter('telegram')">Telegram <span class="filter-count" id="fc-telegram">0</span></button>
-    <button class="filter-btn" data-source="google" onclick="setFilter('google')">חדשות <span class="filter-count" id="fc-google">0</span></button>
+  <!-- Filters -->
+  <div class="filters-row">
+    <!-- Source filter -->
+    <div class="filter-group">
+      <span class="filter-group-label">Source:</span>
+      <button class="filter-btn active" data-source="all" onclick="setSourceFilter('all')">All <span class="filter-count" id="fc-all">0</span></button>
+      <button class="filter-btn" data-source="rss" onclick="setSourceFilter('rss')">RSS <span class="filter-count" id="fc-rss">0</span></button>
+      <button class="filter-btn" data-source="x" onclick="setSourceFilter('x')">X <span class="filter-count" id="fc-x">0</span></button>
+      <button class="filter-btn" data-source="telegram" onclick="setSourceFilter('telegram')">TG <span class="filter-count" id="fc-telegram">0</span></button>
+    </div>
+    <!-- Reliability filter -->
+    <div class="filter-group">
+      <span class="filter-group-label">Trust:</span>
+      <button class="filter-btn active" data-rel="all" onclick="setRelFilter('all')">All</button>
+      <button class="filter-btn" data-rel="high" onclick="setRelFilter('high')">Verified</button>
+      <button class="filter-btn" data-rel="medium" onclick="setRelFilter('medium')">Medium+</button>
+    </div>
+  </div>
+
+  <!-- Sort bar -->
+  <div class="sort-bar">
+    <span class="sort-label">Sort:</span>
+    <button class="sort-btn active" data-sort="time" onclick="setSort('time')">Newest</button>
+    <button class="sort-btn" data-sort="reliability" onclick="setSort('reliability')">Most Reliable</button>
+    <button class="sort-btn" data-sort="relevance" onclick="setSort('relevance')">Most Relevant</button>
   </div>
 
   <!-- Feed -->
   <div class="feed-header">
-    <span class="feed-title" id="feed-label">עדכונים אחרונים</span>
+    <span class="feed-title" id="feed-label">Latest Updates</span>
     <div class="feed-actions">
-      <button class="feed-action-btn" onclick="clearAlerts()">נקה הכל</button>
+      <button class="feed-action-btn" onclick="clearAlerts()">Clear All</button>
     </div>
   </div>
   <div id="feed">
     <div class="feed-empty">
-      <div class="fe-icon">◉</div>
-      <p>הוסף מילות חיפוש כדי להתחיל ניטור</p>
+      <div class="fe-icon">O</div>
+      <p>Add keywords to start monitoring</p>
     </div>
   </div>
 </main>
@@ -308,7 +372,8 @@ main{max-width:800px;margin:0 auto;padding:12px 12px 100px}
 
 <script>
 /* ==========================================================================
-   X LIVE ALERT V2 — INTELLIGENCE MONITORING SYSTEM
+   X LIVE ALERT V3 — HYBRID INTELLIGENCE MONITORING SYSTEM
+   RSS + AI Web Search + Translation + Smart Ranking
    ========================================================================== */
 
 // ===== CONSTANTS =====
@@ -321,20 +386,39 @@ const STORAGE = {
 
 const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+const RSS_API = '/api/rss';
 
 const SOURCE_LABELS = {
-  x: '𝕏 X/Twitter',
+  x: 'X/Twitter',
   telegram: 'Telegram',
+  rss: 'News RSS',
   google: 'Google News'
 };
 
 const RELIABILITY_LABELS = {
-  high: 'אמין',
-  medium: 'בינוני',
-  low: 'לא מאומת'
+  high: 'Verified',
+  medium: 'Medium',
+  low: 'Unverified'
 };
 
-const MAX_ALERTS = 100;
+// Major trusted news sources for reliability scoring
+const TRUSTED_SOURCES = new Set([
+  'reuters', 'ap', 'bbc', 'cnn', 'aljazeera', 'al jazeera',
+  'sky news', 'fox news', 'nbc', 'abc', 'cbs',
+  'the guardian', 'the times', 'new york times', 'nyt',
+  'washington post', 'wall street journal', 'wsj',
+  'bloomberg', 'financial times',
+  'al arabiya', 'france24', 'dw',
+  'irna', 'fars', 'tasnim', 'press tv',
+  'ynet', 'haaretz', 'times of israel', 'jpost', 'jerusalem post',
+  'walla', 'kan', 'mako', 'n12', 'i24',
+  'rt', 'sputnik', 'tass',
+  'xinhua', 'cgtn',
+  'sky news arabia', 'bbc arabic', 'bbc persian',
+  'anadolu', 'daily sabah'
+]);
+
+const MAX_ALERTS = 200;
 const MAX_HASHES = 500;
 
 // ===== STATE =====
@@ -344,10 +428,15 @@ const state = {
   keywords: [],
   alerts: [],
   seenHashes: new Set(),
+  seenTitles: [],
   timers: {},
   activeSearches: 0,
-  currentFilter: 'all',
-  startTime: Date.now()
+  sourceFilter: 'all',
+  relFilter: 'all',
+  kwFilter: null, // null = all keywords
+  sortBy: 'time',
+  startTime: Date.now(),
+  searchLog: []
 };
 
 // ===== DOM =====
@@ -355,7 +444,6 @@ const $ = id => document.getElementById(id);
 
 // ===== INIT =====
 function init() {
-  // Load persisted state
   const persist = localStorage.getItem(STORAGE.PERSIST) !== 'false';
   if (persist) {
     state.provider = localStorage.getItem(STORAGE.PROVIDER);
@@ -367,27 +455,22 @@ function init() {
     loadKeywords();
   }
 
-  // Register service worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   }
 
-  // Request notification permission
   if ('Notification' in window && Notification.permission === 'default') {
     setTimeout(() => Notification.requestPermission(), 2000);
   }
 
-  // PWA install prompt
   window.addEventListener('beforeinstallprompt', e => {
     e.preventDefault();
     window._installPrompt = e;
     $('install-banner').classList.add('show');
   });
 
-  // Uptime clock
   setInterval(updateStats, 1000);
 
-  // Enter key on keyword input
   $('kw-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') addKeyword();
   });
@@ -399,11 +482,11 @@ function selectProvider(p) {
   state.provider = p;
 
   if (p === 'anthropic') {
-    $('key-label').textContent = 'מפתח API של Anthropic';
+    $('key-label').textContent = 'Anthropic API Key';
     $('key-input').placeholder = 'sk-ant-...';
     $('key-help-link').href = 'https://console.anthropic.com/';
   } else {
-    $('key-label').textContent = 'מפתח API של Google Gemini';
+    $('key-label').textContent = 'Google Gemini API Key';
     $('key-input').placeholder = 'AIza...';
     $('key-help-link').href = 'https://aistudio.google.com/apikey';
   }
@@ -419,11 +502,11 @@ function toggleKeyVis() {
 
 async function submitKey() {
   const key = $('key-input').value.trim();
-  if (!key) { setKeyStatus('הזן מפתח API', 'error'); return; }
+  if (!key) { setKeyStatus('Enter API key', 'error'); return; }
 
   const btn = $('key-submit');
   btn.disabled = true;
-  btn.textContent = 'מאמת...';
+  btn.textContent = 'Validating...';
   setKeyStatus('', '');
 
   try {
@@ -442,17 +525,17 @@ async function submitKey() {
         localStorage.removeItem(STORAGE.API_KEY);
         localStorage.setItem(STORAGE.PERSIST, 'false');
       }
-      setKeyStatus('מפתח תקין!', 'success');
+      setKeyStatus('Key valid!', 'success');
       setTimeout(() => { hideModal(); loadKeywords(); }, 600);
     } else {
-      setKeyStatus('מפתח לא תקין. בדוק ונסה שוב.', 'error');
+      setKeyStatus('Invalid key. Check and try again.', 'error');
     }
   } catch (err) {
-    setKeyStatus('שגיאת רשת: ' + err.message, 'error');
+    setKeyStatus('Network error: ' + err.message, 'error');
   }
 
   btn.disabled = false;
-  btn.textContent = 'אמת והתחבר';
+  btn.textContent = 'Validate & Connect';
 }
 
 async function validateAnthropic(key) {
@@ -515,6 +598,12 @@ function addKeyword() {
   const text = $('kw-input').value.trim();
   if (!text) return;
 
+  // Don't add duplicates
+  if (state.keywords.some(k => k.text.toLowerCase() === text.toLowerCase())) {
+    $('kw-input').value = '';
+    return;
+  }
+
   const interval = parseInt($('kw-interval').value);
   const kw = {
     id: 'kw_' + Date.now(),
@@ -523,7 +612,9 @@ function addKeyword() {
     active: true,
     count: 0,
     lastCheck: null,
-    status: 'idle'
+    status: 'idle',
+    rssCount: 0,
+    aiCount: 0
   };
 
   state.keywords.push(kw);
@@ -542,8 +633,10 @@ function addKeyword() {
 function removeKeyword(id) {
   stopMonitoring(id);
   state.keywords = state.keywords.filter(k => k.id !== id);
+  if (state.kwFilter === id) state.kwFilter = null;
   saveKeywords();
   renderKeywords();
+  renderAlerts();
   updateStats();
 }
 
@@ -551,9 +644,19 @@ function toggleKeyword(id) {
   const kw = state.keywords.find(k => k.id === id);
   if (!kw) return;
   kw.active = !kw.active;
-  if (kw.active) { startMonitoring(kw); } else { stopMonitoring(id); kw.status = 'idle'; }
+  if (kw.active) { startMonitoring(kw); doSearch(kw); } else { stopMonitoring(id); kw.status = 'idle'; }
   saveKeywords();
   renderKeywords();
+}
+
+function filterByKeyword(id) {
+  if (state.kwFilter === id) {
+    state.kwFilter = null; // Toggle off
+  } else {
+    state.kwFilter = id;
+  }
+  renderKeywords();
+  renderAlerts();
 }
 
 function startMonitoring(kw) {
@@ -571,27 +674,29 @@ function renderKeywords() {
 
   grid.innerHTML = state.keywords.map(kw => {
     const cls = !kw.active ? 'paused' : kw.status === 'searching' ? 'searching' : kw.status === 'found' ? 'found' : '';
+    const filterCls = state.kwFilter === kw.id ? 'active-filter' : '';
     const intervalLabel = kw.interval < 60000 ? (kw.interval / 1000) + 's' : (kw.interval / 60000) + 'm';
     const lastTime = kw.lastCheck ? new Date(kw.lastCheck).toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--:--:--';
-    return `<div class="kw-chip ${cls}">
+    const kwAlerts = state.alerts.filter(a => a.keywordId === kw.id).length;
+    return `<div class="kw-chip ${cls} ${filterCls}" onclick="filterByKeyword('${kw.id}')">
       <div class="kw-top">
         <div class="kw-dot"></div>
         <span class="kw-text" title="${esc(kw.text)}">${esc(kw.text)}</span>
       </div>
       <div class="kw-meta">
         <span>${intervalLabel}</span>
-        <span>#${kw.count || 0}</span>
+        <span>${kwAlerts} results</span>
         <span>${lastTime}</span>
       </div>
       <div class="kw-actions">
-        <button class="kw-action" onclick="toggleKeyword('${kw.id}')" title="${kw.active ? 'השהה' : 'הפעל'}">${kw.active ? '⏸' : '▶'}</button>
-        <button class="kw-action del" onclick="removeKeyword('${kw.id}')" title="מחק">✕</button>
+        <button class="kw-action" onclick="event.stopPropagation();toggleKeyword('${kw.id}')" title="${kw.active ? 'Pause' : 'Resume'}">${kw.active ? 'II' : '>'}</button>
+        <button class="kw-action del" onclick="event.stopPropagation();removeKeyword('${kw.id}')" title="Delete">X</button>
       </div>
     </div>`;
   }).join('');
 }
 
-// ===== SEARCH ENGINE =====
+// ===== HYBRID SEARCH ENGINE =====
 async function doSearch(kw) {
   if (!state.apiKey || kw.status === 'searching') return;
 
@@ -601,82 +706,158 @@ async function doSearch(kw) {
   state.activeSearches++;
   updateSearchBar();
   renderKeywords();
+  showSearchStatus(`Scanning: "${kw.text}"...`, 'active');
 
+  let rssResults = [];
+  let aiResults = [];
+
+  // PHASE 1: Parallel fetch — RSS + AI
   try {
-    const results = state.provider === 'anthropic'
-      ? await searchAnthropic(kw.text)
-      : await searchGemini(kw.text);
+    const [rssData, aiData] = await Promise.allSettled([
+      fetchRssResults(kw.text),
+      searchAI(kw.text)
+    ]);
 
-    processResults(results, kw);
+    if (rssData.status === 'fulfilled') {
+      rssResults = rssData.value || [];
+    }
+    if (aiData.status === 'fulfilled') {
+      aiResults = aiData.value || [];
+    }
   } catch (err) {
     console.error('Search error:', err);
   }
 
+  // PHASE 2: Process RSS results (need translation)
+  let translatedRss = [];
+  if (rssResults.length > 0) {
+    showSearchStatus(`Translating ${rssResults.length} RSS results...`, 'active');
+    try {
+      translatedRss = await translateAndScoreRss(rssResults, kw.text);
+    } catch (e) {
+      // If translation fails, use raw RSS results with original text
+      translatedRss = rssResults.map(r => ({
+        text: r.title + (r.description ? ' — ' + r.description : ''),
+        hebrew: r.title, // Might already be Hebrew
+        author: r.source,
+        time: formatTimeAgo(new Date(r.pubDate)),
+        url: r.link,
+        source: 'rss',
+        language: r.language || 'en',
+        reliability: scoreSourceReliability(r.source),
+        pubDate: r.pubDate
+      }));
+    }
+  }
+
+  // PHASE 3: Merge, dedup, process
+  const allResults = [...translatedRss, ...aiResults];
+  processResults(allResults, kw);
+
+  kw.rssCount = (kw.rssCount || 0) + rssResults.length;
+  kw.aiCount = (kw.aiCount || 0) + aiResults.length;
   kw.status = 'idle';
   state.activeSearches--;
   updateSearchBar();
   renderKeywords();
+  hideSearchStatus();
+
+  state.searchLog.push({
+    keyword: kw.text,
+    time: Date.now(),
+    rssResults: rssResults.length,
+    aiResults: aiResults.length,
+    total: allResults.length
+  });
 }
 
-function buildPrompt(keyword) {
+// ===== RSS FETCH =====
+async function fetchRssResults(keyword) {
+  try {
+    const url = `${RSS_API}?q=${encodeURIComponent(keyword)}&langs=en,he,ar,fa&hours=2`;
+    const res = await fetch(url);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.results || [];
+  } catch (e) {
+    console.warn('RSS fetch failed:', e);
+    return [];
+  }
+}
+
+// ===== AI SEARCH (X/Twitter + Telegram) =====
+function buildAISearchPrompt(keyword) {
   const now = new Date().toISOString();
-  return `You are a STRICT real-time news intelligence analyst. Your task is to find the MOST RECENT posts/news about: "${keyword}"
+  return `You are an OSINT intelligence analyst. Your mission: find the MOST RECENT social media posts about "${keyword}" from X/Twitter and Telegram ONLY.
 
-ABSOLUTE RULES:
-1. ONLY report results that ACTUALLY APPEARED in your web search results. NEVER fabricate, guess, or hallucinate any result.
-2. Every result MUST have a REAL URL that you found in the search results. NEVER construct or guess URLs.
-3. If you find NO results from the last 1 minute, return {"results":[],"found":false,"searched_queries":[]}. This is the CORRECT response. Empty results are EXPECTED and PREFERRED over fabricated ones.
-4. If you are uncertain about ANY detail (time, URL, author), SKIP that result entirely.
+CRITICAL RULES:
+1. ONLY report results you ACTUALLY FOUND via web search. NEVER fabricate or hallucinate.
+2. Every result MUST have a REAL URL from your search results. NEVER construct URLs.
+3. If you find NOTHING, return {"results":[],"found":false}. Empty is CORRECT — fabrication is FORBIDDEN.
+4. Focus on BREAKING NEWS and FIRST REPORTS. Prioritize posts that broke the news first.
 
-SEARCH STRATEGY — Execute these searches:
-1. Web search: "${keyword}"
-2. X/Twitter: "${keyword} site:x.com OR site:twitter.com"
-3. Telegram: "${keyword} site:t.me"
-4. Arabic translation search: search the Arabic translation of "${keyword}"
-5. Persian/Farsi translation search: search the Persian translation of "${keyword}"
-6. Arabic + X: Arabic translation of "${keyword}" + "site:x.com"
-7. Persian + Telegram: Persian translation of "${keyword}" + "site:t.me"
+SEARCH STRATEGY — Execute ALL of these searches:
+1. "${keyword} site:x.com" — English X/Twitter
+2. "${keyword} site:twitter.com" — Twitter legacy URLs
+3. "${keyword} site:t.me" — Telegram channels
+4. Arabic translation of "${keyword}" + "site:x.com"
+5. Persian translation of "${keyword}" + "site:t.me"
+6. Arabic: "${keyword}" in Arabic + "breaking" in Arabic
+7. "${keyword} breaking news"
+8. Hebrew translation of "${keyword}" + "site:x.com"
 
-KNOWN PERSIAN/ARABIC NEWS TELEGRAM CHANNELS to check:
-- Search: "${keyword} telegram channel" in Arabic/Persian
-- Major channels: Look for results from t.me domains in Persian and Arabic
+TIME: Current UTC: ${now}
+- Prefer results from last 30 minutes
+- Accept up to 2 hours old for major events
+- ALWAYS note the time you found on the page
 
-TIME FILTER (EXTREMELY STRICT):
-- Current UTC time: ${now}
-- ONLY include results from the LAST 2 MINUTES (120 seconds)
-- Acceptable timestamps: "just now", "1m", "2m", "seconds ago", "لحظاتی پیش", "الآن", "قبل دقيقة"
-- REJECT: "3m", "5m", "10m", "1h", "2h" or anything older
-- If timestamp is unclear or missing, DO NOT include the result
+RELIABILITY SCORING:
+- "high": Verified accounts, major journalists, official channels, accounts with blue checkmarks
+- "medium": Known activists, regional reporters, established channels
+- "low": Anonymous, new accounts, unverified
 
-SOURCE RELIABILITY — Rate each source:
-- "high": Verified accounts (✓), major outlets (Reuters, AP, BBC, Al Jazeera, CNN, Fars News, IRNA, Al Arabiya, Sky News Arabia), official government accounts, accounts with verified badges
-- "medium": Known journalists, channels with established history, regional news sites
-- "low": Anonymous accounts, new accounts, unverified sources, personal blogs
+FOR EACH RESULT provide:
+- The EXACT text you found (original language)
+- Accurate Hebrew translation
+- Real author/channel name
+- Time as displayed on the post
+- The EXACT URL from search results
+- Source type: "x" or "telegram"
+- Original language code
+- Reliability level
 
-TRANSLATION:
-- Translate ALL result text to Hebrew accurately
-- Keep @handles, #hashtags, URLs, channel names, and numbers unchanged
-- Preserve the meaning and tone faithfully
-
-RESPONSE — Return ONLY valid JSON, no markdown, no explanation:
+RESPOND WITH ONLY VALID JSON:
 {
   "results": [
     {
-      "text": "exact original text as found",
-      "hebrew": "accurate Hebrew translation",
-      "author": "@handle or channel name",
-      "time": "relative time as displayed",
-      "url": "exact URL from search results",
-      "source": "x" or "telegram" or "google",
-      "language": "en" or "ar" or "fa",
-      "reliability": "high" or "medium" or "low"
+      "text": "exact original text",
+      "hebrew": "Hebrew translation",
+      "author": "@handle or channel",
+      "time": "time as shown",
+      "url": "exact real URL",
+      "source": "x" or "telegram",
+      "language": "en" or "ar" or "fa" or "he" or "ru",
+      "reliability": "high" or "medium" or "low",
+      "is_breaking": true/false
     }
   ],
-  "searched_queries": ["list every query you actually searched"],
-  "found": true or false
+  "found": boolean,
+  "queries_executed": ["list of actual searches performed"]
 }
 
-REMEMBER: An empty results array is the CORRECT answer when nothing recent exists. NEVER invent results.`;
+IMPORTANT: Quality over quantity. Only include results you are CONFIDENT are real. 5 real results beat 20 fabricated ones.`;
+}
+
+async function searchAI(keyword) {
+  try {
+    const results = state.provider === 'anthropic'
+      ? await searchAnthropic(keyword)
+      : await searchGemini(keyword);
+    return results;
+  } catch (e) {
+    console.error('AI search error:', e);
+    return [];
+  }
 }
 
 async function searchAnthropic(keyword) {
@@ -691,15 +872,14 @@ async function searchAnthropic(keyword) {
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4000,
-      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 10 }],
-      messages: [{ role: 'user', content: buildPrompt(keyword) }]
+      tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 15 }],
+      messages: [{ role: 'user', content: buildAISearchPrompt(keyword) }]
     })
   });
 
   if (!res.ok) throw new Error('Anthropic API ' + res.status);
   const data = await res.json();
 
-  // Extract the final text block
   let text = '';
   if (data.content) {
     for (let i = data.content.length - 1; i >= 0; i--) {
@@ -709,7 +889,11 @@ async function searchAnthropic(keyword) {
       }
     }
   }
-  return parseJsonResponse(text);
+  const parsed = parseJsonResponse(text);
+  return (parsed.results || []).map(r => ({
+    ...r,
+    source: ['x', 'telegram'].includes(r.source) ? r.source : 'x'
+  }));
 }
 
 async function searchGemini(keyword) {
@@ -717,7 +901,7 @@ async function searchGemini(keyword) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      contents: [{ role: 'user', parts: [{ text: buildPrompt(keyword) }] }],
+      contents: [{ role: 'user', parts: [{ text: buildAISearchPrompt(keyword) }] }],
       tools: [{ google_search: {} }],
       generationConfig: { maxOutputTokens: 4000 }
     })
@@ -730,20 +914,130 @@ async function searchGemini(keyword) {
   try {
     text = data.candidates[0].content.parts.map(p => p.text || '').join('');
   } catch (e) {}
-  return parseJsonResponse(text);
+  const parsed = parseJsonResponse(text);
+  return (parsed.results || []).map(r => ({
+    ...r,
+    source: ['x', 'telegram'].includes(r.source) ? r.source : 'x'
+  }));
 }
 
+// ===== TRANSLATION & SCORING =====
+function buildTranslationPrompt(rssItems, keyword) {
+  const items = rssItems.slice(0, 15).map((r, i) => ({
+    id: i,
+    title: r.title,
+    source: r.source,
+    language: r.language,
+    pubDate: r.pubDate,
+    description: (r.description || '').slice(0, 200)
+  }));
+
+  return `You are a news translator and analyst. Translate these news headlines to Hebrew and score their relevance to "${keyword}".
+
+NEWS ITEMS:
+${JSON.stringify(items, null, 1)}
+
+For EACH item, return:
+- "id": the item id
+- "hebrew": accurate Hebrew translation of the title
+- "reliability": "high" (major news agency/outlet), "medium" (known outlet), or "low" (unknown/blog)
+- "relevance": 1-10 score of how relevant this is to "${keyword}"
+- "is_breaking": true if this appears to be breaking news
+
+RESPOND WITH ONLY VALID JSON:
+{
+  "translations": [
+    {"id": 0, "hebrew": "...", "reliability": "high", "relevance": 8, "is_breaking": false}
+  ]
+}`;
+}
+
+async function translateAndScoreRss(rssItems, keyword) {
+  if (rssItems.length === 0) return [];
+
+  const prompt = buildTranslationPrompt(rssItems, keyword);
+  let text = '';
+
+  try {
+    if (state.provider === 'anthropic') {
+      const res = await fetch(ANTHROPIC_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': state.apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 3000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      if (!res.ok) throw new Error('API ' + res.status);
+      const data = await res.json();
+      text = data.content?.[0]?.text || '';
+    } else {
+      const res = await fetch(GEMINI_BASE + '?key=' + encodeURIComponent(state.apiKey), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 3000 }
+        })
+      });
+      if (!res.ok) throw new Error('API ' + res.status);
+      const data = await res.json();
+      text = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+    }
+  } catch (e) {
+    console.error('Translation error:', e);
+    // Return untranslated
+    return rssItems.map(r => ({
+      text: r.title + (r.description ? ' — ' + r.description : ''),
+      hebrew: r.title,
+      author: r.source,
+      time: formatTimeAgo(new Date(r.pubDate)),
+      url: r.link,
+      source: 'rss',
+      language: r.language || 'en',
+      reliability: scoreSourceReliability(r.source),
+      pubDate: r.pubDate,
+      relevance: 5
+    }));
+  }
+
+  const parsed = parseJsonResponse(text);
+  const translations = parsed.translations || [];
+  const translationMap = {};
+  translations.forEach(t => { translationMap[t.id] = t; });
+
+  return rssItems.slice(0, 15).map((r, i) => {
+    const t = translationMap[i] || {};
+    return {
+      text: r.title + (r.description ? ' — ' + r.description : ''),
+      hebrew: t.hebrew || r.title,
+      author: r.source,
+      time: formatTimeAgo(new Date(r.pubDate)),
+      url: r.link,
+      source: 'rss',
+      language: r.language || 'en',
+      reliability: t.reliability || scoreSourceReliability(r.source),
+      pubDate: r.pubDate,
+      relevance: t.relevance || 5,
+      is_breaking: t.is_breaking || false
+    };
+  });
+}
+
+// ===== JSON PARSING =====
 function parseJsonResponse(text) {
-  if (!text) return { results: [], found: false, searched_queries: [] };
+  if (!text) return {};
 
-  // Try to extract JSON from the response
   let jsonStr = text;
-
-  // Remove markdown code fences if present
   const fenceMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/);
   if (fenceMatch) jsonStr = fenceMatch[1];
 
-  // Try to find JSON object
   const braceStart = jsonStr.indexOf('{');
   const braceEnd = jsonStr.lastIndexOf('}');
   if (braceStart !== -1 && braceEnd !== -1) {
@@ -751,67 +1045,75 @@ function parseJsonResponse(text) {
   }
 
   try {
-    const parsed = JSON.parse(jsonStr);
-    return {
-      results: Array.isArray(parsed.results) ? parsed.results : [],
-      found: !!parsed.found,
-      searched_queries: parsed.searched_queries || []
-    };
+    return JSON.parse(jsonStr);
   } catch (e) {
     console.warn('JSON parse failed:', e);
-    return { results: [], found: false, searched_queries: [] };
+    return {};
   }
 }
 
 // ===== RESULT PROCESSING =====
-function processResults(data, kw) {
-  if (!data.results || data.results.length === 0) return;
+function processResults(results, kw) {
+  if (!results || results.length === 0) return;
 
   let newCount = 0;
   const now = Date.now();
 
-  for (const r of data.results) {
-    // Validate: must have hebrew text and url
-    if (!r.hebrew || !r.url) continue;
+  for (const r of results) {
+    if (!r.hebrew && !r.text) continue;
+    if (r.url && !r.url.startsWith('http')) continue;
 
-    // Validate URL looks real (basic check)
-    if (!r.url.startsWith('http://') && !r.url.startsWith('https://')) continue;
-
-    // Dedup via text hash
-    const hash = hashText((r.text || '') + r.url);
+    // Dedup: hash on text + url
+    const hash = hashText((r.text || r.hebrew || '') + (r.url || ''));
     if (state.seenHashes.has(hash)) continue;
-    state.seenHashes.add(hash);
 
-    // Trim hash set
+    // Dedup: title similarity check
+    const title = (r.hebrew || r.text || '').toLowerCase().trim();
+    if (title.length > 10 && isTitleSimilar(title)) continue;
+
+    state.seenHashes.add(hash);
+    state.seenTitles.push(title);
+    if (state.seenTitles.length > MAX_HASHES) {
+      state.seenTitles = state.seenTitles.slice(-MAX_HASHES);
+    }
     if (state.seenHashes.size > MAX_HASHES) {
       const arr = [...state.seenHashes];
       state.seenHashes = new Set(arr.slice(arr.length - MAX_HASHES));
     }
 
+    const reliability = ['high', 'medium', 'low'].includes(r.reliability)
+      ? r.reliability
+      : scoreSourceReliability(r.author || r.source);
+
     const alert = {
       id: 'a_' + now + '_' + newCount,
+      keywordId: kw.id,
       keyword: kw.text,
       text: r.text || '',
-      hebrew: r.hebrew,
+      hebrew: r.hebrew || r.text || '',
       author: r.author || '',
       time: r.time || '',
-      url: r.url,
-      source: ['x', 'telegram', 'google'].includes(r.source) ? r.source : 'google',
-      language: ['en', 'ar', 'fa'].includes(r.language) ? r.language : 'en',
-      reliability: ['high', 'medium', 'low'].includes(r.reliability) ? r.reliability : 'low',
+      url: r.url || '',
+      source: ['x', 'telegram', 'rss', 'google'].includes(r.source) ? r.source : 'rss',
+      language: r.language || 'en',
+      reliability,
+      relevance: r.relevance || 5,
+      is_breaking: r.is_breaking || false,
       detectedAt: now,
+      pubDate: r.pubDate || now,
       fresh: true
     };
 
     state.alerts.unshift(alert);
     newCount++;
 
-    // Notify
-    notify(alert);
-    showPopup(alert);
+    if (alert.is_breaking || alert.reliability === 'high') {
+      notify(alert);
+      showPopup(alert);
+    }
   }
 
-  // Trim alerts
+  // Trim
   if (state.alerts.length > MAX_ALERTS) {
     state.alerts = state.alerts.slice(0, MAX_ALERTS);
   }
@@ -820,81 +1122,142 @@ function processResults(data, kw) {
     kw.status = 'found';
     renderKeywords();
     setTimeout(() => { kw.status = 'idle'; renderKeywords(); }, 3000);
-  }
+    renderAlerts();
+    updateStats();
+    updateFilterCounts();
 
-  renderAlerts();
-  updateStats();
-  updateFilterCounts();
+    // Only notify for non-breaking items if there are many
+    if (newCount > 3) {
+      showPopup({ hebrew: `${newCount} new updates found for "${kw.text}"`, source: 'rss' });
+    }
+  }
 }
 
-function hashText(text) {
-  let hash = 0;
-  for (let i = 0; i < text.length; i++) {
-    const c = text.charCodeAt(i);
-    hash = ((hash << 5) - hash) + c;
-    hash |= 0;
+// ===== TITLE SIMILARITY =====
+function isTitleSimilar(title) {
+  const words = title.split(/\s+/).filter(w => w.length > 3);
+  if (words.length < 3) return false;
+
+  for (const existing of state.seenTitles) {
+    if (!existing || existing.length < 10) continue;
+    const existingWords = existing.split(/\s+/).filter(w => w.length > 3);
+    if (existingWords.length < 3) continue;
+
+    // Check word overlap
+    let overlap = 0;
+    for (const w of words) {
+      if (existingWords.includes(w)) overlap++;
+    }
+    const similarity = overlap / Math.max(words.length, existingWords.length);
+    if (similarity > 0.6) return true;
   }
-  return 'h' + hash;
+  return false;
+}
+
+// ===== SOURCE RELIABILITY =====
+function scoreSourceReliability(sourceName) {
+  if (!sourceName) return 'low';
+  const lower = sourceName.toLowerCase().trim();
+  for (const trusted of TRUSTED_SOURCES) {
+    if (lower.includes(trusted)) return 'high';
+  }
+  // Check if it's a known domain pattern
+  if (lower.includes('.gov') || lower.includes('official')) return 'high';
+  if (lower.includes('news') || lower.includes('press') || lower.includes('media')) return 'medium';
+  return 'medium'; // Default RSS sources are at least medium
 }
 
 // ===== ALERT RENDERING =====
 function renderAlerts() {
   const feed = $('feed');
-  const filtered = state.currentFilter === 'all'
-    ? state.alerts
-    : state.alerts.filter(a => a.source === state.currentFilter);
+  let filtered = state.alerts;
+
+  // Keyword filter
+  if (state.kwFilter) {
+    filtered = filtered.filter(a => a.keywordId === state.kwFilter);
+  }
+
+  // Source filter
+  if (state.sourceFilter !== 'all') {
+    filtered = filtered.filter(a => a.source === state.sourceFilter);
+  }
+
+  // Reliability filter
+  if (state.relFilter === 'high') {
+    filtered = filtered.filter(a => a.reliability === 'high');
+  } else if (state.relFilter === 'medium') {
+    filtered = filtered.filter(a => a.reliability === 'high' || a.reliability === 'medium');
+  }
+
+  // Sort
+  if (state.sortBy === 'reliability') {
+    const relOrder = { high: 0, medium: 1, low: 2 };
+    filtered.sort((a, b) => (relOrder[a.reliability] || 2) - (relOrder[b.reliability] || 2));
+  } else if (state.sortBy === 'relevance') {
+    filtered.sort((a, b) => (b.relevance || 0) - (a.relevance || 0));
+  } else {
+    filtered.sort((a, b) => b.detectedAt - a.detectedAt);
+  }
+
+  // Update feed label
+  const kwObj = state.keywords.find(k => k.id === state.kwFilter);
+  $('feed-label').textContent = kwObj
+    ? `Results: "${kwObj.text}" (${filtered.length})`
+    : `All Updates (${filtered.length})`;
 
   if (filtered.length === 0) {
-    feed.innerHTML = `<div class="feed-empty"><div class="fe-icon">◉</div><p>${state.keywords.length ? 'אין תוצאות עדיין... ממשיך לסרוק' : 'הוסף מילות חיפוש כדי להתחיל ניטור'}</p></div>`;
+    feed.innerHTML = `<div class="feed-empty"><div class="fe-icon">O</div><p>${state.keywords.length ? 'No results yet... still scanning' : 'Add keywords to start monitoring'}</p></div>`;
     return;
   }
 
   const now = Date.now();
-  feed.innerHTML = filtered.map(a => {
-    const isFresh = (now - a.detectedAt) < 30000;
+  feed.innerHTML = filtered.slice(0, 50).map(a => {
+    const isFresh = (now - a.detectedAt) < 60000;
+    const isBreaking = a.is_breaking;
     const hebrewHighlighted = highlightKeyword(a.hebrew, a.keyword);
-    const sourceBadgeCls = a.source;
-    const relCls = a.reliability;
+    const sourceColor = a.source === 'x' ? 'x' : a.source === 'telegram' ? 'telegram' : a.source === 'rss' ? 'rss' : 'google';
 
-    return `<div class="alert-card${isFresh ? ' fresh' : ''}">
+    return `<div class="alert-card${isBreaking ? ' breaking' : isFresh ? ' fresh' : ''}">
       <div class="alert-badges">
-        ${isFresh ? '<span class="badge badge-new">NEW</span>' : ''}
-        <span class="badge badge-source ${sourceBadgeCls}">${SOURCE_LABELS[a.source] || a.source}</span>
-        <span class="badge badge-lang">${a.language.toUpperCase()}</span>
-        <span class="badge badge-rel ${relCls}">${RELIABILITY_LABELS[a.reliability] || a.reliability}</span>
+        ${isBreaking ? '<span class="badge badge-breaking">BREAKING</span>' : ''}
+        ${isFresh && !isBreaking ? '<span class="badge badge-new">NEW</span>' : ''}
+        <span class="badge badge-source ${sourceColor}">${SOURCE_LABELS[a.source] || a.source}</span>
+        <span class="badge badge-rel ${a.reliability}">${RELIABILITY_LABELS[a.reliability] || a.reliability}</span>
         <span class="badge badge-kw">${esc(a.keyword)}</span>
+        <span class="badge badge-time">${esc(a.time)}</span>
       </div>
       <div class="alert-text">${hebrewHighlighted}</div>
       <div class="alert-meta">
-        <span>${esc(a.author)}</span>
-        <span>·</span>
-        <span>${esc(a.time)}</span>
-        <span>·</span>
-        <a href="${esc(a.url)}" target="_blank" rel="noopener">→ צפה במקור</a>
+        ${a.author ? `<span>${esc(a.author)}</span><span>&middot;</span>` : ''}
+        ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener">View Source &rarr;</a>` : ''}
       </div>
-      <div class="alert-original">
-        <button class="alert-orig-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('span').textContent=this.nextElementSibling.classList.contains('open')?'▲':'▼'">
-          <span>▼</span> טקסט מקורי (${a.language.toUpperCase()})
+      ${a.text && a.text !== a.hebrew ? `<div class="alert-original">
+        <button class="alert-orig-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('span').textContent=this.nextElementSibling.classList.contains('open')?'&#9650;':'&#9660;'">
+          <span>&#9660;</span> Original (${(a.language || 'en').toUpperCase()})
         </button>
         <div class="alert-orig-text">${esc(a.text)}</div>
-      </div>
+      </div>` : ''}
     </div>`;
   }).join('');
 
-  // Remove fresh flag after 30s
+  // Remove fresh flag after 60s
   setTimeout(() => {
     state.alerts.forEach(a => a.fresh = false);
-  }, 30000);
+  }, 60000);
 }
 
 function highlightKeyword(text, keyword) {
   if (!keyword || !text) return esc(text);
   const escaped = esc(text);
   const kw = esc(keyword);
-  // Simple case-insensitive highlight
   try {
-    const re = new RegExp('(' + kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-    return escaped.replace(re, '<mark>$1</mark>');
+    const words = kw.split(/\s+/).filter(w => w.length > 2);
+    let result = escaped;
+    for (const word of words) {
+      const re = new RegExp('(' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+      result = result.replace(re, '<mark>$1</mark>');
+    }
+    return result;
   } catch {
     return escaped;
   }
@@ -903,31 +1266,61 @@ function highlightKeyword(text, keyword) {
 function clearAlerts() {
   state.alerts = [];
   state.seenHashes.clear();
+  state.seenTitles = [];
   renderAlerts();
   updateStats();
   updateFilterCounts();
 }
 
 // ===== FILTERS =====
-function setFilter(source) {
-  state.currentFilter = source;
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.source === source));
+function setSourceFilter(source) {
+  state.sourceFilter = source;
+  document.querySelectorAll('.filter-group:first-child .filter-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.source === source));
+  renderAlerts();
+}
+
+function setRelFilter(rel) {
+  state.relFilter = rel;
+  document.querySelectorAll('.filter-group:nth-child(2) .filter-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.rel === rel));
+  renderAlerts();
+}
+
+function setSort(sort) {
+  state.sortBy = sort;
+  document.querySelectorAll('.sort-btn').forEach(b =>
+    b.classList.toggle('active', b.dataset.sort === sort));
   renderAlerts();
 }
 
 function updateFilterCounts() {
   $('fc-all').textContent = state.alerts.length;
+  $('fc-rss').textContent = state.alerts.filter(a => a.source === 'rss').length;
   $('fc-x').textContent = state.alerts.filter(a => a.source === 'x').length;
   $('fc-telegram').textContent = state.alerts.filter(a => a.source === 'telegram').length;
-  $('fc-google').textContent = state.alerts.filter(a => a.source === 'google').length;
+}
+
+// ===== SEARCH STATUS =====
+function showSearchStatus(text, statusType) {
+  $('search-status').className = 'search-status active';
+  $('search-status-text').textContent = text;
+}
+
+function hideSearchStatus() {
+  setTimeout(() => {
+    if (state.activeSearches === 0) {
+      $('search-status').className = 'search-status';
+    }
+  }, 500);
 }
 
 // ===== NOTIFICATIONS =====
 function notify(alert) {
-  // Browser notification
   if ('Notification' in window && Notification.permission === 'granted') {
     try {
-      const n = new Notification('X Live Alert — ' + alert.keyword, {
+      const prefix = alert.is_breaking ? 'BREAKING: ' : '';
+      const n = new Notification(prefix + 'X Live Alert — ' + alert.keyword, {
         body: alert.hebrew.slice(0, 120),
         icon: '/icon-192.png',
         tag: alert.id,
@@ -936,7 +1329,6 @@ function notify(alert) {
       });
       n.onclick = () => { window.focus(); n.close(); };
     } catch (e) {
-      // Fallback to SW notification
       if (navigator.serviceWorker && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({
           type: 'notify',
@@ -949,47 +1341,61 @@ function notify(alert) {
     }
   }
 
-  // Sound
-  playAlertSound();
+  playAlertSound(alert.is_breaking);
 
-  // Vibration
   if (navigator.vibrate) {
-    navigator.vibrate([200, 100, 200, 100, 200]);
+    navigator.vibrate(alert.is_breaking ? [300, 100, 300, 100, 300] : [200, 100, 200]);
   }
 }
 
 function showPopup(alert) {
   const el = $('popup');
   const sourceLabel = SOURCE_LABELS[alert.source] || alert.source;
-  $('popup-text').innerHTML = `<span class="popup-badge" style="background:var(--source-${alert.source === 'x' ? 'x' : alert.source === 'telegram' ? 'tg' : 'google'})">${esc(sourceLabel)}</span> ${esc(alert.hebrew.slice(0, 100))}`;
+  const sourceVar = alert.source === 'x' ? 'x' : alert.source === 'telegram' ? 'tg' : 'rss';
+  $('popup-text').innerHTML = `<span class="popup-badge" style="background:var(--source-${sourceVar})">${esc(sourceLabel)}</span> ${esc((alert.hebrew || '').slice(0, 100))}`;
   el.classList.add('show');
   clearTimeout(window._popupTimer);
   window._popupTimer = setTimeout(() => el.classList.remove('show'), 5000);
 }
 
-function playAlertSound() {
+function playAlertSound(isBreaking) {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const freqs = [880, 0, 880, 0, 1100];
-    const durations = [0.1, 0.05, 0.1, 0.05, 0.15];
     let t = ctx.currentTime;
 
-    for (let i = 0; i < freqs.length; i++) {
-      if (freqs[i] > 0) {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.value = freqs[i];
-        gain.gain.value = 0.12;
-        gain.gain.exponentialRampToValueAtTime(0.001, t + durations[i]);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(t);
-        osc.stop(t + durations[i]);
+    if (isBreaking) {
+      // Urgent alert sound
+      const freqs = [880, 0, 1100, 0, 880, 0, 1100];
+      const durs = [0.12, 0.06, 0.12, 0.06, 0.12, 0.06, 0.2];
+      for (let i = 0; i < freqs.length; i++) {
+        if (freqs[i] > 0) {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.value = freqs[i];
+          gain.gain.value = 0.15;
+          gain.gain.exponentialRampToValueAtTime(0.001, t + durs[i]);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + durs[i]);
+        }
+        t += durs[i];
       }
-      t += durations[i];
+    } else {
+      // Standard notification sound
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = 800;
+      gain.gain.value = 0.1;
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.15);
     }
-    setTimeout(() => ctx.close(), 1000);
+    setTimeout(() => ctx.close(), 2000);
   } catch (e) {}
 }
 
@@ -1001,8 +1407,8 @@ function updateSearchBar() {
 // ===== STATS =====
 function updateStats() {
   const active = state.keywords.filter(k => k.active).length;
-  $('stat-kw').textContent = active + ' מילים';
-  $('stat-alerts').textContent = state.alerts.length + ' התראות';
+  $('stat-kw').textContent = active + ' keywords';
+  $('stat-alerts').textContent = state.alerts.length + ' alerts';
 
   const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
   const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
@@ -1024,8 +1430,27 @@ function dismissInstall() { $('install-banner').classList.remove('show'); }
 function esc(str) {
   if (!str) return '';
   const d = document.createElement('div');
-  d.textContent = str;
+  d.textContent = String(str);
   return d.innerHTML;
+}
+
+function hashText(text) {
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    const c = text.charCodeAt(i);
+    hash = ((hash << 5) - hash) + c;
+    hash |= 0;
+  }
+  return 'h' + hash;
+}
+
+function formatTimeAgo(date) {
+  if (!date || isNaN(date.getTime())) return '';
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (seconds < 60) return seconds + 's ago';
+  if (seconds < 3600) return Math.floor(seconds / 60) + 'm ago';
+  if (seconds < 86400) return Math.floor(seconds / 3600) + 'h ago';
+  return Math.floor(seconds / 86400) + 'd ago';
 }
 
 // ===== START =====
