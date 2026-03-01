@@ -1,124 +1,92 @@
-/**
- * generate-icons.js
- * Generates PWA icon PNGs for X Live Alert using only Node.js built-ins.
- * Creates a solid-color icon with a white "X" mark on red background.
- */
-'use strict';
-const fs   = require('fs');
-const path = require('path');
+const fs = require('fs');
 const zlib = require('zlib');
 
-// ─── CRC32 ────────────────────────────────────────────────────────────────────
-const crcTable = (() => {
-  const t = new Uint32Array(256);
-  for (let i = 0; i < 256; i++) {
-    let c = i;
-    for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
-    t[i] = c;
-  }
-  return t;
-})();
-
 function crc32(buf) {
-  let crc = 0xFFFFFFFF;
-  for (const b of buf) crc = crcTable[(crc ^ b) & 0xFF] ^ (crc >>> 8);
-  return (crc ^ 0xFFFFFFFF) >>> 0;
+  let c, table = [];
+  for (let n = 0; n < 256; n++) {
+    c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    table[n] = c;
+  }
+  c = 0xffffffff;
+  for (let i = 0; i < buf.length; i++) c = table[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
 }
 
-function pngChunk(type, data) {
-  const typeBuf = Buffer.from(type, 'ascii');
-  const lenBuf  = Buffer.alloc(4);
-  lenBuf.writeUInt32BE(data.length, 0);
-  const crcInput = Buffer.concat([typeBuf, data]);
-  const crcBuf   = Buffer.alloc(4);
-  crcBuf.writeUInt32BE(crc32(crcInput), 0);
-  return Buffer.concat([lenBuf, typeBuf, data, crcBuf]);
+function chunk(type, data) {
+  const t = Buffer.from(type);
+  const buf = Buffer.concat([t, data]);
+  const len = Buffer.alloc(4); len.writeUInt32BE(data.length);
+  const crc = Buffer.alloc(4); crc.writeUInt32BE(crc32(buf));
+  return Buffer.concat([len, buf, crc]);
 }
 
-// ─── Icon painter ─────────────────────────────────────────────────────────────
-function createIconPNG(size) {
-  const BG_R = 0xFF, BG_G = 0x2D, BG_B = 0x4A; // #ff2d4a (red)
-  const FG_R = 0xFF, FG_G = 0xFF, FG_B = 0xFF; // white
+function createIcon(size) {
+  const bg = [11, 17, 32];       // #0b1120
+  const red = [229, 62, 62];     // #e53e3e
+  const white = [225, 231, 239]; // #e1e7ef
 
-  // Raw pixels: RGBA
-  const pixels = new Uint8Array(size * size * 4);
+  const raw = Buffer.alloc(size * (size * 4 + 1));
+  const cx = size / 2, cy = size / 2;
+  const outerR = size * 0.42;
+  const innerR = size * 0.34;
+  const dotR = size * 0.06;
 
-  // Fill background
-  for (let i = 0; i < size * size; i++) {
-    pixels[i*4]   = BG_R;
-    pixels[i*4+1] = BG_G;
-    pixels[i*4+2] = BG_B;
-    pixels[i*4+3] = 255;
-  }
-
-  // Draw a thick "X" using two diagonal bands
-  const pad    = Math.round(size * 0.18);
-  const thick  = Math.round(size * 0.13);
-
-  function setPixel(x, y) {
-    if (x < 0 || x >= size || y < 0 || y >= size) return;
-    const i = (y * size + x) * 4;
-    pixels[i]   = FG_R;
-    pixels[i+1] = FG_G;
-    pixels[i+2] = FG_B;
-    pixels[i+3] = 255;
-  }
-
-  for (let t = -thick; t <= thick; t++) {
-    for (let s = pad; s < size - pad; s++) {
-      // top-left → bottom-right diagonal
-      const x1 = s;
-      const y1 = Math.round((s - pad) * (size - 2*pad) / (size - 2*pad)) + pad + t;
-      setPixel(x1, y1);
-      // top-right → bottom-left diagonal
-      const x2 = s;
-      const y2 = (size - 1 - pad) - Math.round((s - pad) * (size - 2*pad) / (size - 2*pad)) + t;
-      setPixel(x2, y2);
-    }
-  }
-
-  // Build PNG scanlines: filter byte (0 = None) + RGBA row
-  const stride = 1 + size * 4;
-  const raw    = Buffer.alloc(size * stride);
   for (let y = 0; y < size; y++) {
-    raw[y * stride] = 0; // filter: None
+    const off = y * (size * 4 + 1);
+    raw[off] = 0; // filter none
     for (let x = 0; x < size; x++) {
-      const pi = (y * size + x) * 4;
-      const ri = y * stride + 1 + x * 4;
-      raw[ri]   = pixels[pi];
-      raw[ri+1] = pixels[pi+1];
-      raw[ri+2] = pixels[pi+2];
-      raw[ri+3] = pixels[pi+3];
+      const px = off + 1 + x * 4;
+      const dx = x - cx, dy = y - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      let r, g, b, a = 255;
+
+      if (dist <= outerR && dist > innerR) {
+        // Red ring
+        const edge = Math.min(dist - innerR, outerR - dist);
+        const aa = Math.min(1, edge * 2);
+        r = red[0]; g = red[1]; b = red[2]; a = Math.round(aa * 255);
+      } else if (dist <= innerR) {
+        // Inner area - draw X lettermark
+        const nx = (x - cx) / innerR;
+        const ny = (y - cy) / innerR;
+        const thickness = 0.22;
+
+        const onDiag1 = Math.abs(nx - ny) / Math.sqrt(2) < thickness && Math.abs(nx) < 0.7;
+        const onDiag2 = Math.abs(nx + ny) / Math.sqrt(2) < thickness && Math.abs(nx) < 0.7;
+
+        if (onDiag1 || onDiag2) {
+          r = white[0]; g = white[1]; b = white[2];
+        } else {
+          r = bg[0]; g = bg[1]; b = bg[2];
+        }
+      } else {
+        // Live dot - top right
+        const dotCx = cx + size * 0.30;
+        const dotCy = cy - size * 0.30;
+        const dotDist = Math.sqrt((x - dotCx) ** 2 + (y - dotCy) ** 2);
+        if (dotDist <= dotR) {
+          r = red[0]; g = red[1]; b = red[2];
+        } else {
+          r = bg[0]; g = bg[1]; b = bg[2]; a = 0;
+        }
+      }
+
+      raw[px] = r; raw[px + 1] = g; raw[px + 2] = b; raw[px + 3] = a;
     }
   }
 
-  const compressed = zlib.deflateSync(raw, { level: 6 });
-
-  // IHDR: width, height, bit-depth=8, color-type=6 (RGBA)
+  const deflated = zlib.deflateSync(raw, { level: 9 });
+  const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(size, 0);
   ihdr.writeUInt32BE(size, 4);
-  ihdr[8]  = 8; // bit depth
-  ihdr[9]  = 6; // RGBA
-  ihdr[10] = 0; // compression
-  ihdr[11] = 0; // filter
-  ihdr[12] = 0; // interlace
+  ihdr[8] = 8; ihdr[9] = 6; // 8-bit RGBA
 
-  return Buffer.concat([
-    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), // PNG signature
-    pngChunk('IHDR', ihdr),
-    pngChunk('IDAT', compressed),
-    pngChunk('IEND', Buffer.alloc(0))
-  ]);
+  return Buffer.concat([sig, chunk('IHDR', ihdr), chunk('IDAT', deflated), chunk('IEND', Buffer.alloc(0))]);
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
-const publicDir = path.join(__dirname, 'public');
-if (!fs.existsSync(publicDir)) fs.mkdirSync(publicDir, { recursive: true });
-
-for (const size of [192, 512]) {
-  const outPath = path.join(publicDir, `icon-${size}.png`);
-  fs.writeFileSync(outPath, createIconPNG(size));
-  console.log(`✓ Generated icon-${size}.png`);
-}
-console.log('Icons ready.');
+fs.writeFileSync('public/icon-192.png', createIcon(192));
+fs.writeFileSync('public/icon-512.png', createIcon(512));
+console.log('Icons generated: icon-192.png, icon-512.png');
