@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#0b1120">
+<title>ערוצי טלגרם — X Live Alert</title>
+<link rel="icon" href="/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b1120;--surface:#111a2e;--card:#162036;--card-alt:#1a2540;--input:#0d1526;
+  --border:#243049;--border-light:#2d3d5a;
+  --text:#e1e7ef;--text2:#8b98ad;--text3:#5a6478;
+  --red:#e53e3e;--green:#38a169;--blue:#3182ce;--cyan:#0bc5ea;--amber:#d69e2e;--purple:#805ad5;
+  --fa-color:#68d391;--ar-color:#63b3ed;--lb-color:#f6ad55;
+  --font:'Noto Sans Hebrew','Inter',-apple-system,sans-serif;
+  --mono:'Space Mono','Menlo',monospace;
+  --r:6px;--r-sm:4px;
+}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh}
+button{cursor:pointer;font-family:inherit;border:none;outline:none}
+input,select{font-family:inherit}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* ===== HEADER ===== */
+header{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;position:sticky;top:0;z-index:10}
+.header-inner{display:flex;align-items:center;justify-content:space-between;max-width:860px;margin:0 auto}
+.back-btn{display:flex;align-items:center;gap:8px;color:var(--cyan);text-decoration:none;font-size:13px;font-weight:600;padding:7px 12px;border:1px solid rgba(11,197,234,0.25);border-radius:var(--r-sm);transition:all 0.2s}
+.back-btn:hover{background:rgba(11,197,234,0.08);border-color:var(--cyan)}
+.page-title{font-size:15px;font-weight:700;color:var(--text)}
+.page-sub{font-size:11px;color:var(--text3);font-family:var(--mono);letter-spacing:0.5px}
+
+/* ===== MAIN ===== */
+main{max-width:860px;margin:0 auto;padding:20px}
+
+/* ===== STATS BAR ===== */
+.stats-bar{display:flex;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:12px 16px;margin-bottom:20px;font-family:var(--mono);font-size:11px}
+.stat-item{display:flex;flex-direction:column;align-items:center;gap:2px}
+.stat-num{font-size:20px;font-weight:700;color:var(--cyan)}
+.stat-label{color:var(--text3);font-size:10px}
+
+/* ===== ADD FORM ===== */
+.add-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px}
+.add-panel-title{font-size:12px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.add-panel-title span{background:var(--cyan);color:#000;font-size:9px;padding:2px 6px;border-radius:3px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr;gap:8px}}
+.form-field label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;font-weight:500}
+.form-field input,.form-field select{width:100%;padding:9px 12px;background:var(--input);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:13px}
+.form-field input:focus,.form-field select:focus{outline:none;border-color:var(--blue)}
+.form-field input::placeholder{color:var(--text3)}
+.add-btn{padding:9px 18px;background:var(--blue);color:#fff;font-size:13px;font-weight:600;border-radius:var(--r-sm);white-space:nowrap;transition:background 0.2s;align-self:end}
+.add-btn:hover{background:#2b6cb0}
+.form-hint{font-size:11px;color:var(--text3);margin-top:8px}
+.form-hint code{background:var(--card);padding:1px 5px;border-radius:3px;font-family:var(--mono);color:var(--cyan)}
+
+/* ===== CATEGORY SECTIONS ===== */
+.section{margin-bottom:24px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-title{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--text)}
+.section-flag{width:6px;height:20px;border-radius:2px}
+.section-flag.fa{background:var(--fa-color)}
+.section-flag.ar{background:var(--ar-color)}
+.section-flag.lb{background:var(--lb-color)}
+.section-flag.custom{background:var(--purple)}
+.section-badge{font-size:10px;font-weight:600;font-family:var(--mono);padding:2px 7px;border-radius:3px}
+.section-badge.fa{background:rgba(104,211,145,0.15);color:var(--fa-color);border:1px solid rgba(104,211,145,0.3)}
+.section-badge.ar{background:rgba(99,179,237,0.15);color:var(--ar-color);border:1px solid rgba(99,179,237,0.3)}
+.section-badge.lb{background:rgba(246,173,85,0.15);color:var(--lb-color);border:1px solid rgba(246,173,85,0.3)}
+.section-badge.custom{background:rgba(128,90,213,0.15);color:var(--purple);border:1px solid rgba(128,90,213,0.3)}
+.section-toggle-all{background:none;color:var(--text3);font-size:11px;padding:4px 8px;border:1px solid var(--border);border-radius:var(--r-sm);transition:all 0.2s}
+.section-toggle-all:hover{color:var(--text);border-color:var(--border-light)}
+.channels-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px}
+
+/* ===== CHANNEL CARD ===== */
+.channel-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;align-items:flex-start;gap:12px;transition:all 0.2s;cursor:pointer}
+.channel-card:hover{border-color:var(--border-light)}
+.channel-card.active{border-color:rgba(11,197,234,0.4);background:var(--card-alt)}
+.channel-card.active .ch-name{color:var(--text)}
+.channel-card:not(.active){opacity:0.55}
+.toggle-wrap{flex-shrink:0;margin-top:2px}
+.toggle{width:36px;height:20px;background:var(--input);border:1px solid var(--border);border-radius:10px;position:relative;transition:all 0.2s;cursor:pointer}
+.toggle::after{content:'';position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:var(--text3);transition:all 0.2s}
+.channel-card.active .toggle{background:rgba(11,197,234,0.2);border-color:var(--cyan)}
+.channel-card.active .toggle::after{background:var(--cyan);right:auto;left:2px}
+.ch-info{flex:1;min-width:0}
+.ch-name{font-size:13px;font-weight:600;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;transition:color 0.2s}
+.ch-url{font-size:11px;color:var(--text3);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
+.ch-desc{font-size:11px;color:var(--text3);line-height:1.4}
+.ch-actions{display:flex;align-items:center;gap:6px;margin-top:2px;flex-shrink:0}
+.ch-link{color:var(--blue);font-size:11px;text-decoration:none;padding:2px 0}
+.ch-link:hover{text-decoration:underline}
+.ch-del{background:none;color:var(--text3);font-size:14px;padding:2px 4px;border-radius:3px;transition:color 0.2s}
+.ch-del:hover{color:var(--red)}
+/* Custom-only channels have delete button */
+.ch-del.hidden{display:none}
+
+/* ===== ACTIVE COUNT ===== */
+.active-summary{background:rgba(11,197,234,0.06);border:1px solid rgba(11,197,234,0.2);border-radius:var(--r);padding:12px 16px;margin-bottom:20px;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--text2)}
+.active-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:pulse 2s infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.active-count{font-size:18px;font-weight:700;color:var(--cyan);font-family:var(--mono)}
+
+/* ===== EMPTY ===== */
+.empty-custom{text-align:center;padding:30px;color:var(--text3);font-size:13px;background:var(--card);border:1px dashed var(--border);border-radius:var(--r)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="/" class="back-btn">← חמ"ל ראשי</a>
+    <div style="text-align:center">
+      <div class="page-title">ערוצי טלגרם</div>
+      <div class="page-sub">TELEGRAM CHANNEL MANAGER</div>
+    </div>
+    <div style="width:100px"></div>
+  </div>
+</header>
+
+<main>
+
+  <!-- Active summary -->
+  <div class="active-summary">
+    <div class="active-dot"></div>
+    <span class="active-count" id="active-count">0</span>
+    <span>ערוצים פעילים — ייכללו בכל חיפוש AI</span>
+  </div>
+
+  <!-- Add custom channel -->
+  <div class="add-panel">
+    <div class="add-panel-title">הוסף ערוץ מותאם אישית <span>חדש</span></div>
+    <div class="form-grid">
+      <div class="form-field">
+        <label>שם הערוץ</label>
+        <input type="text" id="ch-name" placeholder="למשל: ערוץ המלחמה">
+      </div>
+      <div class="form-field">
+        <label>כתובת טלגרם</label>
+        <input type="text" id="ch-url" placeholder="t.me/channel_name או @channel" dir="ltr">
+      </div>
+      <button class="add-btn" onclick="addCustomChannel()">+ הוסף</button>
+    </div>
+    <div class="form-hint">
+      ניתן להזין <code>t.me/channel_name</code> או רק <code>@channel_name</code>
+    </div>
+  </div>
+
+  <!-- Custom channels -->
+  <div class="section" id="section-custom">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-flag custom"></div>
+        <span>ערוצים מותאמים אישית</span>
+        <span class="section-badge custom">CUSTOM</span>
+      </div>
+      <button class="section-toggle-all" onclick="toggleSection('custom')">הפעל/כבה הכל</button>
+    </div>
+    <div class="channels-grid" id="grid-custom">
+      <div class="empty-custom">עדיין לא הוספת ערוצים מותאמים. השתמש בטופס למעלה.</div>
+    </div>
+  </div>
+
+  <!-- Iranian Persian channels -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-flag fa"></div>
+        <span>ערוצים איראניים בפרסית</span>
+        <span class="section-badge fa">FA · IRAN</span>
+      </div>
+      <button class="section-toggle-all" onclick="toggleSection('iran-fa')">הפעל/כבה הכל</button>
+    </div>
+    <div class="channels-grid" id="grid-iran-fa"></div>
+  </div>
+
+  <!-- Iranian Arabic channels -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-flag ar"></div>
+        <span>ערוצים איראניים בערבית</span>
+        <span class="section-badge ar">AR · IRAN</span>
+      </div>
+      <button class="section-toggle-all" onclick="toggleSection('iran-ar')">הפעל/כבה הכל</button>
+    </div>
+    <div class="channels-grid" id="grid-iran-ar"></div>
+  </div>
+
+  <!-- Lebanese Persian channels -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="section-flag lb"></div>
+        <span>ערוצים לבנוניים בפרסית</span>
+        <span class="section-badge lb">FA · LEBANON</span>
+      </div>
+      <button class="section-toggle-all" onclick="toggleSection('lebanon-fa')">הפעל/כבה הכל</button>
+    </div>
+    <div class="channels-grid" id="grid-lebanon-fa"></div>
+  </div>
+
+</main>
+
+<script>
+const STORAGE_KEY = 'xlive_tg_channels_v2';
+
+// Default channels (built-in, cannot be deleted)
+const DEFAULT_CHANNELS = [
+  // Iranian Persian
+  { id: 'khamenei_ir', name: 'חמינאי — رهبر', url: 't.me/khamenei_ir', category: 'iran-fa', desc: 'המנהיג העליון של איראן — חשבון רשמי', builtin: true },
+  { id: 'Irnafarsi', name: 'IRNA פרסית', url: 't.me/Irnafarsi', category: 'iran-fa', desc: 'סוכנות הידיעות הרשמית של איראן', builtin: true },
+  { id: 'IranIntlTV', name: 'איראן אינטרנשיונל', url: 't.me/IranIntlTV', category: 'iran-fa', desc: 'ערוץ חדשות עצמאי — מרחבי העולם', builtin: true },
+  { id: 'bbc_persian', name: 'BBC פרסית', url: 't.me/bbc_persian', category: 'iran-fa', desc: 'BBC Service — Persian/Farsi', builtin: true },
+  { id: 'VoiceofAmericaFarsi', name: 'VOA פרסית', url: 't.me/VoiceofAmericaFarsi', category: 'iran-fa', desc: 'Voice of America — Farsi Service', builtin: true },
+  { id: 'tasnimnews_fa', name: 'Tasnim פרסית', url: 't.me/tasnimnews_fa', category: 'iran-fa', desc: 'סוכנות תסנים — מדיה ממשלתית', builtin: true },
+  { id: 'FarsNewsFa', name: 'Fars News פרסית', url: 't.me/FarsNewsFa', category: 'iran-fa', desc: 'סוכנות פארס — קרובה למשמרות המהפכה', builtin: true },
+  { id: 'mehrnews', name: 'Mehr News פרסית', url: 't.me/mehrnews', category: 'iran-fa', desc: 'סוכנות מהר — ממשלתית', builtin: true },
+  { id: 'manoto', name: 'Manoto TV', url: 't.me/manoto', category: 'iran-fa', desc: 'ערוץ פרסי עצמאי — לונדון', builtin: true },
+
+  // Iranian Arabic
+  { id: 'AlaalamTV', name: 'العالم — Al-Alam', url: 't.me/AlaalamTV', category: 'iran-ar', desc: 'הטלוויזיה הממלכתית של איראן בערבית', builtin: true },
+  { id: 'sabereen_news', name: 'الصابرين — Sabereen', url: 't.me/sabereen_news', category: 'iran-ar', desc: 'ערוץ ציר ההתנגדות — ערבית', builtin: true },
+  { id: 'tasnimarabic', name: 'Tasnim ערבית', url: 't.me/tasnimarabic', category: 'iran-ar', desc: 'תסנים ערבית — איראן', builtin: true },
+  { id: 'FarsNews_Arabic', name: 'Fars News ערבית', url: 't.me/FarsNews_Arabic', category: 'iran-ar', desc: 'סוכנות פארס בערבית', builtin: true },
+  { id: 'nournewsir', name: 'Nour News', url: 't.me/nournewsir', category: 'iran-ar', desc: 'ערוץ נור — קרוב למועצת הביטחון הלאומי', builtin: true },
+  { id: 'presstvchannel', name: 'Press TV', url: 't.me/presstvchannel', category: 'iran-ar', desc: 'ערוץ הטלוויזיה הבינלאומי של איראן', builtin: true },
+
+  // Lebanese Persian
+  { id: 'almanarpers', name: 'المنار פרסית', url: 't.me/almanarpers', category: 'lebanon-fa', desc: 'ערוץ אל-מנאר — שירות פרסי (חיזבאללה)', builtin: true },
+  { id: 'AlAhedNews', name: 'Al-Ahed News', url: 't.me/AlAhedNews', category: 'lebanon-fa', desc: 'ערוץ אל-עהד — לבנון', builtin: true },
+  { id: 'almanarnews', name: 'المنار ערבית', url: 't.me/almanarnews', category: 'lebanon-fa', desc: 'ערוץ אל-מנאר ערבית — לבנון', builtin: true },
+];
+
+let channels = []; // Will be loaded from localStorage
+
+function loadChannels() {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+  if (saved) {
+    channels = saved;
+    // Merge in any new built-in channels that were added
+    for (const def of DEFAULT_CHANNELS) {
+      if (!channels.find(c => c.id === def.id)) {
+        channels.push({ ...def, active: true });
+      }
+    }
+  } else {
+    // First time: activate all defaults
+    channels = DEFAULT_CHANNELS.map(c => ({ ...c, active: true }));
+  }
+  save();
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(channels));
+  renderAll();
+}
+
+function toggle(id) {
+  const ch = channels.find(c => c.id === id);
+  if (ch) { ch.active = !ch.active; save(); }
+}
+
+function toggleSection(category) {
+  const sectionChannels = channels.filter(c => c.category === category);
+  const allActive = sectionChannels.every(c => c.active);
+  sectionChannels.forEach(c => c.active = !allActive);
+  save();
+}
+
+function addCustomChannel() {
+  const name = document.getElementById('ch-name').value.trim();
+  let url = document.getElementById('ch-url').value.trim();
+  if (!name || !url) { alert('נא למלא שם וכתובת'); return; }
+
+  // Normalize URL
+  if (url.startsWith('@')) url = 't.me/' + url.slice(1);
+  if (!url.startsWith('t.me/') && !url.startsWith('https://t.me/')) {
+    url = 't.me/' + url.replace(/^\/+/, '');
+  }
+  url = url.replace('https://', '').replace('http://', '');
+
+  const id = 'custom_' + Date.now();
+  channels.push({ id, name, url, category: 'custom', desc: 'ערוץ מותאם אישית', builtin: false, active: true });
+  document.getElementById('ch-name').value = '';
+  document.getElementById('ch-url').value = '';
+  save();
+}
+
+function deleteChannel(id) {
+  channels = channels.filter(c => c.id !== id);
+  save();
+}
+
+function renderAll() {
+  renderSection('iran-fa');
+  renderSection('iran-ar');
+  renderSection('lebanon-fa');
+  renderCustom();
+  updateStats();
+}
+
+function renderSection(category) {
+  const grid = document.getElementById('grid-' + category);
+  if (!grid) return;
+  const list = channels.filter(c => c.category === category);
+  grid.innerHTML = list.map(ch => channelCard(ch)).join('');
+}
+
+function renderCustom() {
+  const grid = document.getElementById('grid-custom');
+  const customList = channels.filter(c => c.category === 'custom');
+  if (customList.length === 0) {
+    grid.innerHTML = '<div class="empty-custom">עדיין לא הוספת ערוצים מותאמים. השתמש בטופס למעלה.</div>';
+    return;
+  }
+  grid.innerHTML = customList.map(ch => channelCard(ch)).join('');
+}
+
+function channelCard(ch) {
+  const activeClass = ch.active ? 'active' : '';
+  const tmeUrl = ch.url.startsWith('https://') ? ch.url : 'https://' + ch.url;
+  return `<div class="channel-card ${activeClass}" onclick="toggle('${esc(ch.id)}')">
+    <div class="toggle-wrap"><div class="toggle"></div></div>
+    <div class="ch-info">
+      <div class="ch-name">${esc(ch.name)}</div>
+      <div class="ch-url">${esc(ch.url)}</div>
+      ${ch.desc ? `<div class="ch-desc">${esc(ch.desc)}</div>` : ''}
+    </div>
+    <div class="ch-actions" onclick="event.stopPropagation()">
+      <a class="ch-link" href="${esc(tmeUrl)}" target="_blank" rel="noopener">פתח</a>
+      ${!ch.builtin ? `<button class="ch-del" onclick="deleteChannel('${esc(ch.id)}')" title="מחק">✕</button>` : ''}
+    </div>
+  </div>`;
+}
+
+function updateStats() {
+  const active = channels.filter(c => c.active).length;
+  document.getElementById('active-count').textContent = active;
+}
+
+function esc(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = String(str);
+  return d.innerHTML;
+}
+
+// Init
+loadChannels();
+renderAll();
+</script>
+</body>
+</html>

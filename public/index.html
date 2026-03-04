@@ -81,73 +81,75 @@ button{cursor:pointer}
 .modal-persist input[type=checkbox]{accent-color:var(--accent-blue)}
 
 /* ===== HEADER ===== */
-header{background:var(--bg-surface);border-bottom:1px solid var(--border);padding:12px 16px;position:sticky;top:0;z-index:100}
+header{background:var(--bg-surface);border-bottom:1px solid var(--border);padding:10px 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.3)}
 .header-row{display:flex;align-items:center;justify-content:space-between;max-width:900px;margin:0 auto}
 .header-left{display:flex;align-items:center;gap:10px}
-.live-dot{width:8px;height:8px;border-radius:50%;background:var(--accent-red);animation:pulse-dot 2s infinite;flex-shrink:0}
-@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:0.4}}
-.header-title{font-size:15px;font-weight:700;letter-spacing:1px;color:var(--text-primary)}
-.header-subtitle{font-size:10px;color:var(--text-muted);letter-spacing:0.5px;font-weight:400;margin-top:1px}
-.header-stats{display:flex;align-items:center;gap:12px;font-family:var(--font-mono);font-size:11px;color:var(--text-secondary)}
+.live-dot{width:9px;height:9px;border-radius:50%;background:var(--accent-red);animation:pulse-dot 1.5s infinite;flex-shrink:0;box-shadow:0 0 6px var(--accent-red)}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.85)}}
+.header-title{font-size:16px;font-weight:800;letter-spacing:1.5px;color:var(--text-primary);font-family:var(--font-mono)}
+.header-subtitle{font-size:9px;color:var(--accent-cyan);letter-spacing:1px;font-weight:600;margin-top:2px;font-family:var(--font-mono)}
+.header-stats{display:flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:11px;color:var(--text-secondary)}
 .header-stats span{white-space:nowrap}
 .stat-divider{width:1px;height:14px;background:var(--border)}
-.header-btn{background:none;color:var(--text-muted);font-size:16px;padding:6px;border-radius:var(--radius-sm);transition:color 0.2s}
-.header-btn:hover{color:var(--text-primary)}
+.header-btn{background:none;color:var(--text-muted);font-size:16px;padding:5px 7px;border-radius:var(--radius-sm);transition:all 0.2s}
+.header-btn:hover{color:var(--text-primary);background:rgba(255,255,255,0.05)}
 
 /* ===== MAIN ===== */
 main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
 
 /* ===== CONTROL PANEL ===== */
-.panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
-.panel-title{font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:0.5px;margin-bottom:12px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
-.panel-title .title-badge{font-size:9px;background:var(--accent-cyan);color:#000;padding:1px 6px;border-radius:3px;font-weight:700}
-.add-row{display:flex;gap:8px;margin-bottom:12px}
-.add-row input[type=text]{flex:1;padding:9px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px}
-.add-row input[type=text]:focus{border-color:var(--accent-blue)}
-.add-row select{padding:9px 8px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-secondary);font-size:12px;font-family:var(--font-mono);min-width:70px}
-.add-btn{padding:9px 16px;background:var(--accent-blue);color:#fff;font-size:13px;font-weight:600;border-radius:var(--radius-sm);white-space:nowrap;transition:background 0.2s}
-.add-btn:hover{background:#2b6cb0}
+.panel{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px}
+.panel-title{font-size:11px;color:var(--text-muted);font-weight:700;letter-spacing:0.8px;margin-bottom:10px;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.panel-title .title-badge{font-size:9px;background:var(--accent-cyan);color:#000;padding:1px 6px;border-radius:3px;font-weight:700;letter-spacing:0}
+.add-row{display:flex;gap:8px;margin-bottom:10px;align-items:center}
+.add-row input[type=text]{flex:1;padding:9px 12px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-size:14px;min-width:0;transition:border-color 0.2s}
+.add-row input[type=text]:focus{border-color:var(--accent-blue);outline:none}
+.add-row input[type=text]::placeholder{color:var(--text-muted);font-size:13px}
+.add-row select{padding:9px 8px;background:var(--bg-input);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-secondary);font-size:12px;font-family:var(--font-mono);min-width:68px;cursor:pointer}
+.add-btn{padding:9px 16px;background:var(--accent-blue);color:#fff;font-size:13px;font-weight:700;border-radius:var(--radius-sm);white-space:nowrap;transition:all 0.2s;letter-spacing:0.3px}
+.add-btn:hover{background:#2b6cb0;transform:translateY(-1px)}
 
 /* ===== KEYWORDS ===== */
 .kw-grid{display:flex;flex-wrap:wrap;gap:8px}
-.kw-chip{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;min-width:140px;position:relative;transition:all 0.3s;cursor:pointer}
-.kw-chip:hover{border-color:var(--border-light)}
-.kw-chip.active-filter{border-color:var(--accent-cyan);background:var(--bg-card-alt)}
-.kw-chip.searching{border-color:var(--accent-cyan)}
-.kw-chip.found{border-color:var(--accent-red)}
-.kw-chip.paused{opacity:0.5}
-.kw-top{display:flex;align-items:center;gap:6px;margin-bottom:4px}
-.kw-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;background:var(--accent-green)}
-.kw-chip.searching .kw-dot{background:var(--accent-cyan);animation:pulse-dot 1s infinite}
-.kw-chip.found .kw-dot{background:var(--accent-red)}
+.kw-chip{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;min-width:160px;max-width:220px;position:relative;transition:all 0.25s;cursor:pointer}
+.kw-chip:hover{border-color:var(--border-light);background:var(--bg-card-alt)}
+.kw-chip.active-filter{border-color:var(--accent-cyan);background:rgba(11,197,234,0.06)}
+.kw-chip.searching{border-color:rgba(11,197,234,0.5);background:rgba(11,197,234,0.04)}
+.kw-chip.found{border-color:rgba(229,62,62,0.5);background:rgba(229,62,62,0.04)}
+.kw-chip.paused{opacity:0.45}
+.kw-top{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.kw-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--accent-green)}
+.kw-chip.searching .kw-dot{background:var(--accent-cyan);animation:pulse-dot 0.8s infinite}
+.kw-chip.found .kw-dot{background:var(--accent-red);animation:pulse-dot 0.5s ease 3}
 .kw-chip.paused .kw-dot{background:var(--text-muted)}
-.kw-text{font-size:13px;font-weight:500;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:120px}
-.kw-meta{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted)}
-.kw-actions{display:flex;gap:4px;margin-top:4px}
-.kw-action{background:none;color:var(--text-muted);font-size:12px;padding:2px 4px;border-radius:2px;transition:color 0.2s}
-.kw-action:hover{color:var(--text-primary)}
-.kw-action.del:hover{color:var(--accent-red)}
+.kw-text{font-size:13px;font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.kw-meta{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);margin-bottom:6px}
+.kw-actions{display:flex;gap:4px}
+.kw-action{background:rgba(255,255,255,0.04);color:var(--text-muted);font-size:11px;padding:3px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);transition:all 0.2s}
+.kw-action:hover{color:var(--text-primary);border-color:var(--border-light)}
+.kw-action.del:hover{color:var(--accent-red);border-color:var(--accent-red);background:rgba(229,62,62,0.06)}
 
 /* ===== FILTER BAR ===== */
-.filters-row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
-.filter-group{display:flex;gap:4px;align-items:center}
-.filter-group-label{font-size:10px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-left:6px}
-.filter-btn{padding:7px 14px;font-size:12px;font-weight:500;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-secondary);white-space:nowrap;transition:all 0.2s;cursor:pointer}
-.filter-btn:hover{border-color:var(--border-light);color:var(--text-primary)}
+.filters-row{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;align-items:center;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px}
+.filter-group{display:flex;gap:3px;align-items:center;flex-wrap:wrap}
+.filter-group+.filter-group{padding-right:10px;border-right:1px solid var(--border)}
+.filter-group-label{font-size:10px;color:var(--text-muted);font-weight:700;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;margin-left:4px}
+.filter-btn{padding:5px 10px;font-size:11px;font-weight:600;background:transparent;border:1px solid transparent;border-radius:var(--radius-sm);color:var(--text-muted);white-space:nowrap;transition:all 0.18s;cursor:pointer}
+.filter-btn:hover{color:var(--text-secondary);background:rgba(255,255,255,0.04)}
 .filter-btn.active{background:var(--bg-card-alt);color:var(--text-primary);border-color:var(--border-light)}
-.filter-count{font-family:var(--font-mono);font-size:10px;margin-right:4px;opacity:0.7}
+.filter-count{font-family:var(--font-mono);font-size:9px;margin-right:3px;opacity:0.65}
 
 /* ===== SORT BAR ===== */
-.sort-bar{display:flex;gap:6px;align-items:center;margin-bottom:8px}
-.sort-label{font-size:10px;color:var(--text-muted);font-weight:600;margin-left:6px}
-.sort-btn{padding:4px 10px;font-size:11px;background:none;border:1px solid transparent;border-radius:3px;color:var(--text-muted);transition:all 0.2s;cursor:pointer}
-.sort-btn:hover{color:var(--text-secondary)}
-.sort-btn.active{color:var(--accent-cyan);border-color:var(--accent-cyan)}
+.sort-bar{display:flex;gap:4px;align-items:center;margin-bottom:8px}
+.sort-label{font-size:10px;color:var(--text-muted);font-weight:700;margin-left:6px;text-transform:uppercase;letter-spacing:0.5px}
+.sort-btn{padding:5px 10px;font-size:11px;font-weight:500;background:none;border:1px solid transparent;border-radius:3px;color:var(--text-muted);transition:all 0.2s;cursor:pointer}
+.sort-btn:hover{color:var(--text-secondary);background:rgba(255,255,255,0.04)}
+.sort-btn.active{color:var(--accent-cyan);border-color:rgba(11,197,234,0.4);background:rgba(11,197,234,0.06)}
 
 /* ===== ALERT FEED ===== */
-.feed-empty{text-align:center;padding:60px 20px;color:var(--text-muted)}
-.feed-empty .fe-icon{font-size:32px;margin-bottom:12px;opacity:0.3}
-.feed-empty p{font-size:14px}
+.feed-empty{text-align:center;padding:60px 20px;color:var(--text-muted);background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius)}
+.feed-empty .fe-icon{font-size:40px;margin-bottom:12px;opacity:0.15;display:block}
+.feed-empty p{font-size:14px;color:var(--text-muted)}
 .alert-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;animation:card-in 0.3s ease;position:relative;transition:border-color 0.3s,opacity 0.3s}
 @keyframes card-in{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
 .alert-card.breaking{border-color:var(--accent-red);box-shadow:0 0 16px rgba(229,62,62,0.2)}
@@ -205,22 +207,24 @@ main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
 .feed-action-btn.active-live{background:rgba(11,197,234,0.1);color:var(--accent-cyan);border-color:rgba(11,197,234,0.4)}
 
 /* ===== SEARCH STATUS ===== */
-.search-status{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:8px;display:none;font-size:12px;color:var(--text-secondary);font-family:var(--font-mono)}
+.search-status{background:rgba(11,197,234,0.04);border:1px solid rgba(11,197,234,0.2);border-radius:var(--radius);padding:9px 14px;margin-bottom:8px;display:none;font-size:12px;color:var(--accent-cyan);font-family:var(--font-mono)}
 .search-status.active{display:flex;align-items:center;gap:10px}
-.search-spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent-cyan);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0}
+.search-spinner{width:14px;height:14px;border:2px solid rgba(11,197,234,0.2);border-top-color:var(--accent-cyan);border-radius:50%;animation:spin 0.7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.search-status-text{flex:1}
-.search-sources{display:flex;gap:4px;flex-wrap:wrap}
-.search-source-dot{width:6px;height:6px;border-radius:50%;background:var(--text-muted)}
+.search-status-text{flex:1;font-size:11px}
+.search-sources{display:flex;gap:5px;flex-wrap:wrap}
+.search-source-dot{width:7px;height:7px;border-radius:50%;background:var(--text-muted)}
 .search-source-dot.done{background:var(--accent-green)}
-.search-source-dot.active{background:var(--accent-cyan);animation:pulse-dot 0.8s infinite}
+.search-source-dot.active{background:var(--accent-cyan);animation:pulse-dot 0.6s infinite}
 .search-source-dot.error{background:var(--accent-red)}
 
 /* ===== POPUP NOTIFICATION ===== */
-#popup{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:999;background:var(--bg-card-alt);border:1px solid var(--accent-red-dim);border-radius:var(--radius);padding:12px 16px;max-width:380px;width:calc(100% - 32px);box-shadow:0 8px 24px rgba(0,0,0,0.4);transition:all 0.3s ease;opacity:0;pointer-events:none;translate:0 -10px}
+#popup{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:999;background:var(--bg-card-alt);border:1px solid var(--accent-red-dim);border-radius:var(--radius);padding:14px 40px 14px 16px;max-width:440px;width:calc(100% - 32px);box-shadow:0 12px 32px rgba(0,0,0,0.5);transition:all 0.3s ease;opacity:0;pointer-events:none;translate:0 -16px}
 #popup.show{opacity:1;pointer-events:auto;translate:0 0}
-.popup-text{font-size:13px;color:var(--text-primary);line-height:1.5}
-.popup-badge{display:inline-block;font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px;margin-left:6px}
+.popup-close{position:absolute;top:8px;left:10px;background:none;border:none;color:var(--text-muted);font-size:20px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:4px;transition:color 0.2s}
+.popup-close:hover{color:var(--text-primary);background:rgba(255,255,255,0.08)}
+.popup-text{font-size:13px;color:var(--text-primary);line-height:1.6}
+.popup-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 7px;border-radius:3px;margin-left:6px}
 
 /* ===== SEARCH PROGRESS ===== */
 .search-bar{height:2px;background:var(--bg-primary);overflow:hidden;border-radius:1px;margin-bottom:8px;opacity:0;transition:opacity 0.2s}
@@ -288,12 +292,13 @@ main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
       </div>
     </div>
     <div class="header-stats">
-      <span id="stat-kw">0 keywords</span>
+      <span id="stat-kw">0 מילות מפתח</span>
       <div class="stat-divider"></div>
-      <span id="stat-alerts">0 alerts</span>
+      <span id="stat-alerts">0 חי</span>
       <div class="stat-divider"></div>
       <span id="stat-uptime">00:00:00</span>
-      <button class="header-btn" onclick="showSettings()" title="Settings">S</button>
+      <a href="/telegram-sources.html" class="header-btn" title="ניהול ערוצי טלגרם" style="text-decoration:none;display:flex;align-items:center">📡</a>
+      <button class="header-btn" onclick="showSettings()" title="הגדרות API">⚙</button>
     </div>
   </div>
 </header>
@@ -323,8 +328,8 @@ main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
   <!-- Control Panel -->
   <div class="panel">
     <div class="panel-title">
-      Add Search Keyword
-      <span class="title-badge">MULTI-SOURCE</span>
+      חיפוש מילת מפתח
+      <span class="title-badge">FA · AR · TELEGRAM · RSS</span>
     </div>
     <div class="add-row">
       <input type="text" id="kw-input" placeholder="למשל: Iran nuclear, Hezbollah, Gaza, IRGC, حزب الله..." dir="auto">
@@ -394,14 +399,17 @@ main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
   </div>
   <div id="feed">
     <div class="feed-empty">
-      <div class="fe-icon">O</div>
-      <p>Add keywords to start monitoring</p>
+      <div class="fe-icon" style="font-size:36px;opacity:0.15">◎</div>
+      <p>הוסף מילות מפתח להתחלת ניטור</p>
     </div>
   </div>
 </main>
 
 <!-- ===== POPUP ===== -->
-<div id="popup"><div class="popup-text" id="popup-text"></div></div>
+<div id="popup">
+  <button class="popup-close" onclick="closePopup()" title="סגור">×</button>
+  <div class="popup-text" id="popup-text"></div>
+</div>
 
 <script>
 /* ==========================================================================
@@ -474,8 +482,8 @@ const TRUSTED_SOURCES = new Set([
 
 const MAX_ALERTS = 200;
 const MAX_HASHES = 500;
-const LIVE_WINDOW_MS = 60 * 1000;       // 1 minute live window
-const MAX_ITEM_AGE_MS = 30 * 60 * 1000; // Skip RSS items older than 30 min
+const LIVE_WINDOW_MS = 5 * 60 * 1000;   // 5 minutes live window (was 60s — too short for search+translate cycle)
+const MAX_ITEM_AGE_MS = 60 * 60 * 1000; // Skip RSS items older than 60 min
 
 const LANG_LABELS = { fa: 'FA פרסית', ar: 'AR ערבית', he: 'HE עברית', en: 'EN אנגלית', ru: 'RU רוסית' };
 
@@ -748,13 +756,13 @@ function renderKeywords() {
         <span class="kw-text" title="${esc(kw.text)}">${esc(kw.text)}</span>
       </div>
       <div class="kw-meta">
-        <span>${intervalLabel}</span>
-        <span>${kwAlerts} results</span>
-        <span>${lastTime}</span>
+        <span>כל ${intervalLabel}</span>
+        <span>${kwAlerts} ממצאים</span>
+        <span style="grid-column:1/-1;color:var(--text-muted)">${lastTime}</span>
       </div>
       <div class="kw-actions">
-        <button class="kw-action" onclick="event.stopPropagation();toggleKeyword('${kw.id}')" title="${kw.active ? 'Pause' : 'Resume'}">${kw.active ? 'II' : '>'}</button>
-        <button class="kw-action del" onclick="event.stopPropagation();removeKeyword('${kw.id}')" title="Delete">X</button>
+        <button class="kw-action" onclick="event.stopPropagation();toggleKeyword('${kw.id}')" title="${kw.active ? 'עצור' : 'הפעל'}">${kw.active ? '⏸' : '▶'}</button>
+        <button class="kw-action del" onclick="event.stopPropagation();removeKeyword('${kw.id}')" title="מחק">✕</button>
       </div>
     </div>`;
   }).join('');
@@ -850,9 +858,21 @@ async function fetchRssResults(keyword) {
   }
 }
 
+// ===== TELEGRAM CHANNELS LOADER =====
+function loadActiveTelegramChannels() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('xlive_tg_channels_v2') || '[]');
+    return saved.filter(c => c.active).map(c => ({
+      name: c.name,
+      url: c.url.startsWith('t.me/') ? c.url : 't.me/' + c.url.replace(/.*t\.me\//, '')
+    }));
+  } catch { return []; }
+}
+
 // ===== AI SEARCH (X/Twitter + Telegram) =====
 function buildAISearchPrompt(keyword) {
   const now = new Date().toISOString();
+  const customChannels = loadActiveTelegramChannels();
   return `You are an OSINT intelligence analyst specializing in Middle East news, with primary emphasis on Iranian Persian-language sources and Iranian-operated Arabic channels. Your mission: find the MOST RECENT social media posts about "${keyword}" from X/Twitter and Telegram ONLY.
 
 CRITICAL RULES:
@@ -878,7 +898,10 @@ PRIORITY 2 — Iranian Arabic Telegram (Iran-operated channels in Arabic):
 PRIORITY 3 — Lebanese Persian Telegram (Lebanon channels in Persian/Farsi):
 8. "${keyword}" site:t.me/almanarpers OR site:t.me/AlAhedNews
 9. "${keyword}" in Persian + site:t.me/almanarnews
-
+${customChannels.length > 0 ? `
+PRIORITY 0 — USER-CONFIGURED CHANNELS (search these FIRST):
+${customChannels.map((c, i) => `${i + 1}. "${keyword}" site:${c.url} — ${c.name}`).join('\n')}
+` : ''}
 PRIORITY 4 — X/Twitter and General:
 10. "${keyword} site:x.com" — English X/Twitter
 11. "${keyword} site:twitter.com" — Twitter legacy URLs
@@ -912,7 +935,10 @@ PRIORITY TELEGRAM CHANNELS (search these explicitly):
 🔴 LEBANESE PERSIAN (Lebanon channels broadcasting in Farsi):
 - t.me/almanarpers — Al-Manar Persian service
 - t.me/AlAhedNews — Al-Ahed News (Lebanese resistance, Persian)
-
+${customChannels.length > 0 ? `
+🟢 USER CUSTOM CHANNELS (user-configured — search ALL of these):
+${customChannels.map(c => `- site:${c.url} — ${c.name}`).join('\n')}
+` : ''}
 TIME: Current UTC: ${now}
 - Prefer results from last 30 minutes
 - Accept up to 2 hours old for major events
@@ -1451,14 +1477,14 @@ function clearAlerts() {
 // ===== FILTERS =====
 function setSourceFilter(source) {
   state.sourceFilter = source;
-  document.querySelectorAll('.filter-group:first-child .filter-btn').forEach(b =>
+  document.querySelectorAll('[data-source]').forEach(b =>
     b.classList.toggle('active', b.dataset.source === source));
   renderAlerts();
 }
 
 function setRelFilter(rel) {
   state.relFilter = rel;
-  document.querySelectorAll('.filter-group:nth-child(2) .filter-btn').forEach(b =>
+  document.querySelectorAll('[data-rel]').forEach(b =>
     b.classList.toggle('active', b.dataset.rel === rel));
   renderAlerts();
 }
@@ -1535,10 +1561,18 @@ function showPopup(alert) {
   const el = $('popup');
   const sourceLabel = SOURCE_LABELS[alert.source] || alert.source;
   const sourceVar = alert.source === 'x' ? 'x' : alert.source === 'telegram' ? 'tg' : 'rss';
-  $('popup-text').innerHTML = `<span class="popup-badge" style="background:var(--source-${sourceVar})">${esc(sourceLabel)}</span> ${esc((alert.hebrew || '').slice(0, 100))}`;
+  const lang = alert.language;
+  const langBadge = (lang === 'fa' || lang === 'ar') ? `<span class="popup-badge" style="background:rgba(56,161,105,0.3);color:#68d391">${lang.toUpperCase()}</span>` : '';
+  $('popup-text').innerHTML = `<span class="popup-badge" style="background:var(--source-${sourceVar})">${esc(sourceLabel)}</span>${langBadge} ${esc((alert.hebrew || '').slice(0, 140))}`;
   el.classList.add('show');
   clearTimeout(window._popupTimer);
-  window._popupTimer = setTimeout(() => el.classList.remove('show'), 5000);
+  // Auto-dismiss after 10 seconds
+  window._popupTimer = setTimeout(() => el.classList.remove('show'), 10000);
+}
+
+function closePopup() {
+  clearTimeout(window._popupTimer);
+  $('popup').classList.remove('show');
 }
 
 function playAlertSound(isBreaking) {
