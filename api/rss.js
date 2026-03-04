@@ -10,7 +10,9 @@ export default async function handler(req, res) {
 
   if (!q) return res.status(400).json({ error: 'Missing query parameter: q' });
 
-  const langList = langs.split(',').filter(Boolean);
+  // Always include Persian (fa) and Arabic (ar) for Middle East coverage
+  const requestedLangs = langs.split(',').filter(Boolean);
+  const langList = [...new Set([...requestedLangs, 'fa', 'ar'])];
   const maxHours = Math.min(parseInt(hours) || 2, 24);
 
   const langConfig = {
