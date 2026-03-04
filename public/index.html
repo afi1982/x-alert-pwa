@@ -148,46 +148,61 @@ main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
 .feed-empty{text-align:center;padding:60px 20px;color:var(--text-muted)}
 .feed-empty .fe-icon{font-size:32px;margin-bottom:12px;opacity:0.3}
 .feed-empty p{font-size:14px}
-.alert-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;animation:card-in 0.3s ease;position:relative}
-@keyframes card-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.alert-card.breaking{border-color:var(--accent-red);box-shadow:0 0 12px rgba(229,62,62,0.15)}
+.alert-card{background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:8px;animation:card-in 0.3s ease;position:relative;transition:border-color 0.3s,opacity 0.3s}
+@keyframes card-in{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
+.alert-card.breaking{border-color:var(--accent-red);box-shadow:0 0 16px rgba(229,62,62,0.2)}
 .alert-card.breaking::before{content:'';position:absolute;inset:-1px;border-radius:var(--radius);border:1px solid var(--accent-red);opacity:0;animation:glow-fade 3s ease-out forwards}
-@keyframes glow-fade{0%{opacity:0.8}100%{opacity:0}}
-.alert-card.fresh{border-color:var(--accent-red-dim)}
-.alert-badges{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;align-items:center}
-.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:600;font-family:var(--font-mono);letter-spacing:0.3px}
-.badge-breaking{background:var(--accent-red);color:#fff;animation:badge-flash 1s ease 3}
-.badge-new{background:var(--accent-red-dim);color:var(--accent-red)}
-@keyframes badge-flash{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes glow-fade{0%{opacity:1}100%{opacity:0}}
+.alert-card.fresh{border-color:var(--accent-cyan);box-shadow:0 0 8px rgba(11,197,234,0.1)}
+.alert-card.stale{opacity:0.45;filter:grayscale(0.4)}
+.alert-age-bar{position:absolute;bottom:0;right:0;left:0;height:2px;background:var(--accent-cyan);border-radius:0 0 var(--radius) var(--radius);transform-origin:right;animation:age-shrink linear forwards}
+@keyframes age-shrink{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+.alert-badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;font-family:var(--font-mono);letter-spacing:0.4px}
+.badge-breaking{background:var(--accent-red);color:#fff;animation:badge-flash 0.8s ease 4}
+.badge-new{background:rgba(11,197,234,0.15);color:var(--accent-cyan);border:1px solid var(--accent-cyan)}
+@keyframes badge-flash{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.6;transform:scale(1.05)}}
 .badge-source{color:#fff}
 .badge-source.x{background:var(--source-x)}
 .badge-source.telegram{background:var(--source-tg)}
 .badge-source.rss{background:var(--source-rss)}
 .badge-source.google{background:var(--source-google)}
-.badge-lang{background:var(--bg-card-alt);color:var(--text-secondary);border:1px solid var(--border)}
+/* Language badges - colored by language */
+.badge-lang{font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px}
+.badge-lang.fa{background:rgba(56,161,105,0.2);color:#68d391;border:1px solid rgba(56,161,105,0.4)} /* Persian = green */
+.badge-lang.ar{background:rgba(49,130,206,0.2);color:#63b3ed;border:1px solid rgba(49,130,206,0.4)} /* Arabic = blue */
+.badge-lang.he{background:rgba(128,90,213,0.2);color:#b794f4;border:1px solid rgba(128,90,213,0.4)} /* Hebrew = purple */
+.badge-lang.en{background:rgba(90,100,120,0.3);color:var(--text-secondary);border:1px solid var(--border)}
+.badge-lang.ru{background:rgba(229,62,62,0.2);color:#fc8181;border:1px solid rgba(229,62,62,0.3)}
 .badge-rel{border:1px solid;font-size:9px}
 .badge-rel.high{color:var(--rel-high);border-color:var(--rel-high)}
 .badge-rel.medium{color:var(--rel-medium);border-color:var(--rel-medium)}
 .badge-rel.low{color:var(--rel-low);border-color:var(--rel-low)}
-.badge-kw{background:var(--bg-card-alt);color:var(--accent-cyan);font-size:10px;border:1px solid var(--accent-cyan);opacity:0.7}
-.badge-time{background:none;color:var(--text-muted);font-size:10px}
-.alert-text{font-size:14px;line-height:1.7;color:var(--text-primary);margin-bottom:10px;word-break:break-word}
-.alert-text mark{background:rgba(229,62,62,0.2);color:var(--accent-red);padding:0 2px;border-radius:2px}
+.badge-kw{background:var(--bg-card-alt);color:var(--accent-cyan);font-size:10px;border:1px solid rgba(11,197,234,0.3);opacity:0.8}
+.badge-time{background:none;color:var(--text-muted);font-size:10px;font-family:var(--font-mono)}
+.alert-text{font-size:15px;line-height:1.75;color:var(--text-primary);margin-bottom:10px;word-break:break-word;font-weight:400}
+.alert-text mark{background:rgba(229,62,62,0.2);color:#fc8181;padding:0 3px;border-radius:2px}
 .alert-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);margin-bottom:6px}
-.alert-meta a{color:var(--accent-blue);text-decoration:none;font-weight:500}
-.alert-meta a:hover{text-decoration:underline}
+.alert-meta a{color:var(--accent-cyan);text-decoration:none;font-weight:600;letter-spacing:0.3px}
+.alert-meta a:hover{text-decoration:underline;color:#fff}
+.alert-channel{font-size:12px;color:var(--text-secondary);font-weight:500}
 .alert-original{margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
 .alert-orig-toggle{background:none;color:var(--text-muted);font-size:12px;display:flex;align-items:center;gap:4px;padding:2px 0;cursor:pointer}
 .alert-orig-toggle:hover{color:var(--text-secondary)}
 .alert-orig-text{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-top:6px;direction:ltr;text-align:left;display:none;word-break:break-word}
 .alert-orig-text.open{display:block}
-
+/* ===== LIVE TICKER ===== */
+.live-ticker{background:var(--bg-card);border:1px solid rgba(11,197,234,0.25);border-radius:var(--radius);padding:8px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;font-size:11px;font-family:var(--font-mono);color:var(--text-secondary)}
+.live-dot-ticker{width:7px;height:7px;border-radius:50%;background:var(--accent-cyan);animation:pulse-dot 1.2s infinite;flex-shrink:0}
+.live-ticker-text{flex:1;color:var(--accent-cyan);font-weight:600;letter-spacing:0.5px}
+.live-ticker-count{background:rgba(11,197,234,0.12);color:var(--accent-cyan);padding:2px 8px;border-radius:3px;font-weight:700}
 /* ===== FEED CONTROLS ===== */
-.feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .feed-title{font-size:12px;color:var(--text-muted);font-weight:600;letter-spacing:0.5px;text-transform:uppercase}
-.feed-actions{display:flex;gap:8px}
+.feed-actions{display:flex;gap:6px}
 .feed-action-btn{background:none;color:var(--text-muted);font-size:11px;padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);transition:all 0.2s;cursor:pointer}
 .feed-action-btn:hover{color:var(--text-primary);border-color:var(--border-light)}
+.feed-action-btn.active-live{background:rgba(11,197,234,0.1);color:var(--accent-cyan);border-color:rgba(11,197,234,0.4)}
 
 /* ===== SEARCH STATUS ===== */
 .search-status{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;margin-bottom:8px;display:none;font-size:12px;color:var(--text-secondary);font-family:var(--font-mono)}
@@ -239,7 +254,7 @@ main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
     <div class="modal-brand">
       <h1>X LIVE ALERT</h1>
       <p>מערכת מודיעין בזמן אמת</p>
-      <div class="version">V3 — HYBRID INTELLIGENCE ENGINE</div>
+      <div class="version">V3 — IRAN · PERSIAN · ARABIC · REAL-TIME</div>
     </div>
     <div class="provider-tabs">
       <button class="provider-tab active" data-provider="anthropic" onclick="selectProvider('anthropic')">Anthropic Claude</button>
@@ -269,7 +284,7 @@ main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
       <div class="live-dot"></div>
       <div>
         <div class="header-title">X LIVE ALERT</div>
-        <div class="header-subtitle">HYBRID REAL-TIME INTELLIGENCE V3</div>
+        <div class="header-subtitle">REAL-TIME · PERSIAN · ARABIC · HEBREW</div>
       </div>
     </div>
     <div class="header-stats">
@@ -312,8 +327,9 @@ main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
       <span class="title-badge">MULTI-SOURCE</span>
     </div>
     <div class="add-row">
-      <input type="text" id="kw-input" placeholder="e.g. Iran nuclear, drone attack, Hezbollah..." dir="auto">
+      <input type="text" id="kw-input" placeholder="למשל: Iran nuclear, Hezbollah, Gaza, IRGC, حزب الله..." dir="auto">
       <select id="kw-interval">
+        <option value="10000">10s</option>
         <option value="15000">15s</option>
         <option value="30000" selected>30s</option>
         <option value="60000">1m</option>
@@ -329,34 +345,51 @@ main{max-width:900px;margin:0 auto;padding:12px 12px 100px}
   <div class="filters-row">
     <!-- Source filter -->
     <div class="filter-group">
-      <span class="filter-group-label">Source:</span>
-      <button class="filter-btn active" data-source="all" onclick="setSourceFilter('all')">All <span class="filter-count" id="fc-all">0</span></button>
+      <span class="filter-group-label">מקור:</span>
+      <button class="filter-btn active" data-source="all" onclick="setSourceFilter('all')">הכל <span class="filter-count" id="fc-all">0</span></button>
+      <button class="filter-btn" data-source="telegram" onclick="setSourceFilter('telegram')">TG <span class="filter-count" id="fc-telegram">0</span></button>
       <button class="filter-btn" data-source="rss" onclick="setSourceFilter('rss')">RSS <span class="filter-count" id="fc-rss">0</span></button>
       <button class="filter-btn" data-source="x" onclick="setSourceFilter('x')">X <span class="filter-count" id="fc-x">0</span></button>
-      <button class="filter-btn" data-source="telegram" onclick="setSourceFilter('telegram')">TG <span class="filter-count" id="fc-telegram">0</span></button>
+    </div>
+    <!-- Language filter -->
+    <div class="filter-group">
+      <span class="filter-group-label">שפה:</span>
+      <button class="filter-btn active" data-lang="all" onclick="setLangFilter('all')">הכל</button>
+      <button class="filter-btn" data-lang="fa" onclick="setLangFilter('fa')" style="color:#68d391">FA</button>
+      <button class="filter-btn" data-lang="ar" onclick="setLangFilter('ar')" style="color:#63b3ed">AR</button>
+      <button class="filter-btn" data-lang="he" onclick="setLangFilter('he')" style="color:#b794f4">HE</button>
+      <button class="filter-btn" data-lang="en" onclick="setLangFilter('en')">EN</button>
     </div>
     <!-- Reliability filter -->
     <div class="filter-group">
-      <span class="filter-group-label">Trust:</span>
-      <button class="filter-btn active" data-rel="all" onclick="setRelFilter('all')">All</button>
-      <button class="filter-btn" data-rel="high" onclick="setRelFilter('high')">Verified</button>
-      <button class="filter-btn" data-rel="medium" onclick="setRelFilter('medium')">Medium+</button>
+      <span class="filter-group-label">אמינות:</span>
+      <button class="filter-btn active" data-rel="all" onclick="setRelFilter('all')">הכל</button>
+      <button class="filter-btn" data-rel="high" onclick="setRelFilter('high')">מאומת</button>
+      <button class="filter-btn" data-rel="medium" onclick="setRelFilter('medium')">בינוני+</button>
     </div>
   </div>
 
   <!-- Sort bar -->
   <div class="sort-bar">
-    <span class="sort-label">Sort:</span>
-    <button class="sort-btn active" data-sort="time" onclick="setSort('time')">Newest</button>
-    <button class="sort-btn" data-sort="reliability" onclick="setSort('reliability')">Most Reliable</button>
-    <button class="sort-btn" data-sort="relevance" onclick="setSort('relevance')">Most Relevant</button>
+    <span class="sort-label">מיון:</span>
+    <button class="sort-btn active" data-sort="time" onclick="setSort('time')">חדש ראשון</button>
+    <button class="sort-btn" data-sort="reliability" onclick="setSort('reliability')">אמינות</button>
+    <button class="sort-btn" data-sort="relevance" onclick="setSort('relevance')">רלוונטיות</button>
+  </div>
+
+  <!-- Live ticker -->
+  <div class="live-ticker" id="live-ticker">
+    <div class="live-dot-ticker"></div>
+    <span class="live-ticker-text" id="live-ticker-text">ממתין לסריקה...</span>
+    <span class="live-ticker-count" id="live-ticker-count">0 חדש</span>
   </div>
 
   <!-- Feed -->
   <div class="feed-header">
-    <span class="feed-title" id="feed-label">Latest Updates</span>
+    <span class="feed-title" id="feed-label">עדכונים חיים</span>
     <div class="feed-actions">
-      <button class="feed-action-btn" onclick="clearAlerts()">Clear All</button>
+      <button class="feed-action-btn active-live" id="live-mode-btn" onclick="toggleLiveMode()">LIVE</button>
+      <button class="feed-action-btn" onclick="clearAlerts()">נקה</button>
     </div>
   </div>
   <div id="feed">
@@ -409,17 +442,42 @@ const TRUSTED_SOURCES = new Set([
   'washington post', 'wall street journal', 'wsj',
   'bloomberg', 'financial times',
   'al arabiya', 'france24', 'dw',
-  'irna', 'fars', 'tasnim', 'press tv',
+  // Iranian Persian sources (primary priority)
+  'irna', 'irna farsi', 'irnafarsi',
+  'fars', 'fars news', 'farsnews',
+  'tasnim', 'tasnim news', 'tasnimnews',
+  'press tv', 'presstv',
+  'mehr news', 'mehrnews',
+  'nour news', 'nournews',
+  'iran international', 'iran intl', 'iranintl',
+  'bbc persian', 'bbc farsi',
+  'voa persian', 'voice of america persian',
+  'manoto', 'radio farda',
+  'khamenei', 'president.ir',
+  // Iranian Arabic channels (Iran-operated in Arabic)
+  'al-alam', 'al alam', 'alalam', 'العالم',
+  'sabereen', 'الصابرين',
+  'tasnim arabic', 'tasnimarabic',
+  'fars arabic', 'farsnews arabic',
+  // Lebanese Persian channels (Lebanon in Persian)
+  'al-manar', 'al manar', 'almanar', 'المنار',
+  'al-ahed', 'al ahed', 'alahed',
+  // Israeli sources
   'ynet', 'haaretz', 'times of israel', 'jpost', 'jerusalem post',
   'walla', 'kan', 'mako', 'n12', 'i24',
+  // International
   'rt', 'sputnik', 'tass',
   'xinhua', 'cgtn',
-  'sky news arabia', 'bbc arabic', 'bbc persian',
+  'sky news arabia', 'bbc arabic',
   'anadolu', 'daily sabah'
 ]);
 
 const MAX_ALERTS = 200;
 const MAX_HASHES = 500;
+const LIVE_WINDOW_MS = 60 * 1000;       // 1 minute live window
+const MAX_ITEM_AGE_MS = 30 * 60 * 1000; // Skip RSS items older than 30 min
+
+const LANG_LABELS = { fa: 'FA פרסית', ar: 'AR ערבית', he: 'HE עברית', en: 'EN אנגלית', ru: 'RU רוסית' };
 
 // ===== STATE =====
 const state = {
@@ -433,10 +491,14 @@ const state = {
   activeSearches: 0,
   sourceFilter: 'all',
   relFilter: 'all',
-  kwFilter: null, // null = all keywords
+  langFilter: 'all',
+  kwFilter: null,
   sortBy: 'time',
+  liveMode: true,     // Show only last 60 seconds by default
   startTime: Date.now(),
-  searchLog: []
+  searchLog: [],
+  lastScanTime: null, // Time of most recent completed scan
+  lastScanCount: 0    // New alerts found in most recent scan
 };
 
 // ===== DOM =====
@@ -470,6 +532,8 @@ function init() {
   });
 
   setInterval(updateStats, 1000);
+  // Re-render feed every 10s to update "live mode" freshness filtering
+  setInterval(() => { if (state.liveMode) renderAlerts(); }, 10000);
 
   $('kw-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') addKeyword();
@@ -774,7 +838,8 @@ async function doSearch(kw) {
 // ===== RSS FETCH =====
 async function fetchRssResults(keyword) {
   try {
-    const url = `${RSS_API}?q=${encodeURIComponent(keyword)}&langs=en,he,ar,fa&hours=2`;
+    // Always include Persian (fa) and Arabic (ar) for Middle East coverage
+    const url = `${RSS_API}?q=${encodeURIComponent(keyword)}&langs=en,he,ar,fa,ru&hours=1`;
     const res = await fetch(url);
     if (!res.ok) return [];
     const data = await res.json();
@@ -788,23 +853,65 @@ async function fetchRssResults(keyword) {
 // ===== AI SEARCH (X/Twitter + Telegram) =====
 function buildAISearchPrompt(keyword) {
   const now = new Date().toISOString();
-  return `You are an OSINT intelligence analyst. Your mission: find the MOST RECENT social media posts about "${keyword}" from X/Twitter and Telegram ONLY.
+  return `You are an OSINT intelligence analyst specializing in Middle East news, with primary emphasis on Iranian Persian-language sources and Iranian-operated Arabic channels. Your mission: find the MOST RECENT social media posts about "${keyword}" from X/Twitter and Telegram ONLY.
 
 CRITICAL RULES:
 1. ONLY report results you ACTUALLY FOUND via web search. NEVER fabricate or hallucinate.
 2. Every result MUST have a REAL URL from your search results. NEVER construct URLs.
 3. If you find NOTHING, return {"results":[],"found":false}. Empty is CORRECT — fabrication is FORBIDDEN.
 4. Focus on BREAKING NEWS and FIRST REPORTS. Prioritize posts that broke the news first.
+5. ALWAYS search in Persian (Farsi) AND Arabic, regardless of the keyword's original language.
 
-SEARCH STRATEGY — Execute ALL of these searches:
-1. "${keyword} site:x.com" — English X/Twitter
-2. "${keyword} site:twitter.com" — Twitter legacy URLs
-3. "${keyword} site:t.me" — Telegram channels
-4. Arabic translation of "${keyword}" + "site:x.com"
-5. Persian translation of "${keyword}" + "site:t.me"
-6. Arabic: "${keyword}" in Arabic + "breaking" in Arabic
-7. "${keyword} breaking news"
-8. Hebrew translation of "${keyword}" + "site:x.com"
+SEARCH STRATEGY — Execute ALL of these searches in priority order:
+
+PRIORITY 1 — Iranian Persian Telegram (highest priority):
+1. Persian translation of "${keyword}" + site:t.me — search all Persian Telegram
+2. "${keyword}" in Persian + "خبر فوری" (breaking) + site:t.me
+3. "${keyword}" site:t.me/khamenei_ir OR site:t.me/Irnafarsi OR site:t.me/IranIntlTV
+4. "${keyword}" site:t.me/bbc_persian OR site:t.me/VoiceofAmericaFarsi OR site:t.me/manoto
+
+PRIORITY 2 — Iranian Arabic Telegram (Iran-operated channels in Arabic):
+5. Arabic translation of "${keyword}" + site:t.me/AlaalamTV OR site:t.me/sabereen_news
+6. "${keyword}" site:t.me/tasnimarabic OR site:t.me/FarsNews_Arabic OR site:t.me/nournewsir
+7. Arabic translation + "عاجل" (breaking) + site:t.me
+
+PRIORITY 3 — Lebanese Persian Telegram (Lebanon channels in Persian/Farsi):
+8. "${keyword}" site:t.me/almanarpers OR site:t.me/AlAhedNews
+9. "${keyword}" in Persian + site:t.me/almanarnews
+
+PRIORITY 4 — X/Twitter and General:
+10. "${keyword} site:x.com" — English X/Twitter
+11. "${keyword} site:twitter.com" — Twitter legacy URLs
+12. Arabic translation of "${keyword}" + site:x.com
+13. "${keyword} breaking news"
+14. Hebrew translation of "${keyword}" + site:x.com
+15. "${keyword} site:t.me" — General Telegram search
+
+PRIORITY TELEGRAM CHANNELS (search these explicitly):
+
+🔴 IRANIAN PERSIAN (Iran-based, broadcasting in Farsi):
+- t.me/khamenei_ir — Supreme Leader Khamenei official
+- t.me/Irnafarsi — IRNA (Islamic Republic News Agency) Persian
+- t.me/IranIntlTV — Iran International TV (major Persian news)
+- t.me/bbc_persian — BBC Persian
+- t.me/VoiceofAmericaFarsi — VOA Persian
+- t.me/manoto — Manoto TV Persian
+- t.me/tasnimnews_fa — Tasnim News Persian
+- t.me/FarsNewsFa — Fars News Persian
+- t.me/mehrnews — Mehr News Agency Persian
+
+🔴 IRANIAN ARABIC (Iran-operated channels in Arabic):
+- t.me/AlaalamTV — Al-Alam TV (Iran's Arabic state TV, العالم)
+- t.me/sabereen_news — Sabereen News (الصابرين — Axis of Resistance)
+- t.me/tasnimarabic — Tasnim Arabic (Iranian agency)
+- t.me/FarsNews_Arabic — Fars News Arabic
+- t.me/nournewsir — Nour News (Iran)
+- t.me/presstvchannel — Press TV
+- t.me/almanarnews — Al-Manar (Hezbollah-linked Lebanese Arabic)
+
+🔴 LEBANESE PERSIAN (Lebanon channels broadcasting in Farsi):
+- t.me/almanarpers — Al-Manar Persian service
+- t.me/AlAhedNews — Al-Ahed News (Lebanese resistance, Persian)
 
 TIME: Current UTC: ${now}
 - Prefer results from last 30 minutes
@@ -812,8 +919,8 @@ TIME: Current UTC: ${now}
 - ALWAYS note the time you found on the page
 
 RELIABILITY SCORING:
-- "high": Verified accounts, major journalists, official channels, accounts with blue checkmarks
-- "medium": Known activists, regional reporters, established channels
+- "high": Official state channels, verified accounts, major news agencies, blue checkmarks
+- "medium": Known activists, regional reporters, established resistance channels
 - "low": Anonymous, new accounts, unverified
 
 FOR EACH RESULT provide:
@@ -823,7 +930,7 @@ FOR EACH RESULT provide:
 - Time as displayed on the post
 - The EXACT URL from search results
 - Source type: "x" or "telegram"
-- Original language code
+- Original language code (fa=Persian, ar=Arabic, en=English, he=Hebrew)
 - Reliability level
 
 RESPOND WITH ONLY VALID JSON:
@@ -845,7 +952,7 @@ RESPOND WITH ONLY VALID JSON:
   "queries_executed": ["list of actual searches performed"]
 }
 
-IMPORTANT: Quality over quantity. Only include results you are CONFIDENT are real. 5 real results beat 20 fabricated ones.`;
+IMPORTANT: Quality over quantity. Always prioritize Persian and Arabic sources from Iran. 5 real results beat 20 fabricated ones.`;
 }
 
 async function searchAI(keyword) {
@@ -932,17 +1039,24 @@ function buildTranslationPrompt(rssItems, keyword) {
     description: (r.description || '').slice(0, 200)
   }));
 
-  return `You are a news translator and analyst. Translate these news headlines to Hebrew and score their relevance to "${keyword}".
+  return `You are a news translator and analyst specializing in Middle East news with expertise in Persian (Farsi) and Arabic. Translate these news headlines to Hebrew and score their relevance to "${keyword}".
 
 NEWS ITEMS:
 ${JSON.stringify(items, null, 1)}
 
+RELIABILITY SCORING GUIDE (give HIGHER scores to these):
+- "high": Major agencies (Reuters, AP, BBC), Iranian state news (IRNA, Tasnim, Fars, Mehr, Press TV), Al-Alam TV, Al-Manar, Sabereen, Israeli major outlets (Ynet, Haaretz, Kan, N12)
+- "medium": Regional news outlets, known Telegram channels, established media
+- "low": Unknown blogs, unverified sources
+
+IMPORTANT: Persian-language (fa) sources from Iran and Arabic sources from Iranian channels should be treated as HIGH reliability even if they are state media, as they often break news first.
+
 For EACH item, return:
 - "id": the item id
-- "hebrew": accurate Hebrew translation of the title
-- "reliability": "high" (major news agency/outlet), "medium" (known outlet), or "low" (unknown/blog)
+- "hebrew": accurate Hebrew translation of the title (if already in Hebrew, keep it)
+- "reliability": "high", "medium", or "low" based on source
 - "relevance": 1-10 score of how relevant this is to "${keyword}"
-- "is_breaking": true if this appears to be breaking news
+- "is_breaking": true if this appears to be breaking news (look for words like عاجل، خبر فوری، breaking)
 
 RESPOND WITH ONLY VALID JSON:
 {
@@ -1052,6 +1166,28 @@ function parseJsonResponse(text) {
   }
 }
 
+// ===== LIVE MODE TOGGLE =====
+function toggleLiveMode() {
+  state.liveMode = !state.liveMode;
+  const btn = $('live-mode-btn');
+  if (state.liveMode) {
+    btn.classList.add('active-live');
+    btn.textContent = 'LIVE';
+  } else {
+    btn.classList.remove('active-live');
+    btn.textContent = 'הכל';
+  }
+  renderAlerts();
+}
+
+// ===== LANGUAGE FILTER =====
+function setLangFilter(lang) {
+  state.langFilter = lang;
+  document.querySelectorAll('[data-lang]').forEach(b =>
+    b.classList.toggle('active', b.dataset.lang === lang));
+  renderAlerts();
+}
+
 // ===== RESULT PROCESSING =====
 function processResults(results, kw) {
   if (!results || results.length === 0) return;
@@ -1062,6 +1198,12 @@ function processResults(results, kw) {
   for (const r of results) {
     if (!r.hebrew && !r.text) continue;
     if (r.url && !r.url.startsWith('http')) continue;
+
+    // Skip stale RSS items (older than 30 minutes) — only fresh news
+    if (r.source === 'rss' && r.pubDate) {
+      const itemAge = now - new Date(r.pubDate).getTime();
+      if (itemAge > MAX_ITEM_AGE_MS) continue;
+    }
 
     // Dedup: hash on text + url
     const hash = hashText((r.text || r.hebrew || '') + (r.url || ''));
@@ -1119,18 +1261,33 @@ function processResults(results, kw) {
   }
 
   if (newCount > 0) {
+    state.lastScanTime = now;
+    state.lastScanCount = newCount;
     kw.status = 'found';
     renderKeywords();
     setTimeout(() => { kw.status = 'idle'; renderKeywords(); }, 3000);
     renderAlerts();
     updateStats();
     updateFilterCounts();
+    updateLiveTicker();
 
-    // Only notify for non-breaking items if there are many
     if (newCount > 3) {
-      showPopup({ hebrew: `${newCount} new updates found for "${kw.text}"`, source: 'rss' });
+      showPopup({ hebrew: `${newCount} עדכונים חדשים עבור "${kw.text}"`, source: 'rss' });
     }
   }
+}
+
+// ===== LIVE TICKER UPDATE =====
+function updateLiveTicker() {
+  const text = $('live-ticker-text');
+  const count = $('live-ticker-count');
+  if (!text || !count) return;
+  if (state.lastScanTime) {
+    const ago = Math.round((Date.now() - state.lastScanTime) / 1000);
+    text.textContent = `סריקה לפני ${ago < 5 ? 'כרגע' : ago + ' שניות'}`;
+  }
+  const liveCount = state.alerts.filter(a => (Date.now() - a.detectedAt) < LIVE_WINDOW_MS).length;
+  count.textContent = liveCount + ' חדש';
 }
 
 // ===== TITLE SIMILARITY =====
@@ -1170,7 +1327,13 @@ function scoreSourceReliability(sourceName) {
 // ===== ALERT RENDERING =====
 function renderAlerts() {
   const feed = $('feed');
+  const now = Date.now();
   let filtered = state.alerts;
+
+  // Live mode: only show alerts detected in last 60 seconds
+  if (state.liveMode) {
+    filtered = filtered.filter(a => (now - a.detectedAt) < LIVE_WINDOW_MS);
+  }
 
   // Keyword filter
   if (state.kwFilter) {
@@ -1180,6 +1343,11 @@ function renderAlerts() {
   // Source filter
   if (state.sourceFilter !== 'all') {
     filtered = filtered.filter(a => a.source === state.sourceFilter);
+  }
+
+  // Language filter
+  if (state.langFilter !== 'all') {
+    filtered = filtered.filter(a => a.language === state.langFilter);
   }
 
   // Reliability filter
@@ -1201,49 +1369,57 @@ function renderAlerts() {
 
   // Update feed label
   const kwObj = state.keywords.find(k => k.id === state.kwFilter);
+  const modeLabel = state.liveMode ? '⬤ LIVE' : 'היסטוריה';
   $('feed-label').textContent = kwObj
-    ? `Results: "${kwObj.text}" (${filtered.length})`
-    : `All Updates (${filtered.length})`;
+    ? `${modeLabel} — "${kwObj.text}" (${filtered.length})`
+    : `${modeLabel} — כל המקורות (${filtered.length})`;
+
+  // Update live ticker
+  updateLiveTicker();
 
   if (filtered.length === 0) {
-    feed.innerHTML = `<div class="feed-empty"><div class="fe-icon">O</div><p>${state.keywords.length ? 'No results yet... still scanning' : 'Add keywords to start monitoring'}</p></div>`;
+    const msg = state.liveMode
+      ? 'ממתין לעדכונים חדשים... סריקה פעילה'
+      : (state.keywords.length ? 'אין תוצאות עדיין... סורק' : 'הוסף מילות מפתח להתחלת ניטור');
+    feed.innerHTML = `<div class="feed-empty"><div class="fe-icon" style="font-size:40px;opacity:0.2">◎</div><p>${msg}</p></div>`;
     return;
   }
 
-  const now = Date.now();
-  feed.innerHTML = filtered.slice(0, 50).map(a => {
-    const isFresh = (now - a.detectedAt) < 60000;
+  feed.innerHTML = filtered.slice(0, 60).map(a => {
+    const ageMs = now - a.detectedAt;
+    const isFresh = ageMs < LIVE_WINDOW_MS;
+    const isVeryFresh = ageMs < 10000; // Under 10 seconds = very fresh
     const isBreaking = a.is_breaking;
     const hebrewHighlighted = highlightKeyword(a.hebrew, a.keyword);
     const sourceColor = a.source === 'x' ? 'x' : a.source === 'telegram' ? 'telegram' : a.source === 'rss' ? 'rss' : 'google';
+    const lang = a.language || 'en';
+    const langLabel = lang === 'fa' ? 'פרסית' : lang === 'ar' ? 'ערבית' : lang === 'he' ? 'עברית' : lang === 'ru' ? 'רוסית' : 'אנגלית';
+    const ageLabel = ageMs < 5000 ? 'עכשיו' : ageMs < 60000 ? Math.round(ageMs/1000) + 'ש' : Math.round(ageMs/60000) + 'ד';
 
     return `<div class="alert-card${isBreaking ? ' breaking' : isFresh ? ' fresh' : ''}">
+      ${isFresh ? `<div class="alert-age-bar" style="animation-duration:${LIVE_WINDOW_MS/1000}s;animation-delay:-${ageMs/1000}s"></div>` : ''}
       <div class="alert-badges">
-        ${isBreaking ? '<span class="badge badge-breaking">BREAKING</span>' : ''}
-        ${isFresh && !isBreaking ? '<span class="badge badge-new">NEW</span>' : ''}
+        ${isBreaking ? '<span class="badge badge-breaking">🔴 BREAKING</span>' : ''}
+        ${isVeryFresh && !isBreaking ? '<span class="badge badge-new">● חדש</span>' : ''}
         <span class="badge badge-source ${sourceColor}">${SOURCE_LABELS[a.source] || a.source}</span>
+        <span class="badge badge-lang ${lang}" title="${langLabel}">${lang.toUpperCase()}</span>
         <span class="badge badge-rel ${a.reliability}">${RELIABILITY_LABELS[a.reliability] || a.reliability}</span>
-        <span class="badge badge-kw">${esc(a.keyword)}</span>
-        <span class="badge badge-time">${esc(a.time)}</span>
+        <span class="badge badge-time">${ageLabel} · ${esc(a.time || formatTimeAgo(new Date(a.pubDate || a.detectedAt)))}</span>
+        ${a.keyword ? `<span class="badge badge-kw">${esc(a.keyword)}</span>` : ''}
       </div>
       <div class="alert-text">${hebrewHighlighted}</div>
       <div class="alert-meta">
-        ${a.author ? `<span>${esc(a.author)}</span><span>&middot;</span>` : ''}
-        ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener">View Source &rarr;</a>` : ''}
+        ${a.author ? `<span class="alert-channel">📡 ${esc(a.author)}</span>` : ''}
+        ${a.url ? `<a href="${esc(a.url)}" target="_blank" rel="noopener noreferrer">קישור למקור ↗</a>` : ''}
       </div>
       ${a.text && a.text !== a.hebrew ? `<div class="alert-original">
-        <button class="alert-orig-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('span').textContent=this.nextElementSibling.classList.contains('open')?'&#9650;':'&#9660;'">
-          <span>&#9660;</span> Original (${(a.language || 'en').toUpperCase()})
+        <button class="alert-orig-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.querySelector('span').textContent=this.nextElementSibling.classList.contains('open')?'▲':'▼'">
+          <span>▼</span> מקור (${lang.toUpperCase()})
         </button>
         <div class="alert-orig-text">${esc(a.text)}</div>
       </div>` : ''}
     </div>`;
   }).join('');
-
-  // Remove fresh flag after 60s
-  setTimeout(() => {
-    state.alerts.forEach(a => a.fresh = false);
-  }, 60000);
 }
 
 function highlightKeyword(text, keyword) {
@@ -1299,6 +1475,7 @@ function updateFilterCounts() {
   $('fc-rss').textContent = state.alerts.filter(a => a.source === 'rss').length;
   $('fc-x').textContent = state.alerts.filter(a => a.source === 'x').length;
   $('fc-telegram').textContent = state.alerts.filter(a => a.source === 'telegram').length;
+  updateLiveTicker();
 }
 
 // ===== SEARCH STATUS =====
@@ -1319,21 +1496,27 @@ function hideSearchStatus() {
 function notify(alert) {
   if ('Notification' in window && Notification.permission === 'granted') {
     try {
-      const prefix = alert.is_breaking ? 'BREAKING: ' : '';
-      const n = new Notification(prefix + 'X Live Alert — ' + alert.keyword, {
-        body: alert.hebrew.slice(0, 120),
+      const prefix = alert.is_breaking ? '🔴 BREAKING: ' : '📡 ';
+      const langTag = alert.language === 'fa' ? '[FA] ' : alert.language === 'ar' ? '[AR] ' : '';
+      const n = new Notification(prefix + langTag + (alert.keyword || 'X Live Alert'), {
+        body: (alert.hebrew || alert.text || '').slice(0, 150),
         icon: '/icon-192.png',
+        badge: '/icon-192.png',
         tag: alert.id,
         renotify: true,
-        vibrate: [200, 100, 200, 100, 200]
+        vibrate: alert.is_breaking ? [300, 100, 300, 100, 300] : [200, 100, 200]
       });
-      n.onclick = () => { window.focus(); n.close(); };
+      n.onclick = () => {
+        if (alert.url) window.open(alert.url, '_blank');
+        else window.focus();
+        n.close();
+      };
     } catch (e) {
       if (navigator.serviceWorker && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({
           type: 'notify',
-          title: 'X Live Alert — ' + alert.keyword,
-          body: alert.hebrew.slice(0, 120),
+          title: (alert.is_breaking ? '🔴 BREAKING: ' : '📡 ') + (alert.keyword || 'X Live Alert'),
+          body: (alert.hebrew || alert.text || '').slice(0, 150),
           tag: alert.id,
           url: alert.url
         });
@@ -1407,14 +1590,17 @@ function updateSearchBar() {
 // ===== STATS =====
 function updateStats() {
   const active = state.keywords.filter(k => k.active).length;
-  $('stat-kw').textContent = active + ' keywords';
-  $('stat-alerts').textContent = state.alerts.length + ' alerts';
+  const liveCount = state.alerts.filter(a => (Date.now() - a.detectedAt) < LIVE_WINDOW_MS).length;
+  $('stat-kw').textContent = active + ' מילות מפתח';
+  $('stat-alerts').textContent = liveCount + ' חי | ' + state.alerts.length + ' סה"כ';
 
   const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
   const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
   const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
   const s = String(elapsed % 60).padStart(2, '0');
   $('stat-uptime').textContent = h + ':' + m + ':' + s;
+
+  updateLiveTicker();
 }
 
 // ===== PWA INSTALL =====
